@@ -14,7 +14,7 @@
   /**
    * How large should the button be?
    */
-  export let size = 'normal'
+  export let size: 'normal' | 'small' = 'normal'
   /**
    * Button contents
    */
