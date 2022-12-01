@@ -1,1 +1,1 @@
-# tailor
+# teiler (ˈteɪlər - tailor)

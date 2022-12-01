@@ -1,0 +1,13 @@
+[1mloaded rollup.config.js with warnings[22m
+[1m[33m(!) Unused external imports[39m[22m
+terser imported from external module "rollup-plugin-terser" but never used in "rollup.config.js".
+[36m
+[1msrc/styled.ts[22m → [1mdist/tailor-core.cjs.js, dist/tailor-core.esm.js[22m...[39m
+[1m[33m(!) Plugin svelte: A11y: visible, non-interactive elements with an on:click event must be accompanied by an on:keydown, on:keyup, or on:keypress event.[39m[22m
+[1msrc/Styled.svelte[22m
+[90m19: </script>
+20: 
+21: <svelte:element this={tag} class={classes.join(' ')} on:click><slot /></svelte:element>
+    ^
+22: [39m
+[32mcreated [1mdist/tailor-core.cjs.js, dist/tailor-core.esm.js[22m in [1m584ms[22m[39m
