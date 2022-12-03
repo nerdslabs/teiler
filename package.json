@@ -5,25 +5,13 @@
     "packages/*"
   ],
   "scripts": {
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "dev": "turbo run dev"
+    "dev": "turbo run dev --parallel --no-cache"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^6.5.9",
-    "@storybook/addon-essentials": "^6.5.9",
-    "@storybook/addon-interactions": "^6.5.9",
-    "@storybook/addon-links": "^6.5.9",
-    "@storybook/addon-svelte-csf": "^2.0.4",
-    "@storybook/svelte": "^6.5.9",
-    "@storybook/testing-library": "^0.0.13",
-    "svelte-loader": "^3.1.4",
-    "turbo": "^1.6.3"
-  },
-  "dependencies": {
-    "svelte": "^3.53.1"
+    "turbo": "^1.6.3",
+    "typescript": "^4.9.3"
   }
 }

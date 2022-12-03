@@ -40,6 +40,7 @@ const defaultPlugins = [
       },
     }),
   }),
+  // terser(),
 ]
 
 export default [

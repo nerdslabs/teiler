@@ -6,7 +6,7 @@ import Styled from './Styled.svelte'
 
 type SvelteComponent<Props> = SvelteComponentTyped<Props> & TailorComponent<Props>
 
-function createComponent<Props>(styles): SvelteComponent<Props> {
+function createComponent<Props>(styles: Array<Style<Props>>): SvelteComponent<Props> {
   return class SvelteComponent extends Styled {
     static styles: Array<Style<Props>> = styles
 

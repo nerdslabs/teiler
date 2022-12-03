@@ -3,7 +3,6 @@ import { nodeResolve } from '@rollup/plugin-node-resolve'
 import json from '@rollup/plugin-json'
 import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
-import { transformSync } from 'esbuild'
 
 import { terser } from 'rollup-plugin-terser'
 
@@ -12,6 +11,7 @@ const defaultPlugins = [
   nodeResolve({ resolveOnly: [/^(?!svelte.*$)/] }),
   json(),
   esbuild.default({ sourceMap: true }),
+  // terser(),
 ]
 
 export default [

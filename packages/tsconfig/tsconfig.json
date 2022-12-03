@@ -13,12 +13,10 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "importsNotUsedAsValues": "preserve"
-  },
-  "paths": {
-    "~/*": [
-      "packages/*"
-    ]
+    "importsNotUsedAsValues": "preserve",
+    "preserveValueImports": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
   "compileOnSave": false,
 }

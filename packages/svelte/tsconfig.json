@@ -1,0 +1,9 @@
+{
+  "extends": "@teiler/tsconfig/tsconfig.json",
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
