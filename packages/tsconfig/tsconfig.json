@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "es6",
     "lib": [
-      "esnext"
+      "esnext",
+      "DOM"
     ],
     "module": "esNext",
     "importHelpers": true,
@@ -13,9 +14,7 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "importsNotUsedAsValues": "preserve",
-    "preserveValueImports": true,
-    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
   "compileOnSave": false,

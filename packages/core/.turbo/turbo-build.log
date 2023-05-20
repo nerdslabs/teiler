@@ -1,16 +1,13 @@
-[1mloaded rollup.config.js with warnings[22m
-[1m[33m(!) Unused external imports[39m[22m
-terser imported from external module "rollup-plugin-terser" but never used in "rollup.config.js".
 [36m
-[1msrc/styled.ts[22m → [1mdist/teiler-core.umd.js, dist/teiler-core.cjs.js, dist/teiler-core.esm.js[22m...[39m
+[1msrc/index.ts[22m → [1mdist/teiler-core.umd.js, dist/teiler-core.cjs.js, dist/teiler-core.esm.js[22m...[39m
 [1m[33m(!) Mixing named and default exports[39m[22m
-[90mhttps://rollupjs.org/guide/en/#outputexports[39m
+[90mhttps://rollupjs.org/configuration-options/#output-exports[39m
 [1mThe following entry modules are using named and default exports together:[22m
-src/styled.ts
-src/styled.ts
+src/index.ts
+src/index.ts
 
 Consumers of your bundle will have to use chunk.default to access their default export, which may not be what you want. Use `output.exports: "named"` to disable this warning.
-[32mcreated [1mdist/teiler-core.umd.js, dist/teiler-core.cjs.js, dist/teiler-core.esm.js[22m in [1m382ms[22m[39m
+[32mcreated [1mdist/teiler-core.umd.js, dist/teiler-core.cjs.js, dist/teiler-core.esm.js[22m in [1m1.2s[22m[39m
 [36m
-[1msrc/styled.ts[22m → [1mdist/teiler-core.d.ts[22m...[39m
-[32mcreated [1mdist/teiler-core.d.ts[22m in [1m1.2s[22m[39m
+[1msrc/index.ts[22m → [1mdist/teiler-core.d.ts[22m...[39m
+[32mcreated [1mdist/teiler-core.d.ts[22m in [1m1.5s[22m[39m

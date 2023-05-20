@@ -24,6 +24,7 @@ const defaultPlugins = [
     compilerOptions: {
       // dev: production === false,
       sourcemap: true,
+      // generate: 'ssr',
     },
     preprocess: sveltePreprocess({
       typescript({ content }) {
@@ -40,7 +41,6 @@ const defaultPlugins = [
       },
     }),
   }),
-  // terser(),
 ]
 
 export default [
@@ -67,7 +67,7 @@ export default [
         globals,
       },
     ],
-    plugins: defaultPlugins,
+    plugins: [...defaultPlugins, terser()],
   },
   {
     input: 'src/index.ts',
@@ -75,6 +75,6 @@ export default [
       file: `dist/teiler-svelte.d.ts`,
       format: 'es',
     },
-    plugins: [dts.default()],
+    plugins: [...defaultPlugins, dts.default()],
   },
 ]

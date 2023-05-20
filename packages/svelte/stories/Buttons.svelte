@@ -1,28 +1,34 @@
 <script lang="ts">
-  import component from '@teiler/svelte'
+  import { createStyleSheet } from '@teiler/core'
+  import { hire } from '@teiler/svelte'
+
+  // import teiler from '@teiler/svelte'
   import { createEventDispatcher } from 'svelte'
 
-  /**
-   * Is this the principal call to action on the page?
-   */
-  export let primary = false
+  const sheet = createStyleSheet({})
+  const { component } = hire({
+    sheet
+  })
 
-  /**
-   * What background color to use
-   */
-  export let backgroundColor
-  /**
-   * How large should the button be?
-   */
-  export let size: 'normal' | 'small' = 'normal'
-  /**
-   * Button contents
-   */
+  export let _primary = false
+  export let _primaryColor = "#f18805"
+
+  export let _size: 'normal' | 'small' = 'normal'
+
   export let label = ''
 
-  const Button = component<{
-    primary: boolean
-    size: 'normal' | 'small'
+  export let disabled
+
+  const test = component<{
+    _primary: boolean
+  }>`
+    color: red;
+  `
+
+  const Button = component.button<{
+    _primary: boolean
+    _size: 'normal' | 'small',
+    _primaryColor: string,
   }>`
     border-radius: 4px;
     box-shadow: none;
@@ -43,29 +49,46 @@
     &:hover {
       text-decoration: none;
       color: #fcfbff;
-      background: #f18805;
-      box-shadow: 0 0 0 3px #f18805 inset;
+      background: ${( { _primaryColor } ) => _primaryColor};
+      box-shadow: 0 0 0 3px ${( { _primaryColor } ) => _primaryColor} inset;
     }
 
-    ${({ primary }) =>
-      primary &&
+    ${({ _primary, _primaryColor }) =>
+      _primary &&
       `
         color: #fff;
         box-shadow: none;
-        background: #f18805;
+        background: ${_primaryColor};
+
+        &:hover {
+          opacity: 0.9;
+        }
       `}
 
-    ${({ size }) =>
-      size === 'small' &&
+    ${({ _size }) =>
+      _size === 'small' &&
       `
       font-size: 0.81rem;
       padding: 0.3rem 1.2rem;
       min-width: auto;
     `}
+
+    &[disabled] {
+      background-image: none !important;
+      background-color: #C0C0C0 !important;
+      box-shadow: 0 0 0 3px #C0C0C0 inset !important;
+      color: #fff !important;
+      cursor: not-allowed;
+    }
   `
 
-  const ExtendedButton = component<{}>(Button)`
+  const ExtendedButton = component(Button)<{test?: boolean}>`
+    font-weight: 300;
     background: red;
+
+    ${props => `
+        ${props}
+      `}
   `
 
   const dispatch = createEventDispatcher()
@@ -74,11 +97,12 @@
    * Optional click handler
    */
   function onClick(event) {
+    console.log('dump', sheet.dump())
     dispatch('click', event)
   }
 </script>
 
-<Button {primary} {size} on:click={onClick}>
+<Button {_primary} {_size} {_primaryColor} {disabled} on:click={onClick}>
   {label}
 </Button>
-<ExtendedButton>Test</ExtendedButton>
+<ExtendedButton {_primary} {_size} {_primaryColor}>Test</ExtendedButton>

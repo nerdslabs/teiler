@@ -11,12 +11,12 @@ const defaultPlugins = [
   nodeResolve({ resolveOnly: [/^(?!svelte.*$)/] }),
   json(),
   esbuild.default({ sourceMap: true }),
-  // terser(),
+  terser(),
 ]
 
 export default [
   {
-    input: 'src/styled.ts',
+    input: 'src/index.ts',
     output: [
       {
         file: 'dist/teiler-core.umd.js',
@@ -38,7 +38,7 @@ export default [
     plugins: defaultPlugins,
   },
   {
-    input: 'src/styled.ts',
+    input: 'src/index.ts',
     output: {
       file: `dist/teiler-core.d.ts`,
       format: 'es',

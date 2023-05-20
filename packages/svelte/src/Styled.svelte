@@ -1,12 +1,15 @@
 <script lang="ts">
-  import type { Style } from '@teiler/core'
-  import { stylesToCSS } from '@teiler/core'
+  import type { Style, CSS } from '@teiler/core'
 
   export let tag: string = 'div'
 
   export let styles: Array<Style<unknown>>
+  export let css: CSS
 
-  $: classes = stylesToCSS(styles, $$restProps)
+  $: classes = css(styles, $$restProps)
+
+  $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== "_")
+  $: filtredProps = Object.fromEntries(filtredPropsEntries)
 </script>
 
-<svelte:element this={tag} class={classes.join(' ')} on:click><slot /></svelte:element>
+<svelte:element this={tag} class={classes.join(' ')} on:click {...filtredProps}><slot /></svelte:element>

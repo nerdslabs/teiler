@@ -9,7 +9,7 @@
   argTypes={{
     label: { control: "text" },
     primary: { control: "boolean" },
-    backgroundColor: { control: "color" },
+    primaryColor: { control: "color" },
     size: {
       control: { type: "select", options: ["small", "medium", "large"] },
     },
@@ -24,7 +24,7 @@
 <Story
   name="Primary"
   args={{
-    primary: true,
+    _primary: true,
     label: "Button",
   }}
 />
@@ -39,7 +39,15 @@
 <Story
   name="Small"
   args={{
-    size: "small",
+    _size: "small",
+    label: "Button",
+  }}
+/>
+
+<Story
+  name="Disabled"
+  args={{
+    disabled: true,
     label: "Button",
   }}
 />
