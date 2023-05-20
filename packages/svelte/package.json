@@ -20,7 +20,7 @@
     "svelte": "^3.58.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^24.1.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@storybook/addon-actions": "^6.5.16",
@@ -32,8 +32,8 @@
     "@storybook/testing-library": "^0.0.13",
     "@teiler/core": "*",
     "@teiler/tsconfig": "*",
-    "esbuild": "^0.17.18",
-    "rollup": "^3.21.3",
+    "esbuild": "^0.17.19",
+    "rollup": "^3.22.0",
     "rollup-plugin-dts": "^5.3.0",
     "rollup-plugin-esbuild": "^5.0.0",
     "rollup-plugin-svelte": "^7.1.4",
