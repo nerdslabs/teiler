@@ -1,14 +1,10 @@
 import type { Sheet } from './sheet'
 
-import hash from './hash'
 import { compile, serialize, stringify, middleware, prefixer, rulesheet } from 'stylis'
 
-function css(sheet: Sheet, styles: string) {
-  const id = hash(styles)
-  const selector = 'teiler-' + id
-
+function stylis(sheet: Sheet, css: string) {
   serialize(
-    compile(`.${selector} { ${styles} }`),
+    compile(css),
     middleware([
       stringify,
       prefixer,
@@ -17,8 +13,6 @@ function css(sheet: Sheet, styles: string) {
       }),
     ]),
   )
-
-  return selector
 }
 
-export default css
+export { stylis }

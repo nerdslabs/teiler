@@ -1,7 +1,8 @@
 import type { Sheet } from './sheet'
 
-import compile from './css'
+import { stylis } from './css'
 import createStyleSheet from './sheet'
+import hash from './hash'
 
 type Expression<Props> = (props: Props) => string
 type Style<Props> = [string[], Expression<Props>[]]
@@ -10,11 +11,11 @@ type TailorComponent<Type, Props> = Type & {
   styles: Array<Style<Props>>
 }
 
-const isFalsish = (chunk: any): chunk is undefined | null | false | '' => chunk === undefined || chunk === null || chunk === false || chunk === ''
+const isFalsish = (chunk: unknown): chunk is undefined | null | false | '' => chunk === undefined || chunk === null || chunk === false || chunk === ''
 
-function css<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props) {
+function compile<Props>(styles: Array<Style<Props>>, props: Props) {
   return styles.map(([strings, expressions]) => {
-    const mapped = strings.reduce((acc, strings, index) => {
+    return strings.reduce((acc, strings, index) => {
       acc = [...acc, strings]
 
       const expression = expressions.at(index)
@@ -27,9 +28,7 @@ function css<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props) {
       }
 
       return acc
-    }, [])
-
-    return compile(sheet, mapped.join(''))
+    }, []).join('')
   })
 }
 
@@ -57,23 +56,37 @@ type HireOptions = {
   sheet?: Sheet
 }
 
-type CSS = <Props>(styles: Array<Style<Props>>, props: Props) => string[]
+type Compile = <Props>(styles: Array<Style<Props>>, props: Props) => string[] | void[]
 
 type Hired = {
   sheet: Sheet
-  css: CSS
+  component: Compile
+  global: Compile
 }
 
 function hire(options?: HireOptions): Hired {
   const sheet = options?.sheet || createStyleSheet({})
-  const cssBindedSheet = <Props>(styles: Array<Style<Props>>, props: Props): string[] => css(sheet, styles, props)
 
   return {
     sheet,
-    css: cssBindedSheet,
+    component: <Props>(styles: Array<Style<Props>>, props: Props): string[] => {
+      return compile(styles, props).map((css) => {
+        const id = hash(css)
+        const selector = 'teiler-' + id
+
+        stylis(sheet, `.${selector} { ${css} }`)
+
+        return selector
+      })
+    },
+    global: <Props>(styles: Array<Style<Props>>, props: Props): void[] => {
+      return compile(styles, props).map((css) => {
+        stylis(sheet, css)
+      })
+    }
   }
 }
 
-export type { CSS, Hired, HireOptions, Expression, Style, TailorComponent }
+export type { Compile, Hired, HireOptions, Expression, Sheet, Style, TailorComponent }
 export { hire, createStyleSheet }
 export default styled

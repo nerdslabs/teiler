@@ -8,9 +8,9 @@
   component={Buttons}
   argTypes={{
     label: { control: "text" },
-    primary: { control: "boolean" },
-    primaryColor: { control: "color" },
-    size: {
+    _primary: { control: "boolean" },
+    _primaryColor: { control: "color" },
+    _size: {
       control: { type: "select", options: ["small", "medium", "large"] },
     },
     onClick: { action: "onClick" },

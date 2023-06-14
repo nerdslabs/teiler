@@ -8,7 +8,6 @@
       ]
     },
     "dev": {
-      "dependsOn": ["^wait"],
       "cache": false,
       "persistent": true
     },

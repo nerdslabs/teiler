@@ -6,7 +6,7 @@
   import { createEventDispatcher } from 'svelte'
 
   const sheet = createStyleSheet({})
-  const { component } = hire({
+  const { component, global } = hire({
     sheet
   })
 
@@ -18,12 +18,6 @@
   export let label = ''
 
   export let disabled
-
-  const test = component<{
-    _primary: boolean
-  }>`
-    color: red;
-  `
 
   const Button = component.button<{
     _primary: boolean

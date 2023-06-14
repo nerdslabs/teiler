@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Style, CSS } from '@teiler/core'
+  import type { Style, Compile } from '@teiler/core'
 
   export let tag: string = 'div'
 
   export let styles: Array<Style<unknown>>
-  export let css: CSS
+  export let compile: Compile
 
-  $: classes = css(styles, $$restProps)
+  $: classes = compile(styles, $$restProps)
 
   $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== "_")
   $: filtredProps = Object.fromEntries(filtredPropsEntries)

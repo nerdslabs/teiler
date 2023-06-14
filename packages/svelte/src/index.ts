@@ -1,4 +1,4 @@
-import type { HireOptions, Hired, Expression, Style, TailorComponent, CSS } from '@teiler/core'
+import type { HireOptions, Sheet, Expression, Style, TailorComponent, Compile } from '@teiler/core'
 
 import styled, { hire } from '@teiler/core'
 import { SvelteComponentTyped } from 'svelte'
@@ -7,7 +7,7 @@ import tags from './tags'
 
 type SvelteComponent<Props> = TailorComponent<typeof SvelteComponentTyped<Props & Record<string | number | symbol, unknown>>, Props>
 
-function createComponent<Props>(css: CSS, tag: string, styles: Array<Style<Props>>): Partial<SvelteComponentTyped<Props>> {
+function createComponent<Props>(compile: Compile, tag: string, styles: Array<Style<Props>>): Partial<SvelteComponentTyped<Props>> {
   return class extends Styled {
     static styles: Array<Style<Props>> = styles
 
@@ -16,7 +16,7 @@ function createComponent<Props>(css: CSS, tag: string, styles: Array<Style<Props
         ...options,
         props: {
           ...options.props,
-          css,
+          compile,
           tag,
           styles,
         },
@@ -35,30 +35,33 @@ type Component = {
 
 type ComponentWithTags = Component & { [K in (typeof tags)[number]]: Component }
 
-type HiredSvelte = Hired & {
-  component: ComponentWithTags
-}
-
-function construct(tag: string, css: CSS) {
-  const binded = createComponent.bind(null, css, tag)
+function construct(tag: string, compile: Compile) {
+  const binded = createComponent.bind(null, compile, tag)
 
   return <Type, Props>(stringOrBinded: TemplateStringsArray, ...expressions: Expression<Props>[]) => {
     return styled<Type, Props>(binded, stringOrBinded, ...expressions)
   }
 }
 
-function hireSvelte(options: HireOptions): HiredSvelte {
+function hireSvelte(options: HireOptions): {
+  sheet: Sheet
+  component: ComponentWithTags
+  global: Component
+} {
   const hired = hire(options)
 
-  const component = construct('div', hired.css)
+  const component = construct('div', hired.component)
 
   tags.forEach((tag) => {
-    component[tag] = construct(tag, hired.css)
+    component[tag] = construct(tag, hired.component)
   })
 
+  const global = construct(null, hired.global)
+
   return {
-    ...hired,
+    sheet: hired.sheet,
     component: component as ComponentWithTags,
+    global,
   }
 }
 

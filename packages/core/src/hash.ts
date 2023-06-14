@@ -10,10 +10,10 @@
  * @return {string} Base 36 encoded hash result
  */
 export default function hash(str: string): string {
-  let l = str.length
-  let h = l
+  let l: number = str.length
+  let h: number = l
   let i = 0
-  let k
+  let k: number
 
   while (l >= 4) {
     k = (str.charCodeAt(i) & 0xff) | ((str.charCodeAt(++i) & 0xff) << 8) | ((str.charCodeAt(++i) & 0xff) << 16) | ((str.charCodeAt(++i) & 0xff) << 24)
