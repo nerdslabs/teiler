@@ -17,7 +17,6 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@teiler/core": "workspace:*",
     "svelte": "^3.59.1"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
-import type { HireOptions, Sheet, Expression, Style, TailorComponent, Compile } from '@teiler/core'
+import type { Expression, Style, TailorComponent, Compile } from '@teiler/core'
 
-import styled, { hire } from '@teiler/core'
+import styled, { component, global } from '@teiler/core'
 import { SvelteComponentTyped } from 'svelte'
 import Styled from './Styled.svelte'
 import tags from './tags'
@@ -43,27 +43,13 @@ function construct(tag: string, compile: Compile) {
   }
 }
 
-function hireSvelte(options: HireOptions): {
-  sheet: Sheet
-  component: ComponentWithTags
-  global: Component
-} {
-  const hired = hire(options)
+const svelteComponent = construct('div', component)
 
-  const component = construct('div', hired.component)
+tags.forEach((tag) => {
+  svelteComponent[tag] = construct(tag, component)
+})
 
-  tags.forEach((tag) => {
-    component[tag] = construct(tag, hired.component)
-  })
+const svelteGlobal = construct(null, global)
 
-  const global = construct(null, hired.global)
-
-  return {
-    sheet: hired.sheet,
-    component: component as ComponentWithTags,
-    global,
-  }
-}
-
-export { hireSvelte as hire }
-export default hireSvelte({})
+export { svelteGlobal as global }
+export default svelteComponent as ComponentWithTags

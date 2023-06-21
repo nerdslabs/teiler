@@ -1,14 +1,8 @@
 <script lang="ts">
-  import { createStyleSheet } from '@teiler/core'
-  import { hire } from '@teiler/svelte'
+  import component, { global } from '@teiler/svelte'
 
   // import teiler from '@teiler/svelte'
   import { createEventDispatcher } from 'svelte'
-
-  const sheet = createStyleSheet({})
-  const { component, global } = hire({
-    sheet
-  })
 
   export let _primary = false
   export let _primaryColor = "#f18805"
@@ -79,10 +73,6 @@
   const ExtendedButton = component(Button)<{test?: boolean}>`
     font-weight: 300;
     background: red;
-
-    ${props => `
-        ${props}
-      `}
   `
 
   const dispatch = createEventDispatcher()
@@ -91,7 +81,6 @@
    * Optional click handler
    */
   function onClick(event) {
-    console.log('dump', sheet.dump())
     dispatch('click', event)
   }
 </script>
@@ -99,4 +88,5 @@
 <Button {_primary} {_size} {_primaryColor} {disabled} on:click={onClick}>
   {label}
 </Button>
+<ExtendedButton {_primary} {_size} {_primaryColor}>Test</ExtendedButton>
 <ExtendedButton {_primary} {_size} {_primaryColor}>Test</ExtendedButton>

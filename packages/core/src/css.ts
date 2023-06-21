@@ -1,18 +1,20 @@
-import type { Sheet } from './sheet'
-
 import { compile, serialize, stringify, middleware, prefixer, rulesheet } from 'stylis'
 
-function stylis(sheet: Sheet, css: string) {
+function stylis(css: string): string[] {
+  const results = []
+
   serialize(
     compile(css),
     middleware([
       stringify,
       prefixer,
       rulesheet((rule) => {
-        sheet.insert(rule)
+        results.push(rule)
       }),
     ]),
   )
+
+  return results
 }
 
 export { stylis }

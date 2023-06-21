@@ -15,26 +15,33 @@ const isFalsish = (chunk: unknown): chunk is undefined | null | false | '' => ch
 
 function compile<Props>(styles: Array<Style<Props>>, props: Props) {
   return styles.map(([strings, expressions]) => {
-    return strings.reduce((acc, strings, index) => {
-      acc = [...acc, strings]
+    return strings
+      .reduce((acc, strings, index) => {
+        acc = [...acc, strings]
 
-      const expression = expressions.at(index)
+        const expression = expressions.at(index)
 
-      if (expression) {
-        const result = expression(props)
-        if (isFalsish(result) === false) {
-          acc = [...acc, result]
+        if (expression) {
+          const result = expression(props)
+          if (isFalsish(result) === false) {
+            acc = [...acc, result]
+          }
         }
-      }
 
-      return acc
-    }, []).join('')
+        return acc
+      }, [])
+      .join('')
   })
 }
 
 type CreateFunction<Type, Props> = (styles: Array<Style<Props>>) => TailorComponent<Type, Props>
 
 type Create<Type, Props> = (string: TemplateStringsArray, ...expressions: Expression<Props>[]) => TailorComponent<Type, Props>
+
+let unifier = 0
+function generateComponentId() {
+  return hash('sc' + unifier++)
+}
 
 function styled<Type, Props>(createComponent: CreateFunction<Type, Props>, binded: TailorComponent<Type, Props>): Create<Type, Props>
 function styled<Type, Props>(createComponent: CreateFunction<Type, Props>, string: TemplateStringsArray, ...expressions: Expression<Props>[]): TailorComponent<Type, Props>
@@ -46,47 +53,41 @@ function styled<Type, Props>(createComponent: CreateFunction<Type, Props>, strin
       return createComponent([...binded.styles, style])
     }
   } else {
+    console.log('generate component', generateComponentId())
+    
     const strings = stringOrBinded as TemplateStringsArray
     const style: Style<Props> = [Array.from(strings), expressions]
     return createComponent([style])
   }
 }
 
-type HireOptions = {
-  sheet?: Sheet
-}
-
-type Compile = <Props>(styles: Array<Style<Props>>, props: Props) => string[] | void[]
+type Compile = <Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props) => string[] | void[]
 
 type Hired = {
-  sheet: Sheet
   component: Compile
   global: Compile
 }
 
-function hire(options?: HireOptions): Hired {
-  const sheet = options?.sheet || createStyleSheet({})
+function component<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props): string[] {
+  return compile(styles, props).map((css) => {
+    const id = hash(css)
+    const selector = 'teiler-' + id
 
-  return {
-    sheet,
-    component: <Props>(styles: Array<Style<Props>>, props: Props): string[] => {
-      return compile(styles, props).map((css) => {
-        const id = hash(css)
-        const selector = 'teiler-' + id
+    const result = stylis(`.${selector} { ${css} }`).join(' ')
+    sheet.insert(id, result)
 
-        stylis(sheet, `.${selector} { ${css} }`)
-
-        return selector
-      })
-    },
-    global: <Props>(styles: Array<Style<Props>>, props: Props): void[] => {
-      return compile(styles, props).map((css) => {
-        stylis(sheet, css)
-      })
-    }
-  }
+    return selector
+  })
 }
 
-export type { Compile, Hired, HireOptions, Expression, Sheet, Style, TailorComponent }
-export { hire, createStyleSheet }
+function global<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props): void[] {
+  return compile(styles, props).map((css) => {
+    const result = stylis(css).join(' ')
+    const id = hash(result)
+    sheet.insert(id, result)
+  })
+}
+
+export type { Compile, Hired, Expression, Sheet, Style, TailorComponent }
+export { component, global, createStyleSheet }
 export default styled

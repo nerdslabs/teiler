@@ -1,12 +1,15 @@
 <script lang="ts">
-  import type { Style, Compile } from '@teiler/core'
+  import { type Style, type Compile, type Sheet } from '@teiler/core'
+  import { getStyleSheet } from './sheet'
 
   export let tag: string = 'div'
 
   export let styles: Array<Style<unknown>>
   export let compile: Compile
 
-  $: classes = compile(styles, $$restProps)
+  const sheet: Sheet = getStyleSheet()
+
+  $: classes = compile(sheet, styles, $$restProps)
 
   $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== "_")
   $: filtredProps = Object.fromEntries(filtredPropsEntries)

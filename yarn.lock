@@ -3634,7 +3634,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@teiler/core@workspace:*, @teiler/core@workspace:packages/core":
+"@teiler/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@teiler/core@workspace:packages/core"
   dependencies:
@@ -3666,7 +3666,6 @@ __metadata:
     "@storybook/addon-svelte-csf": ^2.0.11
     "@storybook/svelte": ^6.5.16
     "@storybook/testing-library": ^0.0.13
-    "@teiler/core": "workspace:*"
     esbuild: ^0.18.2
     rollup: ^3.25.1
     rollup-plugin-dts: ^5.3.0
