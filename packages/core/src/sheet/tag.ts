@@ -41,8 +41,6 @@ export function createBrowserTag(container?: HTMLElement): Tag {
   const rules = createStyleSheetElement(container)
   const inserted = new Map<string, Text>()
 
-  console.log('inserted', inserted)
-
   return {
     insertRule: function (key: string, rule: string): number {
       const node = document.createTextNode(rule)

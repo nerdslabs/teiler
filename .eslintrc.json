@@ -5,5 +5,8 @@
   "ignorePatterns": [
     "**/dist/*"
   ],
-  "root": true
+  "root": true,
+  "rules": {
+    "@typescript-eslint/ban-types": "off"
+  }
 }

@@ -4,12 +4,8 @@ import { stylis } from './css'
 import createStyleSheet from './sheet'
 import hash from './hash'
 
-type Expression<Props> = (props: Props) => string
+type Expression<Props> = (props: Props) => string | boolean
 type Style<Props> = [string[], Expression<Props>[]]
-
-type TailorComponent<Type, Props> = Type & {
-  styles: Array<Style<Props>>
-}
 
 const isFalsish = (chunk: unknown): chunk is undefined | null | false | '' => chunk === undefined || chunk === null || chunk === false || chunk === ''
 
@@ -34,30 +30,26 @@ function compile<Props>(styles: Array<Style<Props>>, props: Props) {
   })
 }
 
-type CreateFunction<Type, Props> = (styles: Array<Style<Props>>) => TailorComponent<Type, Props>
-
-type Create<Type, Props> = (string: TemplateStringsArray, ...expressions: Expression<Props>[]) => TailorComponent<Type, Props>
-
-let unifier = 0
-function generateComponentId() {
-  return hash('sc' + unifier++)
+type TeilerComponent<Props> = {
+  styles: Array<Style<Props>>
 }
 
-function styled<Type, Props>(createComponent: CreateFunction<Type, Props>, binded: TailorComponent<Type, Props>): Create<Type, Props>
-function styled<Type, Props>(createComponent: CreateFunction<Type, Props>, string: TemplateStringsArray, ...expressions: Expression<Props>[]): TailorComponent<Type, Props>
-function styled<Type, Props>(createComponent: CreateFunction<Type, Props>, stringOrBinded: TailorComponent<Type, Props> | TemplateStringsArray, ...expressions: Expression<Props>[]): Create<Type, Props> | TailorComponent<Type, Props> {
-  if (typeof stringOrBinded === 'function') {
-    const binded = stringOrBinded as TailorComponent<Type, Props>
+type CreateFunction<Props, Type extends TeilerComponent<Props>> = (styles: Array<Style<Props>>) => Type
+type ExtendCallback<Props, Type extends TeilerComponent<Props>> = (string: TemplateStringsArray, ...expressions: Expression<Props>[]) => Type
+
+function styled<Props, Type extends TeilerComponent<Props>>(createComponent: CreateFunction<Props, Type>, binded: TeilerComponent<Props>): ExtendCallback<Props, Type>
+function styled<Props, Type extends TeilerComponent<Props>>(createComponent: CreateFunction<Props, Type>, string: TemplateStringsArray, ...expressions: Expression<Props>[]): Type
+function styled<Props, Type extends TeilerComponent<Props>>(createComponent: CreateFunction<Props, Type>, stringOrBinded: TeilerComponent<Props> | TemplateStringsArray, ...expressions: Expression<Props>[]): ExtendCallback<Props, Type> | Type {
+  if (Array.isArray(stringOrBinded)) {
+    const strings = stringOrBinded as TemplateStringsArray
+    const style: Style<Props> = [Array.from(strings), expressions]
+    return createComponent([style])
+  } else {
+    const binded = stringOrBinded as TeilerComponent<Props>
     return (strings: TemplateStringsArray, ...expressions: Expression<Props>[]) => {
       const style: Style<Props> = [Array.from(strings), expressions]
       return createComponent([...binded.styles, style])
     }
-  } else {
-    console.log('generate component', generateComponentId())
-    
-    const strings = stringOrBinded as TemplateStringsArray
-    const style: Style<Props> = [Array.from(strings), expressions]
-    return createComponent([style])
   }
 }
 
@@ -88,6 +80,6 @@ function global<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props):
   })
 }
 
-export type { Compile, Hired, Expression, Sheet, Style, TailorComponent }
+export type { Compile, Hired, Expression, Sheet, Style, TeilerComponent }
 export { component, global, createStyleSheet }
 export default styled

@@ -21,11 +21,19 @@
         "src/**/*.ts"
       ]
     },
+    "storybook": {
+      "dependsOn": [
+        "^storybook"
+      ]
+    },
+    "//#storybook": {
+      "dependsOn": ["wait"]
+    },
+    "//#wait": {
+      "dependsOn": []
+    },
     "lint": {
       "outputs": []
-    },
-    "wait": {
-      "cache": false
     }
   }
 }
