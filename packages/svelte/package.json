@@ -1,6 +1,6 @@
 {
   "name": "@teiler/svelte",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/teiler-svelte.cjs.js",
   "module": "./dist/teiler-svelte.esm.js",
   "types": "./dist/teiler-svelte.d.ts",
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "svelte": "^4.0.1",
-    "@teiler/core": "workspace:*"
+    "@teiler/core": "0.0.2"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.1",

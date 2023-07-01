@@ -1,0 +1,9 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "@teiler/core": "0.0.1",
+    "@teiler/svelte": "0.0.1"
+  },
+  "changesets": []
+}
