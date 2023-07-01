@@ -1,34 +1,11 @@
 import type { Sheet } from './sheet'
 
-import { stylis } from './css'
+import { compile, stylis } from './css'
 import createStyleSheet from './sheet'
 import hash from './hash'
 
 type Expression<Props> = (props: Props) => string | boolean
 type Style<Props> = [string[], Expression<Props>[]]
-
-const isFalsish = (chunk: unknown): chunk is undefined | null | false | '' => chunk === undefined || chunk === null || chunk === false || chunk === ''
-
-function compile<Props>(styles: Array<Style<Props>>, props: Props) {
-  return styles.map(([strings, expressions]) => {
-    return strings
-      .reduce((acc, strings, index) => {
-        acc = [...acc, strings]
-
-        const expression = expressions.at(index)
-
-        if (expression) {
-          const result = expression(props)
-          if (isFalsish(result) === false) {
-            acc = [...acc, result]
-          }
-        }
-
-        return acc
-      }, [])
-      .join('')
-  })
-}
 
 type TeilerComponent<Props> = {
   styles: Array<Style<Props>>
@@ -55,11 +32,6 @@ function styled<Props, Type extends TeilerComponent<Props>>(createComponent: Cre
 
 type Compile = <Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props) => string[] | void[]
 
-type Hired = {
-  component: Compile
-  global: Compile
-}
-
 function component<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props): string[] {
   return compile(styles, props).map((css) => {
     const id = hash(css)
@@ -80,6 +52,6 @@ function global<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props):
   })
 }
 
-export type { Compile, Hired, Expression, Sheet, Style, TeilerComponent }
+export type { Compile, Expression, Sheet, Style, TeilerComponent }
 export { component, global, createStyleSheet }
 export default styled
