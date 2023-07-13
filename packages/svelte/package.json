@@ -17,8 +17,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "svelte": "^4.0.1",
-    "@teiler/core": "0.0.2"
+    "@teiler/core": "0.0.2",
+    "svelte": "^4.0.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.1",

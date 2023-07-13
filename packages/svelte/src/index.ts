@@ -1,17 +1,20 @@
-import type { Expression, Style, TeilerComponent, Compile } from '@teiler/core'
+import type { Expression, Style, TeilerComponent, Compile, Target } from '@teiler/core'
 
 import styled, { component, global } from '@teiler/core'
-import type { SvelteComponent, ComponentType } from 'svelte';
+import type { SvelteComponent, ComponentType } from 'svelte'
 import Styled from './Styled.svelte'
 import tags from './tags'
 
-type SvelteTeilerComponent<Element, Props> = ComponentType<SvelteComponent> & TeilerComponent<Props>
+type SvelteTeilerComponent<Target, Props> = TeilerComponent<Target, Props> & ComponentType<SvelteComponent>
 
-function createComponent<Props>(compile: Compile, tag: string, styles: Array<Style<Props>>): SvelteTeilerComponent<Element, Props> {
-
+let componentsIds = 0
+const createComponent = <Target, Props>(compile: Compile, tag: Target, styles: Array<Style<Props>>): SvelteTeilerComponent<Target, Props> => {
+  const componentId = componentsIds++;
+  console.log('create component', componentId)
   
   return class extends Styled {
     static styles = styles
+    static tag = tag
 
     constructor(options) {
       super({
@@ -25,24 +28,22 @@ function createComponent<Props>(compile: Compile, tag: string, styles: Array<Sty
       })
     }
   }
-
 }
 
-type Inter<Component, Props> = Component extends SvelteTeilerComponent<Element, infer P> ? P & Props : Props
+type InferProps<Component, Props> = Component extends SvelteTeilerComponent<Target, infer P> ? P & Props : Props
+type InferComponent<Component, Props> = Component extends SvelteTeilerComponent<infer E, infer P> ? SvelteTeilerComponent<E, Props & P> : SvelteTeilerComponent<Target, Props>
 
-type Component<Element> = {
-  <Props extends object = {}>(string: TemplateStringsArray, ...expressions: Expression<Props>[]): SvelteTeilerComponent<Element, Props>
-  <Component>(binded: Component): <Props extends object = {}>(string: TemplateStringsArray, ...expressions: Expression<Inter<Component, Props>>[])
-    => SvelteTeilerComponent<Element, Inter<Component, Props>>
+type Component<Target> = {
+  <Props extends object = {}>(string: TemplateStringsArray, ...expressions: Expression<Props>[]): SvelteTeilerComponent<Target, Props>
+  <Component>(binded: Component): <Props extends object = {}>(string: TemplateStringsArray, ...expressions: Expression<InferProps<Component, Props>>[]) => InferComponent<Component, Props>
 }
 
 type ComponentWithTags = Component<'div'> & { [K in (typeof tags)[number]]: Component<K> }
 
 const construct = (tag: string, compile: Compile) => {
-  const binded = createComponent.bind(null, compile, tag)
-
-  return <Props extends object = {}>(stringOrBinded: TemplateStringsArray, ...expressions: Expression<Props>[]) => {
-    return styled<Props, SvelteTeilerComponent<Element, Props>>(binded, stringOrBinded, ...expressions)
+  return <Props extends object = {}>(stringOrBinded: TeilerComponent<Target, Props> | TemplateStringsArray, ...expressions: Expression<Props>[]) => {
+    const binded = createComponent.bind(null, compile, (stringOrBinded as TeilerComponent<Target, Props>).tag || tag)
+    return styled<Props, SvelteTeilerComponent<Target, Props>>(binded, stringOrBinded, ...expressions)
   }
 }
 
@@ -54,5 +55,5 @@ tags.forEach((tag) => {
 
 const svelteGlobal = construct(null, global)
 
-export { svelteGlobal as global }
+export { svelteGlobal as global, createComponent }
 export default svelteComponent as ComponentWithTags

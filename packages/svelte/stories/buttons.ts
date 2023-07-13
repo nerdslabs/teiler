@@ -2,8 +2,8 @@ import component from '@teiler/svelte'
 
 const Button = component.button<{
   _primary: boolean
-  _size: 'normal' | 'small',
-  _primaryColor: string,
+  _size: 'normal' | 'small'
+  _primaryColor: string
 }>`
   border-radius: 4px;
   box-shadow: none;
@@ -24,8 +24,8 @@ const Button = component.button<{
   &:hover {
     text-decoration: none;
     color: #fcfbff;
-    background: ${( { _primaryColor } ) => _primaryColor};
-    box-shadow: 0 0 0 3px ${( { _primaryColor } ) => _primaryColor} inset;
+    background: ${({ _primaryColor }) => _primaryColor};
+    box-shadow: 0 0 0 3px ${({ _primaryColor }) => _primaryColor} inset;
   }
 
   ${({ _primary, _primaryColor }) =>
@@ -57,7 +57,7 @@ const Button = component.button<{
   }
 `
 
-const ExtendedButton = component(Button)<{test?: boolean}>`
+const ExtendedButton = component(Button)<{ test?: boolean }>`
   font-weight: 300;
   background: red;
 
