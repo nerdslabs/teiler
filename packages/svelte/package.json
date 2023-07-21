@@ -1,6 +1,10 @@
 {
   "name": "@teiler/svelte",
   "version": "0.0.3",
+  "repository": {
+    "type": "git",
+    "url": "github:nerdslabs/teiler"
+  },
   "main": "dist/teiler-svelte.cjs.js",
   "module": "./dist/teiler-svelte.esm.js",
   "types": "./dist/teiler-svelte.d.ts",

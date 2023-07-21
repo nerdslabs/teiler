@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Meta, Template, Story } from "@storybook/addon-svelte-csf";
-  import Buttons from "./Buttons.svelte";
+  import Component from "./Component.svelte";
 </script>
 
 <Meta
-  title="Svelte/Button"
-  component={Buttons}
+  title="Svelte/Component"
+  component={Component}
   argTypes={{
     label: { control: "text" },
     _primary: { control: "boolean" },
@@ -18,7 +18,7 @@
 />
 
 <Template let:args>
-  <Buttons {...args} on:click={args.onClick} />
+  <Component {...args} on:click={args.onClick} />
 </Template>
 
 <Story

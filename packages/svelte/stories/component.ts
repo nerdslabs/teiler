@@ -1,6 +1,6 @@
 import component from '@teiler/svelte'
 
-const Button = component.button<{
+const Component = component.button<{
   _primary: boolean
   _size: 'normal' | 'small'
   _primaryColor: string
@@ -57,7 +57,7 @@ const Button = component.button<{
   }
 `
 
-const ExtendedButton = component(Button)<{ test?: boolean }>`
+const ExtendedComponent = component(Component)<{ test?: boolean }>`
   font-weight: 300;
   background: red;
 
@@ -66,4 +66,4 @@ const ExtendedButton = component(Button)<{ test?: boolean }>`
   `}
 `
 
-export { Button, ExtendedButton }
+export { Component, ExtendedComponent }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, ExtendedButton } from './buttons'
+  import { Component, ExtendedComponent } from './component'
 
   // import teiler from '@teiler/svelte'
   import { createEventDispatcher } from 'svelte'
@@ -23,7 +23,7 @@
   }
 </script>
 
-<Button {_primary} {_size} {_primaryColor} {disabled} on:click={onClick}>
+<Component {_primary} {_size} {_primaryColor} {disabled} on:click={onClick}>
   {label}
-</Button>
-<ExtendedButton {_primary} {_size} {_primaryColor}>Test</ExtendedButton>
+</Component>
+<ExtendedComponent {_primary} {_size} {_primaryColor} {disabled}>Test</ExtendedComponent>

@@ -9,7 +9,7 @@
 
   const sheet: Sheet = getStyleSheet()
 
-  $: classes = compile(sheet, styles, $$restProps)
+  $: classes = compile(sheet, styles, $$restProps) as string[]
 
   $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== "_")
   $: filtredProps = Object.fromEntries(filtredPropsEntries)

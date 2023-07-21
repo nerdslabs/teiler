@@ -47,6 +47,40 @@ These are the frameworks we are currently working on and planning to support in 
 *CSR - Client Side Rendering*\
 *SSR - Server Side Rendering*
 
+## Keyframes
+
+```typescript
+import component, { keyframes } from '@teiler/svelte'
+
+const bouncing = keyframes`
+  from, 20%, 53%, 80%, to {
+    transform: translate3d(0,0,0);
+  }
+
+  40%, 43% {
+    transform: translate3d(0, -40px, 0);
+  }
+
+  70% {
+    transform: translate3d(0, -15px, 0);
+  }
+
+  90% {
+    transform: translate3d(0,-4px,0);
+  }
+`
+
+const Button = component.button<{}>`
+  animation: ${bouncing} 1s ease infinite;
+  display: inline-block;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  line-height: 1.5rem;
+  background: transparent;
+  box-shadow: 0 0 0 3px #CBCBCB inset;
+`
+```
+
 ## Saw a Pattern
 
 This tool simplifies the creation of consistent and reusable visual styles for components across various web frameworks. It provides a pattern-based approach, where patterns serve as blueprints for defining the visual style of components.

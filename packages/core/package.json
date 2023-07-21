@@ -1,6 +1,10 @@
 {
   "name": "@teiler/core",
   "version": "0.0.3",
+  "repository": {
+    "type": "git",
+    "url": "github:nerdslabs/teiler"
+  },
   "type": "module",
   "main": "dist/teiler-core.cjs.js",
   "module": "./dist/teiler-core.esm.js",
