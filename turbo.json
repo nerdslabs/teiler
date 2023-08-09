@@ -15,11 +15,7 @@
       "dependsOn": [
         "build"
       ],
-      "outputs": [],
-      "inputs": [
-        "src/**/*.svelte",
-        "src/**/*.ts"
-      ]
+      "outputs": []
     },
     "storybook": {
       "dependsOn": [
