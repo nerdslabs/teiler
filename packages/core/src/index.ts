@@ -1,8 +1,6 @@
 import type { Sheet } from './sheet'
 
 import { compile, stylis } from './css'
-import createStyleSheet from './sheet'
-import { pattern, sew } from './pattern'
 
 type Expression<Props> = (props: Props) => string | boolean
 type StyleDefinition = {
@@ -68,5 +66,7 @@ function keyframes(strings: TemplateStringsArray, ...properties: Raw[]): StyleDe
 }
 
 export type { Compile, Properties, Sheet, Style, StyleDefinition, TeilerComponent, Target }
-export { component, global, keyframes, createStyleSheet, pattern, sew }
+export { component, global, keyframes }
+export { default as createStyleSheet } from './sheet'
+export { pattern, sew } from './pattern'
 export default styled

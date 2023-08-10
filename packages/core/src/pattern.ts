@@ -1,6 +1,6 @@
 import type { Compile, Properties, Style, TeilerComponent, Target } from '.'
 
-import { component } from './index'
+import { component, global } from './index'
 import tags from './tags'
 
 type Pattern<Target, Props> = { styles: Style<Props>[]; tag: Target; __teiler__: true }
@@ -11,7 +11,7 @@ type Constructor<Target> = {
   <Props>(string: TemplateStringsArray, ...properties: Properties<Props>[]): Pattern<Target, Props>
 }
 
-type ConstructorWithTags = Constructor<'div'> & { [K in (typeof tags)[number]]: Constructor<K> }
+type ConstructorWithTags = Constructor<'div'> & { [K in (typeof tags)[number]]: Constructor<K> } & { global: Constructor<null> }
 
 type Inter<Component, Props> = Component extends Pattern<Target, infer P> ? P & Props : Props
 
@@ -36,12 +36,15 @@ tags.forEach((tag) => {
   pattern[tag] = construct(tag)
 })
 
+pattern['global'] = construct(null)
+
 const binded = pattern as ConstructorWithTags
 
 type CreateFunction<Target, Props, Type extends TeilerComponent<Target, Props>> = (compile: Compile, tag: Target, styles: Array<Style<Props>>) => Type
 
 function sew<Target, Props, Type extends TeilerComponent<Target, Props>>(pattern: Pattern<Target, Props>, createComponent: CreateFunction<Target, Props, Type>): Type {
-  return createComponent(component, pattern.tag, pattern.styles)
+  const compiler = pattern.tag === null ? global : component
+  return createComponent(compiler, pattern.tag, pattern.styles)
 }
 
 export { binded as pattern, sew }

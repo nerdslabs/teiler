@@ -52,6 +52,7 @@ export function createBrowserTag(container?: HTMLElement): Tag {
     },
     deleteRule: function (key: string): void {
       rules.removeChild(inserted.get(key))
+      inserted.delete(key)
     },
     getRule: function (key: string): string | null {
       return inserted.get(key)?.textContent || null
