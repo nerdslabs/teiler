@@ -14,6 +14,8 @@ const Test = pattern.button<{
   cursor: pointer;
 `
 
+console.log('Test', Test, JSON.stringify(Test))
+
 const Button = sew(Test, createComponent)
 
 const ExtendedButton = component(Button)<{ _test: boolean }>`

@@ -20,7 +20,7 @@ describe('stylis', () => {
     const css = 'button { color: blue; &:hover: { color: red; } }'
     const results = stylis(css)
     expect(results).toHaveLength(2)
-    expect(results).toEqual(["button{color:blue;}", "button:hover:{color:red;}"])
+    expect(results).toEqual(['button{color:blue;}', 'button:hover:{color:red;}'])
   })
 })
 
@@ -39,5 +39,25 @@ describe('compile', () => {
     const compiled = compile<Props>([style], { color: 'red' })
 
     expect(compiled).toEqual([{ id: 'wq229y', name: 'teiler-wq229y', css: 'color: red;' }])
+  })
+
+  test('with object', () => {
+    const keyframes = {
+      css: '@keyframes test { from { background-color: yellow; } to { background-color: red; } }',
+      id: '14uknit',
+      name: 'teiler-keyframes-14uknit',
+    }
+
+    const style: Style<{}> = [['animation: ', ' 5s;'], [keyframes]]
+    const compiled = compile<{}>([style], {})
+
+    expect(compiled).toEqual([
+      keyframes,
+      {
+        id: 'd18jjz',
+        name: 'teiler-d18jjz',
+        css: 'animation: teiler-keyframes-14uknit 5s;',
+      },
+    ])
   })
 })

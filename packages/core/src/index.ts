@@ -18,20 +18,20 @@ type TeilerComponent<Target, Props> = {
 }
 
 type CreateCallback<Props, Type extends TeilerComponent<Target, Props>> = (styles: Array<Style<Props>>) => Type
-type ExtendCallback<Props, Type extends TeilerComponent<Target, Props>> = (string: TemplateStringsArray, ...properties: Properties<Props>[]) => Type
+type ExtendCallback<Props, Type extends TeilerComponent<Target, Props>> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
 
 function styled<Props, Type extends TeilerComponent<Target, Props>>(
   createComponent: CreateCallback<Props, Type>,
-  stringOrBinded: TeilerComponent<Target, Props> | TemplateStringsArray,
+  stringOrBinded: TeilerComponent<Target, Props> | ReadonlyArray<string>,
   ...properties: Properties<Props>[]
 ): ExtendCallback<Props, Type> | Type {
   if (Array.isArray(stringOrBinded)) {
-    const strings = stringOrBinded as TemplateStringsArray
+    const strings = stringOrBinded as ReadonlyArray<string>
     const style: Style<Props> = [Array.from(strings), properties]
     return createComponent([style])
   } else {
     const binded = stringOrBinded as TeilerComponent<Target, Props>
-    return (strings: TemplateStringsArray, ...properties: Expression<Props>[]) => {
+    return (strings: ReadonlyArray<string>, ...properties: Expression<Props>[]) => {
       const style: Style<Props> = [Array.from(strings), properties]
       return createComponent([...binded.styles, style])
     }
@@ -56,7 +56,7 @@ function global<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props):
   })
 }
 
-function keyframes(strings: TemplateStringsArray, ...properties: Raw[]): StyleDefinition {
+function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleDefinition {
   const style: Style<{}> = [Array.from(strings), properties]
 
   const [{id, css}] = compile([style], {})
