@@ -26,9 +26,10 @@ export default function hash(str: string): string {
 
     l -= 4
     ++i
-  } // forgive existing code
+  }
 
-  /* eslint-disable no-fallthrough */ switch (l) {
+  /* eslint-disable no-fallthrough */ 
+  switch (l) {
     case 3:
       h ^= (str.charCodeAt(i + 2) & 0xff) << 16
     case 2:
