@@ -7,7 +7,7 @@ import { createStyleSheet } from '.'
 
 describe('pattern', () => {
   test('should create a pattern for a div', () => {
-    const div = pattern.div`background: blue;`
+    const div = pattern`background: blue;`
     expect(div).toEqual({
       styles: [[['background: blue;'], []]],
       tag: 'div',
@@ -25,7 +25,10 @@ describe('pattern', () => {
     const div = pattern<{}>(extend)`color: red;`
 
     expect(div).toEqual({
-      styles: [[['background: blue;'], []], [['color: red;'], []]],
+      styles: [
+        [['background: blue;'], []],
+        [['color: red;'], []],
+      ],
       tag: 'div',
       __teiler__: true,
     })
@@ -43,9 +46,7 @@ describe('pattern', () => {
   test('should create a pattern for a global component', () => {
     const global = pattern.global`background: blue;`
     expect(global).toEqual({
-      styles: [
-        [Array('background: blue;'), []],
-      ],
+      styles: [[Array('background: blue;'), []]],
       tag: null,
       __teiler__: true,
     })
@@ -61,13 +62,13 @@ const createComponent = <Target, Props>(compile: Compile, tag: Target, styles: A
     tag,
     styles,
     render() {
-      const classes = compile(createStyleSheet({}), styles, {});
+      const classes = compile(createStyleSheet({}), styles, {})
       if (classes) {
         return `<${tag} class="${classes.join(' ')}">component</${tag}>`
       } else {
         return ''
       }
-    }
+    },
   }
 }
 
@@ -83,7 +84,7 @@ describe('sew', () => {
     const component = sew(button, createComponent)
     expect(component.render()).toEqual('<button class="teiler-1iflo4h">component</button>')
   })
-  
+
   test('should sew a pattern into a global component', () => {
     const global = pattern.global`body { background: red; }`
     const component = sew(global, createComponent)

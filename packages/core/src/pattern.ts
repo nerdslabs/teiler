@@ -1,6 +1,6 @@
-import type { Compile, Properties, Style, TeilerComponent, Target } from '.'
+import type { Compile, Properties, Style, TeilerComponent, Target } from './constructor'
 
-import { component, global } from './index'
+import { component, global } from './constructor'
 import tags from './tags'
 
 type Pattern<Target, Props> = { styles: Style<Props>[]; tag: Target; __teiler__: true }

@@ -1,4 +1,4 @@
-import { createBrowserTag, createServerTag } from "./tag"
+import { createBrowserTag, createServerTag } from './tag'
 
 type Options = {
   container?: HTMLElement
@@ -21,9 +21,9 @@ export default function createStyleSheet(_options: Options): Sheet {
   const styleTag = isSSR ? createServerTag() : createBrowserTag(options.container)
 
   return {
-    insert: (key: string, styles: string) => (styleTag.insertRule(key, styles)),
+    insert: (key: string, styles: string) => styleTag.insertRule(key, styles),
     dump: () => {
       return styleTag.getAllRules()
-    }
+    },
   }
 }

@@ -1,7 +1,7 @@
 import type { Compile, Style, TeilerComponent } from '.'
 
 import { describe, jest, expect, test } from '@jest/globals'
-import styled, { component, global, keyframes, createStyleSheet } from '.'
+import { styled, component, global, keyframes, createStyleSheet } from '.'
 
 const createComponent = <Target, Props>(compile: Compile, tag: Target, styles: Array<Style<Props>>): TeilerComponent<Target, Props> => {
   return {

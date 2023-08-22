@@ -134,7 +134,7 @@ const tags = [
   'stop',
   'svg',
   'text',
-  'tspan'
+  'tspan',
 ] as const
 
 export default tags

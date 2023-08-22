@@ -18,7 +18,7 @@ function createStyleSheetElement(container?: HTMLElement) {
 }
 
 export function createServerTag(): Tag {
-  const rules: {[key: string]: string} = {}
+  const rules: { [key: string]: string } = {}
 
   return {
     insertRule: function (key: string, rule: string): number {
@@ -31,9 +31,9 @@ export function createServerTag(): Tag {
     getRule: function (key: string): string | null {
       return rules[key] || null
     },
-    getAllRules: function(): string {
+    getAllRules: function (): string {
       return Object.values(rules).join(' ')
-    }
+    },
   }
 }
 
@@ -58,7 +58,7 @@ export function createBrowserTag(container?: HTMLElement): Tag {
       return inserted.get(key)?.textContent || null
     },
     getAllRules: function (): string {
-      return Array.from(inserted.values()).reduce((string, node) => string + " " + node.textContent, "")
-    }
+      return Array.from(inserted.values()).reduce((string, node) => string + ' ' + node.textContent, '')
+    },
   }
 }

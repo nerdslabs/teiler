@@ -12,9 +12,13 @@ const Test = pattern.button<{
   padding: 6px 9px;
   border-radius: 3px;
   cursor: pointer;
-`
 
-console.log('Test', Test, JSON.stringify(Test))
+  &[disabled] {
+    cursor: not-allowed;
+    background: gray;
+    color: #fff;
+  }
+`
 
 const Button = sew(Test, createComponent)
 
