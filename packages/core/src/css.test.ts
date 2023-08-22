@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals'
-import { stylis, compile } from './css'
+import { compile, stylis } from './css'
 import { Style } from '.'
 
 describe('stylis', () => {

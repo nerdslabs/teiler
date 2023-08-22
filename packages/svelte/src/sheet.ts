@@ -1,4 +1,4 @@
-import { createStyleSheet, type Sheet } from "@teiler/core";
+import { type Sheet, createStyleSheet } from "@teiler/core";
 import { getContext } from "svelte";
 
 export const styleSheet = createStyleSheet({})

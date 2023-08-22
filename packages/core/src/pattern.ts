@@ -1,4 +1,4 @@
-import type { Compile, Properties, Style, TeilerComponent, Target } from './constructor'
+import type { Compile, Properties, Style, Target, TeilerComponent } from './constructor'
 
 import { component, global } from './constructor'
 import tags from './tags'

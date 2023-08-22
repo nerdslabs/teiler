@@ -1,5 +1,6 @@
 import type { Style, StyleDefinition } from '.'
-import { compile as stylisCompile, serialize, stringify, middleware, prefixer, rulesheet } from 'stylis'
+
+import { middleware, prefixer, rulesheet, serialize, stringify, compile as stylisCompile } from 'stylis'
 import hash from './hash'
 
 const isFalsish = (chunk: unknown): chunk is undefined | null | false | '' => chunk === undefined || chunk === null || chunk === false || chunk === ''

@@ -1,7 +1,7 @@
-import type { Properties, Style, TeilerComponent, Compile, Target } from '@teiler/core'
+import type { Compile, Properties, Style, Target, TeilerComponent } from '@teiler/core'
+import type { ComponentType, SvelteComponent } from 'svelte'
 
 import { component, global, keyframes, styled } from '@teiler/core'
-import type { SvelteComponent, ComponentType } from 'svelte'
 import Styled from './Styled.svelte'
 import tags from './tags'
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals'
-import { createServerTag, createBrowserTag } from './tag'
+import { createBrowserTag, createServerTag } from './tag'
 
 describe('createServerTag', () => {
   test('should insert a rule', () => {
