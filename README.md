@@ -81,7 +81,7 @@ const Button = component.button<{}>`
 `
 ```
 
-## Saw a Pattern
+## Sew a Pattern
 
 This tool simplifies the creation of consistent and reusable visual styles for components across various web frameworks. It provides a pattern-based approach, where patterns serve as blueprints for defining the visual style of components.
 
