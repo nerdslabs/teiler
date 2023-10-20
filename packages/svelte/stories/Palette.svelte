@@ -26,4 +26,4 @@
 <Button {_primary} {_size} {_primaryColor} {disabled} on:click={onClick}>
   {label}
 </Button>
-<ExtendedButton {_primary} {_size} {_primaryColor}>Test</ExtendedButton>
+<ExtendedButton {_primary} {_size} {_primaryColor} {disabled}>Test</ExtendedButton>

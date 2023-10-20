@@ -94,6 +94,7 @@ describe('keyframes', () => {
       css: `@keyframes teiler-keyframes-1ep7axc { from { background-color: red; } to { background-color: green; } }`,
       id: '1ep7axc',
       name: 'teiler-keyframes-1ep7axc',
+      type: 'keyframes',
     })
   })
 
@@ -109,6 +110,7 @@ describe('keyframes', () => {
       css: '@keyframes teiler-keyframes-14uknit { from { background-color: yellow; } to { background-color: red; } }',
       id: '14uknit',
       name: 'teiler-keyframes-14uknit',
+      type: 'keyframes',
     })
   })
 })

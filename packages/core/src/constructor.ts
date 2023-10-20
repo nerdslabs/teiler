@@ -1,12 +1,14 @@
 import type { Sheet } from './sheet'
 
-import { compile, stylis } from './css'
+import { compile, transpile } from './css'
+import hash from './hash'
 
 type Expression<Props> = (props: Props) => string | boolean
 type StyleDefinition = {
   id: string
   name: string
   css: string
+  type: 'component' | 'global' | 'keyframes'
 }
 type Raw = string | number
 type Properties<Props> = Expression<Props> | StyleDefinition | Raw
@@ -42,29 +44,58 @@ function styled<Props, Type extends TeilerComponent<Target, Props>>(
 
 type Compile = <Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props) => string[] | void
 
-function component<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props): string[] {
-  return compile(styles, props).map(({ id, name, css }) => {
-    const result = stylis(`.${name} { ${css} }`).join(' ')
-    sheet.insert(id, result)
+function insert(sheet: Sheet, definitions: StyleDefinition[]): string[] {
+  return definitions.reduce<string[]>((classes, { id, name, css, type }) => {
+    if (type === 'component') {
+      const result = transpile(`.${name} { ${css} }`).join(' ')
+      sheet.insert(id, result)
 
-    return name
-  })
+      classes = [...classes, name]
+    } else {
+      const result = transpile(css).join(' ')
+      sheet.insert(id, result)
+    }
+
+    return classes;
+  }, [])
+}
+
+function component<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props): string[] {
+  const {css, definitions} = compile(styles, props)
+
+  const id = hash(css)
+  const definition: StyleDefinition = {
+    id: id,
+    name: 'teiler-' + id,
+    css,
+    type: 'component'
+  }
+
+  return insert(sheet, [...definitions, definition])
 }
 
 function global<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props): void {
-  compile(styles, props).map(({ id, css }) => {
-    const result = stylis(css).join(' ')
-    sheet.insert(id, result)
-  })
+  const {css, definitions} = compile(styles, props)
+
+  const id = hash(css)
+  const definition: StyleDefinition = {
+    id: id,
+    name: 'teiler-' + id,
+    css,
+    type: 'global'
+  }
+
+  insert(sheet, [...definitions, definition])
 }
 
 function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleDefinition {
   const style: Style<{}> = [Array.from(strings), properties]
 
-  const [{ id, css }] = compile([style], {})
+  const { css } = compile([style], {})
+  const id = hash(css)
   const name = `teiler-keyframes-${id}`
 
-  return { id, name, css: `@keyframes ${name} { ${css} }` }
+  return { id, name, css: `@keyframes ${name} { ${css} }`, type: 'keyframes' }
 }
 
 export type { Compile, Properties, Sheet, Style, StyleDefinition, TeilerComponent, Target }

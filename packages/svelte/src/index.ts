@@ -7,11 +7,7 @@ import tags from './tags'
 
 type SvelteTeilerComponent<Target, Props> = TeilerComponent<Target, Props> & ComponentType<SvelteComponent>
 
-let componentsIds = 0
 const createComponent = <Target, Props>(compile: Compile, tag: Target, styles: Array<Style<Props>>): SvelteTeilerComponent<Target, Props> => {
-  const componentId = componentsIds++;
-  console.log('create component', componentId)
-  
   return class extends Styled {
     static styles = styles
     static tag = tag

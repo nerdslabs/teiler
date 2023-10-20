@@ -1,12 +1,16 @@
 import type { Style, StyleDefinition } from '.'
 
 import { middleware, prefixer, rulesheet, serialize, stringify, compile as stylisCompile } from 'stylis'
-import hash from './hash'
 
 const isFalsish = (chunk: unknown): chunk is undefined | null | false | '' => chunk === undefined || chunk === null || chunk === false || chunk === ''
 
-function compile<Props>(styles: Array<Style<Props>>, props: Props): StyleDefinition[] {
-  return styles.reduce((styles: StyleDefinition[], [strings, properties]) => {
+type CompileResult = {
+  css: string,
+  definitions: StyleDefinition[]
+}
+
+function compile<Props>(styles: Array<Style<Props>>, props: Props): CompileResult {
+  return styles.reduce<CompileResult>((result, [strings, properties]) => {
     const compiled = strings
       .reduce((acc, strings, index) => {
         acc = [...acc, strings]
@@ -14,18 +18,18 @@ function compile<Props>(styles: Array<Style<Props>>, props: Props): StyleDefinit
         const property = properties.at(index)
 
         if (property) {
-          let result = null
+          let value = null
           if (typeof property === 'function') {
-            result = property(props)
+            value = property(props)
           } else if (typeof property === 'object') {
-            styles = [...styles, property]
-            result = property.name
+            result.definitions = [...result.definitions, property]
+            value = property.name
           } else {
-            result = property
+            value = property
           }
 
-          if (isFalsish(result) === false) {
-            acc = [...acc, result]
+          if (isFalsish(value) === false) {
+            acc = [...acc, value]
           }
         }
 
@@ -33,20 +37,13 @@ function compile<Props>(styles: Array<Style<Props>>, props: Props): StyleDefinit
       }, [])
       .join('')
 
-    const id = hash(compiled)
-    const name = `teiler-${id}`
+    result.css = result.css + compiled;
 
-    const definition = {
-      id,
-      name,
-      css: compiled,
-    }
-
-    return [...styles, definition]
-  }, [])
+    return result
+  }, {css: '', definitions: []})
 }
 
-function stylis(css: string): string[] {
+function transpile(css: string): string[] {
   const results = []
 
   serialize(
@@ -63,4 +60,4 @@ function stylis(css: string): string[] {
   return results
 }
 
-export { stylis, compile }
+export { transpile, compile }

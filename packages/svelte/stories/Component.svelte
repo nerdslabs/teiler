@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Component, ExtendedComponent } from './component'
 
-  // import teiler from '@teiler/svelte'
   import { createEventDispatcher } from 'svelte'
 
   export let _primary = false
