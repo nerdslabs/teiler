@@ -1,5 +1,13 @@
 # @teiler/svelte
 
+## 0.0.5
+
+### Patch Changes
+
+- Changed method of compilation to return a single class name
+- Updated dependencies
+  - @teiler/core@0.0.5
+
 ## 0.0.4
 
 ### Patch Changes
