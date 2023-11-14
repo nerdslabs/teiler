@@ -1,6 +1,8 @@
 <script lang="ts">
   import { type Style, type Compile, type Sheet } from '@teiler/core'
   import { getStyleSheet } from './sheet'
+  import { getContext } from 'svelte'
+  import { context } from './ThemeProvider.svelte'
 
   export let tag: string = 'div'
 
@@ -9,7 +11,9 @@
 
   const sheet: Sheet = getStyleSheet()
 
-  $: classes = compile(sheet, styles, $$restProps) as string[]
+  const theme = getContext(context);
+
+  $: classes = compile(sheet, styles, {...$$restProps, theme}) as string[]
 
   $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== "_")
   $: filtredProps = Object.fromEntries(filtredPropsEntries)

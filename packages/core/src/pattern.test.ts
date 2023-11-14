@@ -35,7 +35,7 @@ describe('pattern', () => {
   })
 
   test('should create a pattern with params', () => {
-    const button = pattern.button`background: ${({ color }) => color};`
+    const button = pattern.button<{color: string}>`background: ${({ color }) => color};`
     expect(button).toMatchObject({
       styles: [[['background: ', ';'], [expect.any(Function)]]],
       tag: 'button',
