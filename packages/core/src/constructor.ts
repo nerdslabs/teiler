@@ -1,4 +1,5 @@
 import type { Sheet } from './sheet'
+import type { HTMLElements } from './tags'
 
 import { compile, transpile } from './css'
 import hash from './hash'
@@ -20,19 +21,17 @@ type Raw = string | number
 type Properties<Props> = Expression<Props> | StyleDefinition | Raw
 type Style<Props> = [string[], Properties<Props>[]]
 
-type Target = string
-
 type TeilerComponent<Target, Props> = {
   styles: Array<Style<Props>>
   tag: Target
 }
 
-type CreateCallback<Props, Type extends TeilerComponent<Target, Props>> = (styles: Array<Style<Props>>) => Type
-type ExtendCallback<Props, Type extends TeilerComponent<Target, Props>> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
+type CreateCallback<Props, Type extends TeilerComponent<HTMLElements, Props>> = (styles: Array<Style<Props>>) => Type
+type ExtendCallback<Props, Type extends TeilerComponent<HTMLElements, Props>> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
 
-function styled<Props, Type extends TeilerComponent<Target, Props>>(
+function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   createComponent: CreateCallback<Props, Type>,
-  stringOrBinded: TeilerComponent<Target, Props> | ReadonlyArray<string>,
+  stringOrBinded: TeilerComponent<HTMLElements, Props> | ReadonlyArray<string>,
   ...properties: Properties<Props>[]
 ): ExtendCallback<Props, Type> | Type {
   if (Array.isArray(stringOrBinded)) {
@@ -40,7 +39,7 @@ function styled<Props, Type extends TeilerComponent<Target, Props>>(
     const style: Style<Props> = [Array.from(strings), properties]
     return createComponent([style])
   } else {
-    const binded = stringOrBinded as TeilerComponent<Target, Props>
+    const binded = stringOrBinded as TeilerComponent<HTMLElements, Props>
     return (strings: ReadonlyArray<string>, ...properties: Expression<Props>[]) => {
       const style: Style<Props> = [Array.from(strings), properties]
       return createComponent([...binded.styles, style])
@@ -104,5 +103,5 @@ function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleD
   return { id, name, css: `@keyframes ${name} { ${css} }`, type: 'keyframes' }
 }
 
-export type { Arguments, Compile, DefaultTheme, Properties, Sheet, Style, StyleDefinition, TeilerComponent, Target }
+export type { Arguments, Compile, DefaultTheme, Properties, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
 export { keyframes, component, global, styled }

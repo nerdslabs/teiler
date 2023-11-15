@@ -1,4 +1,4 @@
-const tags = [
+const elements = [
   'a',
   'abbr',
   'address',
@@ -44,7 +44,6 @@ const tags = [
   'h4',
   'h5',
   'h6',
-  'head',
   'header',
   'hgroup',
   'hr',
@@ -63,7 +62,6 @@ const tags = [
   'main',
   'map',
   'mark',
-  'marquee',
   'menu',
   'menuitem',
   'meta',
@@ -105,16 +103,14 @@ const tags = [
   'th',
   'thead',
   'time',
-  'title',
   'tr',
   'track',
   'u',
   'ul',
+  'use',
   'var',
   'video',
-  'wbr',
-
-  // SVG
+  'wbr', // SVG
   'circle',
   'clipPath',
   'defs',
@@ -124,6 +120,7 @@ const tags = [
   'image',
   'line',
   'linearGradient',
+  'marker',
   'mask',
   'path',
   'pattern',
@@ -135,6 +132,7 @@ const tags = [
   'svg',
   'text',
   'tspan',
-] as const
+] as const;
 
-export default tags
+export default new Set(elements);
+export type HTMLElements = (typeof elements)[number];

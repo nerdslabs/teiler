@@ -1,4 +1,4 @@
-import component, { keyframes } from '@teiler/svelte'
+import { component, keyframes } from '@teiler/svelte'
 
 const test = "20px"
 

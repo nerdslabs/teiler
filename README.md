@@ -11,7 +11,7 @@ Join our community on our [Discord Server](https://discord.gg/J6Sv9sQ64t) to sta
 ### Example
 
 ```typescript
-import component from '@teiler/svelte'
+import { component } from '@teiler/svelte'
 
 const Button = component.button<{
   _primary: boolean
@@ -50,7 +50,7 @@ These are the frameworks we are currently working on and planning to support in 
 ## Keyframes
 
 ```typescript
-import component, { keyframes } from '@teiler/svelte'
+import { component, keyframes } from '@teiler/svelte'
 
 const bouncing = keyframes`
   from, 20%, 53%, 80%, to {
@@ -106,7 +106,7 @@ Example how to use themes.
 </ThemeProvider>
 
 // Component with theme usage
-import component from '@teiler/svelte'
+import { component } from '@teiler/svelte'
 
 const Component = component.div`
   color: ${({ theme }) => theme.fontColor};

@@ -1,6 +1,6 @@
 import { pattern, sew } from '@teiler/core'
 
-import component, { createComponent } from '@teiler/svelte'
+import { component, createComponent } from '@teiler/svelte'
 
 const Test = pattern.button<{
   _primaryColor: string

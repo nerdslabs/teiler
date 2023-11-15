@@ -1,4 +1,4 @@
-import component from '@teiler/svelte'
+import { component } from '@teiler/svelte'
 
 const Component = component.button<{
   _primary: boolean
