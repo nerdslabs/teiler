@@ -1,3 +1,4 @@
+import type { Arguments } from './constructor'
 import type { Style, StyleDefinition } from '.'
 
 import { middleware, prefixer, rulesheet, serialize, stringify, compile as stylisCompile } from 'stylis'
@@ -9,7 +10,7 @@ type CompileResult = {
   definitions: StyleDefinition[]
 }
 
-function compile<Props>(styles: Array<Style<Props>>, props: Props): CompileResult {
+function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): CompileResult {
   return styles.reduce<CompileResult>((result, [strings, properties]) => {
     const compiled = strings
       .reduce((acc, strings, index) => {

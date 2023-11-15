@@ -1,6 +1,7 @@
 {
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "stories/stories.d.ts"
   ],
   "exclude": [
     "node_modules"

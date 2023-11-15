@@ -49,18 +49,18 @@ describe('component', () => {
     const styleSheet = createStyleSheet({})
     const test = jest.fn(component)
 
-    test(styleSheet, [[['color: red;'], []]], [])
+    test(styleSheet, [[['color: red;'], []]], {})
 
     expect(test).toHaveReturnedWith(['teiler-wq229y'])
   })
 
   test('should create style from styles with props', () => {
     const styleSheet = createStyleSheet({})
-    const test = jest.fn(component)
+    const test = jest.fn(component<{ color: string }>)
 
-    test(styleSheet, [[['color: ', ';'], [({ color }) => color]]], [{ color: 'red' }])
+    test(styleSheet, [[['color: ', ';'], [({ color }) => color]]], { color: 'blue' })
 
-    expect(test).toHaveReturnedWith(['teiler-10upe3l'])
+    expect(test).toHaveReturnedWith(['teiler-1r77qux'])
   })
 })
 
@@ -77,7 +77,7 @@ describe('global', () => {
 
   test('should create style from styles with props', () => {
     const styleSheet = createStyleSheet({})
-    const test = jest.fn(global)
+    const test = jest.fn(global<{ color: string }>)
 
     test(styleSheet, [[['body { color: ', '; }'], [({ color }) => color]]], { color: 'blue' })
 

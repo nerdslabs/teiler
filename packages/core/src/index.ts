@@ -1,4 +1,4 @@
-export type { Compile, Properties, Sheet, Style, StyleDefinition, TeilerComponent, Target } from './constructor'
+export type { Compile, DefaultTheme, Properties, Sheet, Style, StyleDefinition, TeilerComponent, Target } from './constructor'
 
 export { default as createStyleSheet } from './sheet'
 export { pattern, sew } from './pattern'

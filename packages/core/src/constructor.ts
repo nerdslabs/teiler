@@ -3,7 +3,13 @@ import type { Sheet } from './sheet'
 import { compile, transpile } from './css'
 import hash from './hash'
 
-type Expression<Props> = (props: Props) => string | boolean
+type DefaultTheme = {[key: string]: string | boolean}
+
+type Arguments<Props> = {
+  theme?: DefaultTheme
+} & Props
+
+type Expression<Props> = (props: Arguments<Props>) => string | boolean
 type StyleDefinition = {
   id: string
   name: string
@@ -60,7 +66,7 @@ function insert(sheet: Sheet, definitions: StyleDefinition[]): string[] {
   }, [])
 }
 
-function component<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props): string[] {
+function component<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Arguments<Props>): string[] {
   const {css, definitions} = compile(styles, props)
 
   const id = hash(css)
@@ -74,7 +80,7 @@ function component<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Prop
   return insert(sheet, [...definitions, definition])
 }
 
-function global<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props): void {
+function global<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Arguments<Props>): void {
   const {css, definitions} = compile(styles, props)
 
   const id = hash(css)
@@ -98,5 +104,5 @@ function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleD
   return { id, name, css: `@keyframes ${name} { ${css} }`, type: 'keyframes' }
 }
 
-export type { Compile, Properties, Sheet, Style, StyleDefinition, TeilerComponent, Target }
+export type { Arguments, Compile, DefaultTheme, Properties, Sheet, Style, StyleDefinition, TeilerComponent, Target }
 export { keyframes, component, global, styled }

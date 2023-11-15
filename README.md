@@ -81,6 +81,49 @@ const Button = component.button<{}>`
 `
 ```
 
+## Theme
+
+Example how to use themes.
+
+```typescript
+// Main component inside application (`App.svelte`)
+<script context="module" lang="ts">
+  export type CustomTheme = {
+    fontColor: string,
+  }
+</script>
+<script lang="ts">
+  import ThemeProvider from '../src/ThemeProvider.svelte'
+  import { Component } from './theme'
+
+  export let theme: CustomTheme = {
+    fontColor: 'red',
+  }
+</script>
+
+<ThemeProvider {theme}>
+  <Component>Some test text</Component>
+</ThemeProvider>
+
+// Component with theme usage
+import component from '@teiler/svelte'
+
+const Component = component.div`
+  color: ${({ theme }) => theme.fontColor};
+`
+
+export { Component }
+```
+
+To add typing for Typescript applications you need to add `extend` inside declaration file (`d.ts`)
+```typescript
+import type { CustomTheme } from "./App.svelte";
+
+declare module '@teiler/core' {
+  export interface DefaultTheme extends CustomTheme {}
+}
+```
+
 ## Sew a Pattern
 
 This tool simplifies the creation of consistent and reusable visual styles for components across various web frameworks. It provides a pattern-based approach, where patterns serve as blueprints for defining the visual style of components.
