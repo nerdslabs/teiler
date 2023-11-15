@@ -1,5 +1,13 @@
 # @teiler/svelte
 
+## 0.0.6
+
+### Patch Changes
+
+- feat: add a Themes support
+- Updated dependencies
+  - @teiler/core@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes
