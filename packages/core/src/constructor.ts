@@ -90,22 +90,23 @@ function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleD
 function insert(sheet: Sheet, definition: StyleDefinition<HTMLElements, unknown>, props: Arguments<unknown>): string | null {
   const { styles, type } = definition
   const { css, definitions } = compile(styles, props)
-  const id = hash(css)
-
-  if (type === 'component') {
-    const transpiled = transpile(`.teiler-${id} { ${css} }`)
-    sheet.insert(id, transpiled)
-
-    return `teiler-${id}`
-  } else if (type === 'keyframes') {
-    const transpiled = transpile(`@keyframes ${id} { ${css} }`)
-    sheet.insert(id, transpiled)
-  } else {
-    const transpiled = transpile(`${css}`)
-    sheet.insert(id, transpiled)
-  }
+  const compiledId = hash(css)
 
   definitions.forEach((definition) => insert(sheet, definition, props))
+
+  if (type === 'component') {
+    const transpiled = transpile(`.teiler-${compiledId} { ${css} }`)
+    sheet.insert(compiledId, transpiled)
+
+    return `teiler-${compiledId}`
+  } else if (type === 'keyframes') {
+    const { id: definitionId } = definition
+    const transpiled = transpile(`@keyframes ${definitionId} { ${css} }`)
+    sheet.insert(compiledId, transpiled)
+  } else {
+    const transpiled = transpile(`${css}`)
+    sheet.insert(compiledId, transpiled)
+  }
 
   return null
 }
