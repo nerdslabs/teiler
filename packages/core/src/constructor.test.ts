@@ -1,32 +1,43 @@
-import type { Compile, Style, TeilerComponent } from '.'
+import type { HTMLElements, StyleDefinition, TeilerComponent } from '.'
 
 import { describe, expect, jest, test } from '@jest/globals'
-import { component, createStyleSheet, global, keyframes, styled } from '.'
+import { component, global, keyframes, styled } from '.'
 
-const createComponent = <Target, Props>(compile: Compile, tag: Target, styles: Array<Style<Props>>): TeilerComponent<Target, Props> => {
+const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefinition<Target, Props>): TeilerComponent<Target, Props> => {
   return {
-    tag,
-    styles,
+    styleDefinition: styles,
   }
 }
 
 describe('styled', () => {
   test('should create component', () => {
-    const createComponentBinded = createComponent.bind(null, null, 'div')
     const template = ['color: red;']
     const test = jest.fn(styled)
 
-    test(createComponentBinded, template)
+    test('div', component, createComponent, template)
 
-    expect(test).toHaveReturnedWith({ styles: [[['color: red;'], []]], tag: 'div' })
+    expect(test).toHaveReturnedWith({
+      styleDefinition: {
+        id: 'twq229y',
+        styles: [[['color: red;'], []]],
+        tag: 'div',
+        type: 'component',
+      },
+    })
   })
 
   test('should extend component', () => {
-    const createComponentBinded = createComponent.bind(null, null, 'div')
     const template = ['background: blue;']
-    const component: TeilerComponent<'div', {}> = { tag: 'div', styles: [[['color: red;'], []]] }
+    const existingComponent: TeilerComponent<'div', {}> = {
+      styleDefinition: {
+        type: 'component',
+        id: 'a',
+        tag: 'div',
+        styles: [[['color: red;'], []]],
+      },
+    }
 
-    const extend = styled(createComponentBinded, component)
+    const extend = styled('div', component, createComponent, existingComponent)
 
     type Callable = Extract<typeof extend, Function>
 
@@ -35,54 +46,72 @@ describe('styled', () => {
     test(template)
 
     expect(test).toHaveReturnedWith({
-      styles: [
-        [['color: red;'], []],
-        [['background: blue;'], []],
-      ],
-      tag: 'div',
+      styleDefinition: {
+        id: 't18maiqm',
+        styles: [
+          [['color: red;'], []],
+          [['background: blue;'], []],
+        ],
+        tag: 'div',
+        type: 'component',
+      },
     })
   })
 })
 
 describe('component', () => {
-  test('should create style from styles', () => {
-    const styleSheet = createStyleSheet({})
+  test('should create style definition from styles', () => {
     const test = jest.fn(component)
 
-    test(styleSheet, [[['color: red;'], []]], {})
+    test('div', [[['color: red;'], []]])
 
-    expect(test).toHaveReturnedWith(['teiler-wq229y'])
+    expect(test).toHaveReturnedWith({
+      id: 'twq229y',
+      styles: [[['color: red;'], []]],
+      tag: 'div',
+      type: 'component',
+    })
   })
 
-  test('should create style from styles with props', () => {
-    const styleSheet = createStyleSheet({})
-    const test = jest.fn(component<{ color: string }>)
+  test('should create style definition from styles with props', () => {
+    const test = jest.fn(component<'div', { color: string }>)
 
-    test(styleSheet, [[['color: ', ';'], [({ color }) => color]]], { color: 'blue' })
+    test('div', [[['color: ', ';'], [({ color }) => color]]])
 
-    expect(test).toHaveReturnedWith(['teiler-1r77qux'])
+    expect(test).toHaveReturnedWith({
+      id: 't10upe3l',
+      styles: [[['color: ', ';'], [expect.any(Function)]]],
+      tag: 'div',
+      type: 'component',
+    })
   })
 })
 
 describe('global', () => {
-  test('should create style from styles', () => {
-    const styleSheet = createStyleSheet({})
+  test('should create style definition from styles', () => {
     const test = jest.fn(global)
 
-    test(styleSheet, [[['body { color: red; }'], []]], {})
+    test(null, [[['body { color: red; }'], []]])
 
-    expect(test).toHaveReturnedWith(undefined)
-    expect(styleSheet.dump()).toContain(' body{color:red;}')
+    expect(test).toHaveReturnedWith({
+      id: 'tytz3vv',
+      styles: [[['body { color: red; }'], []]],
+      tag: null,
+      type: 'global',
+    })
   })
 
-  test('should create style from styles with props', () => {
-    const styleSheet = createStyleSheet({})
-    const test = jest.fn(global<{ color: string }>)
+  test('should create style definition from styles with props', () => {
+    const test = jest.fn(global<null, { color: string }>)
 
-    test(styleSheet, [[['body { color: ', '; }'], [({ color }) => color]]], { color: 'blue' })
+    test(null, [[['body { color: ', '; }'], [({ color }) => color]]])
 
-    expect(test).toHaveReturnedWith(undefined)
-    expect(styleSheet.dump()).toContain(' body{color:blue;}')
+    expect(test).toHaveReturnedWith({
+      id: 't1420fqd',
+      styles: [[['body { color: ', '; }'], [expect.any(Function)]]],
+      tag: null,
+      type: 'global',
+    })
   })
 })
 
@@ -91,9 +120,9 @@ describe('keyframes', () => {
     const keyframesDefinition = keyframes`from { background-color: red; } to { background-color: green; }`
 
     expect(keyframesDefinition).toStrictEqual({
-      css: `@keyframes teiler-keyframes-1ep7axc { from { background-color: red; } to { background-color: green; } }`,
-      id: '1ep7axc',
-      name: 'teiler-keyframes-1ep7axc',
+      id: 'teiler-1ep7axc',
+      styles: [[['from { background-color: red; } to { background-color: green; }'], []]],
+      tag: null,
       type: 'keyframes',
     })
   })
@@ -107,9 +136,14 @@ describe('keyframes', () => {
     const keyframesDefinition = keyframes`from { background-color: ${props.from}; } to { background-color: ${props.to}; }`
 
     expect(keyframesDefinition).toEqual({
-      css: '@keyframes teiler-keyframes-14uknit { from { background-color: yellow; } to { background-color: red; } }',
-      id: '14uknit',
-      name: 'teiler-keyframes-14uknit',
+      id: 'teiler-1vxhd59',
+      styles: [
+        [
+          ['from { background-color: ', '; } to { background-color: ', '; }'],
+          ['yellow', 'red'],
+        ],
+      ],
+      tag: null,
       type: 'keyframes',
     })
   })

@@ -1,8 +1,8 @@
-import type { Compile, Properties, Style, TeilerComponent } from './constructor'
+import type { Properties, Style, StyleDefinition, TeilerComponent } from './constructor'
 import type { HTMLElements } from './tags'
 
-import { component, global } from './constructor'
 import tags from './tags'
+import hash from './hash'
 
 type Pattern<Target extends HTMLElements, Props> = { styles: Style<Props>[]; tag: Target; __teiler__: true }
 type ExtendCallback<Target extends HTMLElements, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Inter<Component, Props>>[]) => Pattern<Target, Inter<Component, Props>>
@@ -21,7 +21,7 @@ const construct = (tag: HTMLElements) => {
     if ('__teiler__' in stringOrPattern) {
       return <Component>(strings: ReadonlyArray<string>, ...properties: Properties<Inter<Component, Props>>[]) => {
         const style: Style<Props> = [Array.from(strings), properties]
-        return { styles: [...stringOrPattern.styles, style], tag, __teiler__: true }
+        return { styles: [...stringOrPattern.styles, style], tag: stringOrPattern.tag, __teiler__: true }
       }
     } else {
       const strings = stringOrPattern as ReadonlyArray<string>
@@ -41,11 +41,17 @@ pattern['global'] = construct(null)
 
 const binded = pattern as ConstructorWithTags
 
-type CreateFunction<Target, Props, Type extends TeilerComponent<Target, Props>> = (compile: Compile, tag: Target, styles: Array<Style<Props>>) => Type
+type CreateCallback<Target extends HTMLElements, Type extends TeilerComponent<Target, Props>, Props> = (styles: StyleDefinition<Target, Props>) => Type
 
-function sew<Target extends HTMLElements, Props, Type extends TeilerComponent<Target, Props>>(pattern: Pattern<Target, Props>, createComponent: CreateFunction<Target, Props, Type>): Type {
-  const compiler = pattern.tag === null ? global : component
-  return createComponent(compiler, pattern.tag, pattern.styles)
+function sew<Target extends HTMLElements, Props, Type extends TeilerComponent<Target, Props>>(pattern: Pattern<Target, Props>, createComponent: CreateCallback<Target, Type, Props>): Type {
+  const id = pattern.styles.reduce((acc, [strings]) => acc + strings.join(''), '')
+
+  return createComponent({
+    type: pattern.tag === null ? 'global' : 'component',
+    id: hash(id),
+    styles: pattern.styles,
+    tag: pattern.tag,
+  })
 }
 
 export { binded as pattern, sew }

@@ -1,9 +1,9 @@
 import type { Pattern } from './pattern'
-import type { Compile, Style, TeilerComponent } from '.'
+import type { HTMLElements, StyleDefinition, TeilerComponent } from '.'
 
 import { describe, expect, test } from '@jest/globals'
 import { pattern, sew } from './pattern'
-import { createStyleSheet } from '.'
+import { createStyleSheet, insert } from '.'
 
 describe('pattern', () => {
   test('should create a pattern for a div', () => {
@@ -35,7 +35,7 @@ describe('pattern', () => {
   })
 
   test('should create a pattern with params', () => {
-    const button = pattern.button<{color: string}>`background: ${({ color }) => color};`
+    const button = pattern.button<{ color: string }>`background: ${({ color }) => color};`
     expect(button).toMatchObject({
       styles: [[['background: ', ';'], [expect.any(Function)]]],
       tag: 'button',
@@ -46,25 +46,27 @@ describe('pattern', () => {
   test('should create a pattern for a global component', () => {
     const global = pattern.global`background: blue;`
     expect(global).toEqual({
-      styles: [[Array('background: blue;'), []]],
+      styles: [[['background: blue;'], []]],
       tag: null,
       __teiler__: true,
     })
   })
 })
 
-type TestComponent<Target, Props> = TeilerComponent<Target, Props> & {
+type TestComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & {
   render(): string
 }
 
-const createComponent = <Target, Props>(compile: Compile, tag: Target, styles: Array<Style<Props>>): TestComponent<Target, Props> => {
+const sheet = createStyleSheet({})
+
+const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefinition<Target, Props>): TestComponent<Target, Props> => {
   return {
-    tag,
-    styles,
+    styleDefinition: styles,
     render() {
-      const classes = compile(createStyleSheet({}), styles, {})
-      if (classes) {
-        return `<${tag} class="${classes.join(' ')}">component</${tag}>`
+      const className = insert(sheet, styles, {})
+
+      if (className) {
+        return `<${styles.tag} class="${className}">component</${styles.tag}>`
       } else {
         return ''
       }

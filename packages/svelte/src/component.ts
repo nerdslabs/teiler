@@ -1,24 +1,21 @@
-import type { Compile, HTMLElements, Properties, Style, TeilerComponent } from '@teiler/core'
+import type { Compiler, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
 import type { ComponentType, SvelteComponent } from 'svelte'
 
 import { component, global, keyframes, styled, tags } from '@teiler/core'
 import Styled from './Styled.svelte'
 
-type SvelteTeilerComponent<Target, Props> = TeilerComponent<Target, Props> & ComponentType<SvelteComponent>
+type SvelteTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & ComponentType<SvelteComponent>
 
-const createComponent = <Target extends HTMLElements, Props>(compile: Compile, tag: Target, styles: Array<Style<Props>>): SvelteTeilerComponent<Target, Props> => {
+const createComponent = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): SvelteTeilerComponent<Target, Props> => {
   return class extends Styled {
-    static styles = styles
-    static tag = tag
+    static styleDefinition = styleDefinition
 
     constructor(options) {
       super({
         ...options,
         props: {
           ...options.props,
-          compile,
-          tag,
-          styles,
+          styleDefinition,
         },
       })
     }
@@ -34,15 +31,14 @@ type Component<Target extends HTMLElements> = {
 }
 
 type Global = {
-  <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): SvelteTeilerComponent<unknown, Props>
+  <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): SvelteTeilerComponent<HTMLElements, Props>
 }
 
 type ComponentWithTags = Component<'div'> & { [K in HTMLElements]: Component<K> }
 
-const construct = <Target extends HTMLElements>(tag: Target, compile: Compile) => {
-  return <Props extends object = {}>(stringOrBinded: TeilerComponent<Target, Props> | TemplateStringsArray, ...properties: Properties<Props>[]) => {
-    const binded = createComponent.bind(null, compile, (stringOrBinded as TeilerComponent<Target, Props>).tag || tag)
-    return styled<Props, SvelteTeilerComponent<Target, Props>>(binded, stringOrBinded, ...properties)
+const construct = (tag: HTMLElements, compiler: Compiler) => {
+  return <Props extends object = {}>(stringOrBinded: TeilerComponent<HTMLElements, Props> | TemplateStringsArray, ...properties: Properties<Props>[]) => {
+    return styled<Props, SvelteTeilerComponent<HTMLElements, Props>>(tag, compiler, createComponent, stringOrBinded, ...properties)
   }
 }
 
