@@ -12,7 +12,7 @@ type Arguments<Props> = {
 
 type Expression<Props> = (props: Arguments<Props>) => string | boolean
 type Raw = string | number
-type Properties<Props> = Expression<Props> | StyleDefinition<null, Props> | TeilerComponent<HTMLElements, Props> | Raw
+type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
 type Style<Props> = [string[], Properties<Props>[]]
 
 type StyleDefinition<Target extends HTMLElements, Props> = {
