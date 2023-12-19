@@ -1,107 +1,115 @@
 import type { Sheet } from './sheet'
 import type { HTMLElements } from './tags'
 
-import { compile, transpile } from './css'
 import hash from './hash'
+import { compile, transpile } from './css'
 
-type DefaultTheme = {[key: string]: string | boolean}
+type DefaultTheme = { [key: string]: string | boolean }
 
 type Arguments<Props> = {
   theme?: DefaultTheme
 } & Props
 
 type Expression<Props> = (props: Arguments<Props>) => string | boolean
-type StyleDefinition = {
-  id: string
-  name: string
-  css: string
-  type: 'component' | 'global' | 'keyframes'
-}
 type Raw = string | number
-type Properties<Props> = Expression<Props> | StyleDefinition | Raw
+type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
 type Style<Props> = [string[], Properties<Props>[]]
 
-type TeilerComponent<Target, Props> = {
+type StyleDefinition<Target extends HTMLElements, Props> = {
+  type: 'component' | 'global' | 'keyframes'
+  id: string
   styles: Array<Style<Props>>
-  tag: Target
+  tag: Target | null
 }
 
-type CreateCallback<Props, Type extends TeilerComponent<HTMLElements, Props>> = (styles: Array<Style<Props>>) => Type
-type ExtendCallback<Props, Type extends TeilerComponent<HTMLElements, Props>> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
+type TeilerComponent<Target extends HTMLElements, Props> = {
+  styleDefinition: StyleDefinition<Target, Props>
+}
+
+type CreateCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (styles: StyleDefinition<HTMLElements, Props>) => Type
+type ExtendCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
 
 function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
-  createComponent: CreateCallback<Props, Type>,
+  tag: HTMLElements,
+  compiler: Compiler,
+  createComponent: CreateCallback<Type, Props>,
   stringOrBinded: TeilerComponent<HTMLElements, Props> | ReadonlyArray<string>,
   ...properties: Properties<Props>[]
-): ExtendCallback<Props, Type> | Type {
+): ExtendCallback<Type, Props> | Type {
   if (Array.isArray(stringOrBinded)) {
     const strings = stringOrBinded as ReadonlyArray<string>
     const style: Style<Props> = [Array.from(strings), properties]
-    return createComponent([style])
+    const styleDefinition = compiler(tag, [style])
+    return createComponent(styleDefinition)
   } else {
     const binded = stringOrBinded as TeilerComponent<HTMLElements, Props>
     return (strings: ReadonlyArray<string>, ...properties: Expression<Props>[]) => {
       const style: Style<Props> = [Array.from(strings), properties]
-      return createComponent([...binded.styles, style])
+      const styleDefinition = compiler(binded.styleDefinition.tag, [...binded.styleDefinition.styles, style])
+      return createComponent(styleDefinition)
     }
   }
 }
 
-type Compile = <Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Props) => string[] | void
+type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>) => StyleDefinition<Target, Props>
 
-function insert(sheet: Sheet, definitions: StyleDefinition[]): string[] {
-  return definitions.reduce<string[]>((classes, { id, name, css, type }) => {
-    if (type === 'component') {
-      const result = transpile(`.${name} { ${css} }`).join(' ')
-      sheet.insert(id, result)
+const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
+  const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
 
-      classes = [...classes, name]
-    } else {
-      const result = transpile(css).join(' ')
-      sheet.insert(id, result)
-    }
-
-    return classes;
-  }, [])
-}
-
-function component<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Arguments<Props>): string[] {
-  const {css, definitions} = compile(styles, props)
-
-  const id = hash(css)
-  const definition: StyleDefinition = {
-    id: id,
-    name: 'teiler-' + id,
-    css,
-    type: 'component'
+  return {
+    type: 'component',
+    id: 't' + hash(id),
+    styles,
+    tag,
   }
-
-  return insert(sheet, [...definitions, definition])
 }
 
-function global<Props>(sheet: Sheet, styles: Array<Style<Props>>, props: Arguments<Props>): void {
-  const {css, definitions} = compile(styles, props)
+const global: Compiler = <Target extends HTMLElements, Props>(tag: null, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
+  const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
 
-  const id = hash(css)
-  const definition: StyleDefinition = {
-    id: id,
-    name: 'teiler-' + id,
-    css,
-    type: 'global'
+  return {
+    type: 'global',
+    id: 't' + hash(id),
+    styles,
+    tag,
   }
-
-  insert(sheet, [...definitions, definition])
 }
 
-function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleDefinition {
+function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleDefinition<null, {}> {
   const style: Style<{}> = [Array.from(strings), properties]
+  const id = strings.join('')
 
-  const { css } = compile([style], {})
-  const id = hash(css)
-  const name = `teiler-keyframes-${id}`
-
-  return { id, name, css: `@keyframes ${name} { ${css} }`, type: 'keyframes' }
+  return {
+    type: 'keyframes',
+    id: 'teiler-' + hash(id),
+    styles: [style],
+    tag: null,
+  }
 }
 
-export type { Arguments, Compile, DefaultTheme, Properties, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
-export { keyframes, component, global, styled }
+function insert(sheet: Sheet, definition: StyleDefinition<HTMLElements, unknown>, props: Arguments<unknown>): string | null {
+  const { styles, type } = definition
+  const { css, definitions } = compile(styles, props)
+  const compiledId = hash(css)
+
+  definitions.forEach((definition) => insert(sheet, definition, props))
+
+  if (type === 'component') {
+    const transpiled = transpile(`.teiler-${compiledId} { ${css} }`)
+    sheet.insert(compiledId, transpiled)
+
+    return `teiler-${compiledId}`
+  } else if (type === 'keyframes') {
+    const { id: definitionId } = definition
+    const transpiled = transpile(`@keyframes ${definitionId} { ${css} }`)
+    sheet.insert(compiledId, transpiled)
+  } else {
+    const transpiled = transpile(`${css}`)
+    sheet.insert(compiledId, transpiled)
+  }
+
+  return null
+}
+
+export type { Arguments, Compiler, CreateCallback, DefaultTheme, Properties, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
+export { component, global, insert, keyframes, styled }
