@@ -1,5 +1,13 @@
 # @teiler/svelte
 
+## 0.0.8
+
+### Patch Changes
+
+- feat: component as nested selector
+- Updated dependencies
+  - @teiler/core@0.0.8
+
 ## 0.0.7
 
 ### Patch Changes
