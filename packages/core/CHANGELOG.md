@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.10
+
+### Patch Changes
+
+- Add missing generated `d.ts` files
+
 ## 0.0.9
 
 ### Patch Changes
