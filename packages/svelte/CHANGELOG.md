@@ -1,5 +1,13 @@
 # @teiler/svelte
 
+## 0.0.9
+
+### Patch Changes
+
+- Add missing `Pattern` type export
+- Updated dependencies
+  - @teiler/core@0.0.9
+
 ## 0.0.8
 
 ### Patch Changes

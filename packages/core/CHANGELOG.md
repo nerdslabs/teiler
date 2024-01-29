@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.9
+
+### Patch Changes
+
+- Add missing `Pattern` type export
+
 ## 0.0.8
 
 ### Patch Changes
