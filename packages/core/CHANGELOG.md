@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.11
+
+### Patch Changes
+
+- Handle Pattern as nested selector
+
 ## 0.0.10
 
 ### Patch Changes

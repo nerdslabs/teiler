@@ -157,7 +157,7 @@ export default Button
 
 ## Packages
 
-| Package       | Download
-| :---          | :------ |
-| Core          | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fcore) |
-| Svelte        | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fsvelte) |
+| Package       | Download | Size
+| :---          | :------ | :---- |
+| Core          | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fcore) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fcore) |
+| Svelte        | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fsvelte) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fsvelte) |
