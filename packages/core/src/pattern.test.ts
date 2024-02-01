@@ -11,7 +11,8 @@ describe('pattern', () => {
     expect(div).toEqual({
       styles: [[['background: blue;'], []]],
       tag: 'div',
-      __teiler__: true,
+      __pattern__: true,
+      id: 't1iflo4h',
     })
   })
 
@@ -19,7 +20,8 @@ describe('pattern', () => {
     const extend: Pattern<'div', {}> = {
       styles: [[['background: blue;'], []]],
       tag: 'div',
-      __teiler__: true,
+      __pattern__: true,
+      id: 't1iflo4h',
     }
 
     const div = pattern<{}>(extend)`color: red;`
@@ -30,7 +32,8 @@ describe('pattern', () => {
         [['color: red;'], []],
       ],
       tag: 'div',
-      __teiler__: true,
+      __pattern__: true,
+      id: 'tu2c2va',
     })
   })
 
@@ -39,7 +42,7 @@ describe('pattern', () => {
     expect(button).toMatchObject({
       styles: [[['background: ', ';'], [expect.any(Function)]]],
       tag: 'button',
-      __teiler__: true,
+      __pattern__: true,
     })
   })
 
@@ -48,7 +51,8 @@ describe('pattern', () => {
     expect(global).toEqual({
       styles: [[['background: blue;'], []]],
       tag: null,
-      __teiler__: true,
+      __pattern__: true,
+      id: 't1iflo4h',
     })
   })
 })

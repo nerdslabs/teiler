@@ -1,5 +1,5 @@
 import type { Arguments, HTMLElements } from './constructor'
-import type { Style, StyleDefinition } from '.'
+import type { Pattern, Style, StyleDefinition } from '.'
 
 import { middleware, prefixer, rulesheet, serialize, stringify, compile as stylisCompile } from 'stylis'
 
@@ -29,6 +29,9 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
               } else {
                 value = property(props)
               }
+            } else if (typeof property === 'object' && '__pattern__' in property) {
+              const pattern = property as Pattern<HTMLElements, Props>
+              value = '.' + pattern.id
             } else if (typeof property === 'object') {
               const styleDefinition = property as StyleDefinition<HTMLElements, Props>
               result.definitions = [...result.definitions, styleDefinition]
