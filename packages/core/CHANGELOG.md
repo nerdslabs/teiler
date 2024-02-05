@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.13
+
+### Patch Changes
+
+- Adjust typing for `css` function
+
 ## 0.0.12
 
 ### Patch Changes
