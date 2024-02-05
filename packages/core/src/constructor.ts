@@ -11,8 +11,8 @@ type Arguments<Props> = {
   theme?: DefaultTheme
 } & Props
 
-type CSS<Props> = { styles: Style<Props>[]; id: string; __css__: true }
-type Expression<Props> = (props: Arguments<Props>) => string | boolean | CSS<Props>
+type CSS = { styles: Style<unknown>[]; id: string; __css__: true }
+type Expression<Props> = (props: Arguments<Props>) => string | boolean | CSS
 type Raw = string | number
 type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | Pattern<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
 type Style<Props> = [string[], Properties<Props>[]]
@@ -89,7 +89,7 @@ function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleD
   }
 }
 
-function css<Props>(strings: ReadonlyArray<string>, ...properties: Exclude<Properties<Props>, Expression<Props>>[]): CSS<Props> {
+function css<Props>(strings: ReadonlyArray<string>, ...properties: Exclude<Properties<Props>, Expression<Props>>[]): CSS {
   const style: Style<Props> = [Array.from(strings), properties]
   const styles = [style]
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
