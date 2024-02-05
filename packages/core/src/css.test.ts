@@ -63,7 +63,7 @@ describe('compile', () => {
   })
 
   test('with css', () => {
-    const css: CSS<{}> = {
+    const css: CSS = {
       id: 't1vxhd59',
       styles: [[['background: ', ';'], ['red']]],
       __css__: true,
