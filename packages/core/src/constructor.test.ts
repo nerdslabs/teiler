@@ -1,7 +1,7 @@
 import type { HTMLElements, StyleDefinition, TeilerComponent } from '.'
 
 import { describe, expect, jest, test } from '@jest/globals'
-import { component, global, keyframes, styled } from '.'
+import { component, css, global, keyframes, styled } from '.'
 
 const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefinition<Target, Props>): TeilerComponent<Target, Props> => {
   return {
@@ -145,6 +145,31 @@ describe('keyframes', () => {
       ],
       tag: null,
       type: 'keyframes',
+    })
+  })
+})
+
+describe('css', () => {
+  test('should create a css styles', () => {
+    // prettier-ignore
+    const div = css`background: blue;`
+
+    expect(div).toEqual({
+      styles: [[['background: blue;'], []]],
+      __css__: true,
+      id: 't1iflo4h',
+    })
+  })
+
+  test('should create a css styles with properties', () => {
+    const color = 'blue'
+    // prettier-ignore
+    const div = css`background: ${color};`
+
+    expect(div).toEqual({
+      styles: [[['background: ', ';'], ['blue']]],
+      __css__: true,
+      id: 't42o50t',
     })
   })
 })

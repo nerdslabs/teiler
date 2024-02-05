@@ -27,7 +27,13 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
                 result.definitions = [...result.definitions, styleDefinition]
                 value = '.' + styleDefinition.id
               } else {
-                value = property(props)
+                const exec = property(props)
+                if (typeof exec === 'object' && '__css__' in exec) {
+                  const { css: style } = compile<Props>(exec.styles, props)
+                  value = style
+                } else {
+                  value = exec
+                }
               }
             } else if (typeof property === 'object' && '__pattern__' in property) {
               const pattern = property as Pattern<HTMLElements, Props>

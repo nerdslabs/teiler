@@ -3,6 +3,7 @@ import type { HTMLElements } from './tags'
 
 import hash from './hash'
 import { compile, transpile } from './css'
+import { Pattern } from './pattern'
 
 type DefaultTheme = { [key: string]: string | boolean }
 
@@ -10,9 +11,10 @@ type Arguments<Props> = {
   theme?: DefaultTheme
 } & Props
 
-type Expression<Props> = (props: Arguments<Props>) => string | boolean
+type CSS<Props> = { styles: Style<Props>[]; id: string; __css__: true }
+type Expression<Props> = (props: Arguments<Props>) => string | boolean | CSS<Props>
 type Raw = string | number
-type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
+type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | Pattern<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
 type Style<Props> = [string[], Properties<Props>[]]
 
 type StyleDefinition<Target extends HTMLElements, Props> = {
@@ -87,6 +89,13 @@ function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleD
   }
 }
 
+function css<Props>(strings: ReadonlyArray<string>, ...properties: Exclude<Properties<Props>, Expression<Props>>[]): CSS<Props> {
+  const style: Style<Props> = [Array.from(strings), properties]
+  const styles = [style]
+  const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
+  return { styles: styles, id: 't' + hash(id), __css__: true }
+}
+
 function insert(sheet: Sheet, definition: StyleDefinition<HTMLElements, unknown>, props: Arguments<unknown>): string | null {
   const { styles, type } = definition
   const { css, definitions } = compile(styles, props)
@@ -111,5 +120,5 @@ function insert(sheet: Sheet, definition: StyleDefinition<HTMLElements, unknown>
   return null
 }
 
-export type { Arguments, Compiler, CreateCallback, DefaultTheme, Properties, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
-export { component, global, insert, keyframes, styled }
+export type { Arguments, Compiler, CreateCallback, CSS, DefaultTheme, Properties, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
+export { component, css, global, insert, keyframes, styled }

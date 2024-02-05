@@ -1,6 +1,7 @@
 import { describe, expect, test } from '@jest/globals'
 import { compile, transpile } from './css'
 import { Style, StyleDefinition } from '.'
+import { CSS } from './constructor'
 
 describe('transpile', () => {
   test('should return an empty array if the CSS string is empty', () => {
@@ -58,6 +59,22 @@ describe('compile', () => {
     expect(compiled).toEqual({
       css: 'animation: teiler-1vxhd59 5s;',
       definitions: [keyframes],
+    })
+  })
+
+  test('with css', () => {
+    const css: CSS<{}> = {
+      id: 't1vxhd59',
+      styles: [[['background: ', ';'], ['red']]],
+      __css__: true,
+    }
+
+    const style: Style<{}> = [['color: #fff; '], [() => css]]
+    const compiled = compile<{}>([style], {})
+
+    expect(compiled).toEqual({
+      css: 'color: #fff; background: red;',
+      definitions: [],
     })
   })
 })

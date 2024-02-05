@@ -6,8 +6,14 @@ import hash from './hash'
 
 type PropertiesWithPattern<Props> = Properties<Props> | Pattern<HTMLElements, Props>
 
-type Pattern<Target extends HTMLElements, Props> = { styles: Style<Props>[]; tag: Target; id: string; __pattern__: true }
-type ExtendCallback<Target extends HTMLElements, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Inter<Component, Props>>[]) => Pattern<Target, Inter<Component, Props>>
+type Pattern<Target extends HTMLElements, Props> = {
+  styles: Style<Props>[]
+  tag: Target
+  id: string
+  __pattern__: true
+}
+
+type ExtendCallback<Target extends HTMLElements, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => Pattern<Target, Infer<Component, Props>>
 
 type Constructor<Target extends HTMLElements> = {
   <Props>(pattern: Pattern<Target, Props>): ExtendCallback<Target, Props>
@@ -16,12 +22,12 @@ type Constructor<Target extends HTMLElements> = {
 
 type ConstructorWithTags = Constructor<'div'> & { [K in HTMLElements]: Constructor<K> } & { global: Constructor<null> }
 
-type Inter<Component, Props> = Component extends Pattern<HTMLElements, infer P> ? P & Props : Props
+type Infer<Component, Props> = Component extends Pattern<HTMLElements, infer P> ? P & Props : Props
 
 const construct = (tag: HTMLElements) => {
   return <Props>(stringOrPattern: Pattern<HTMLElements, Props> | ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<HTMLElements, Props> | ExtendCallback<HTMLElements, Props> => {
     if ('__pattern__' in stringOrPattern) {
-      return <Component>(strings: ReadonlyArray<string>, ...properties: Properties<Inter<Component, Props>>[]) => {
+      return <Component>(strings: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => {
         const style: Style<Props> = [Array.from(strings), properties]
         const styles = [...stringOrPattern.styles, style]
         const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
