@@ -32,6 +32,10 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
                   const { css: style } = compile<Props>(exec.styles, props)
                   value = style
                 } else {
+                  if (typeof exec === 'string' && exec.includes('[object Object]')) {
+                    console.error('[teiler]', `If you trying to use nested component/pattern selector inside function use function \`css\`, sample: \n\${({ someProperty }) => css\`\${NastedComponent} {...}\`}`)
+                  }
+
                   value = exec
                 }
               }
