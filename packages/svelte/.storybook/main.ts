@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/svelte-vite';
+import { mergeConfig } from 'vite';
 
 const config: StorybookConfig = {
   stories: ['../**/*.stories.mdx', '../**/*.stories.@(js|jsx|ts|tsx|svelte)'],
@@ -14,7 +15,9 @@ const config: StorybookConfig = {
     autodocs: true
   },
   async viteFinal(config, options) {
-    return config
+    return mergeConfig(config, {
+      define: { 'process.env': {} },
+    });
   },
 };
 
