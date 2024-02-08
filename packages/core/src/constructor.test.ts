@@ -1,7 +1,7 @@
 import type { HTMLElements, StyleDefinition, TeilerComponent } from '.'
 
 import { describe, expect, jest, test } from '@jest/globals'
-import { component, css, global, keyframes, styled } from '.'
+import { component, css, global, insert, keyframes, styled } from '.'
 
 const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefinition<Target, Props>): TeilerComponent<Target, Props> => {
   return {
@@ -171,5 +171,70 @@ describe('css', () => {
       __css__: true,
       id: 't42o50t',
     })
+  })
+})
+
+describe('insert', () => {
+  test('should insert component styles into the sheet', () => {
+    const sheet = {
+      insert: jest.fn(),
+      dump: jest.fn<() => string>(),
+    }
+
+    const definition: StyleDefinition<'div', {}> = {
+      id: 'twq229y',
+      styles: [[['color: red;'], []]],
+      tag: 'div',
+      type: 'component',
+    }
+
+    const props = {}
+
+    const result = insert(sheet, definition, props)
+
+    expect(sheet.insert).toHaveBeenCalledWith('wq229y', '.teiler-wq229y{color:red;}')
+    expect(result).toBe('teiler-wq229y')
+  })
+
+  test('should insert keyframes styles into the sheet', () => {
+    const sheet = {
+      insert: jest.fn(),
+      dump: jest.fn<() => string>(),
+    }
+
+    const definition: StyleDefinition<'div', {}> = {
+      id: 'teiler-1ep7axc',
+      styles: [[['from { background-color: red; } to { background-color: green; }'], []]],
+      tag: null,
+      type: 'keyframes',
+    }
+
+    const props = {}
+
+    const result = insert(sheet, definition, props)
+
+    expect(sheet.insert).toHaveBeenCalledWith('1ep7axc', '@keyframes teiler-1ep7axc{from{background-color:red;}to{background-color:green;}}')
+    expect(result).toBeNull()
+  })
+
+  test('should insert global styles into the sheet', () => {
+    const sheet = {
+      insert: jest.fn(),
+      dump: jest.fn<() => string>(),
+    }
+
+    const definition: StyleDefinition<'div', {}> = {
+      id: 'tytz3vv',
+      styles: [[['body { color: red; }'], []]],
+      tag: null,
+      type: 'global',
+    }
+
+    const props = {}
+
+    const result = insert(sheet, definition, props)
+
+    expect(sheet.insert).toHaveBeenCalledWith('ytz3vv', 'body{color:red;}')
+    expect(result).toBeNull()
   })
 })

@@ -1,7 +1,7 @@
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, jest, test } from '@jest/globals'
 import { compile, transpile } from './css'
-import { Style, StyleDefinition } from '.'
-import { CSS } from './constructor'
+import { Pattern, Style, StyleDefinition } from '.'
+import { CSS, TeilerComponent } from './constructor'
 
 describe('transpile', () => {
   test('should return an empty array if the CSS string is empty', () => {
@@ -59,6 +59,70 @@ describe('compile', () => {
     expect(compiled).toEqual({
       css: 'animation: teiler-1vxhd59 5s;',
       definitions: [keyframes],
+    })
+  })
+
+  test('with component', () => {
+    const component: TeilerComponent<'div', {}> = class {
+      static styleDefinition = {
+        id: 'twq229y',
+        styles: [[['color: red;'], []]],
+        tag: 'div',
+        type: 'component',
+      }
+    }
+
+    const style: Style<{}> = [['& ', ' { color: blue; }'], [component]]
+    const compiled = compile<{}>([style], {})
+
+    expect(compiled).toEqual({
+      css: '& .twq229y { color: blue; }',
+      definitions: [component.styleDefinition],
+    })
+  })
+
+  test('with function', () => {
+    const style: Style<{}> = [['color: ', ';'], [() => 'blue']]
+    const compiled = compile<{}>([style], {})
+
+    expect(compiled).toEqual({
+      css: 'color: blue;',
+      definitions: [],
+    })
+  })
+
+  test('with function contain wrong nested component', () => {
+    const spy = jest.spyOn(console, 'error').mockImplementation((...args) => args)
+
+    const fn = () => `${{}} { background: yellow; }`
+
+    const style: Style<{}> = [['color: red;', ''], [fn]]
+    const compiled = compile<{}>([style], {})
+
+    expect(compiled).toEqual({
+      css: 'color: red;[object Object] { background: yellow; }',
+      definitions: [],
+    })
+
+    expect(console.error).toHaveBeenCalledWith('[teiler]', `If you trying to use nested component/pattern selector inside function use function \`css\`, sample: \n\${({ someProperty }) => css\`\${NastedComponent} {...}\`}`)
+
+    spy.mockRestore()
+  })
+
+  test('with pattern', () => {
+    const pattern: Pattern<'div', {}> = {
+      id: 'twq229y',
+      styles: [[['color: red;'], []]],
+      tag: 'div',
+      __pattern__: true,
+    }
+
+    const style: Style<{}> = [['& ', ' { color: blue; }'], [pattern]]
+    const compiled = compile<{}>([style], {})
+
+    expect(compiled).toEqual({
+      css: '& .twq229y { color: blue; }',
+      definitions: [],
     })
   })
 
