@@ -1,5 +1,13 @@
 # @teiler/core
 
+## 0.0.14
+
+### Patch Changes
+
+- Add missing tests
+- Enforce correct nested component/pattern selector usage
+- Update dependencies
+
 ## 0.0.13
 
 ### Patch Changes
