@@ -1,5 +1,13 @@
 # @teiler/svelte
 
+## 0.0.15
+
+### Patch Changes
+
+- Delegate all events
+- Updated dependencies
+  - @teiler/core@0.0.15
+
 ## 0.0.14
 
 ### Patch Changes

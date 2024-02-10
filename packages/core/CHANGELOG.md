@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.15
+
+### Patch Changes
+
+- Delegate all events
+
 ## 0.0.14
 
 ### Patch Changes
