@@ -1,6 +1,6 @@
 {
   "name": "@teiler/svelte",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "repository": {
     "type": "git",
     "url": "github:nerdslabs/teiler"
@@ -22,7 +22,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@teiler/core": "0.0.15",
+    "@teiler/core": "0.0.16",
     "svelte": "^4.2.10"
   },
   "devDependencies": {

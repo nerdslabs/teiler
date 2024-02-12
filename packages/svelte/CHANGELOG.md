@@ -1,5 +1,14 @@
 # @teiler/svelte
 
+## 0.0.16
+
+### Patch Changes
+
+- Update YARN version
+- Add `ThemeProvider.svelte` to exports
+- Updated dependencies
+  - @teiler/core@0.0.16
+
 ## 0.0.15
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.16
+
+### Patch Changes
+
+- Update YARN version
+
 ## 0.0.15
 
 ### Patch Changes
