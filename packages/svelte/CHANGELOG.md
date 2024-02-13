@@ -1,5 +1,13 @@
 # @teiler/svelte
 
+## 0.0.17
+
+### Patch Changes
+
+- Fix typing of `ThemeProvider.svelte`
+- Updated dependencies
+  - @teiler/core@0.0.17
+
 ## 0.0.16
 
 ### Patch Changes

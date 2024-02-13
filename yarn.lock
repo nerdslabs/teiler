@@ -5309,7 +5309,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@teiler/core@npm:0.0.16, @teiler/core@workspace:packages/core":
+"@teiler/core@npm:0.0.17, @teiler/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@teiler/core@workspace:packages/core"
   dependencies:
@@ -5348,7 +5348,7 @@ __metadata:
     "@storybook/svelte-vite": "npm:^7.6.12"
     "@storybook/testing-library": "npm:^0.2.2"
     "@sveltejs/vite-plugin-svelte": "npm:^3.0.2"
-    "@teiler/core": "npm:0.0.16"
+    "@teiler/core": "npm:0.0.17"
     esbuild: "npm:^0.20.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
