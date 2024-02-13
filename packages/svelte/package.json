@@ -12,8 +12,7 @@
     ".": {
       "import": "./dist/teiler-svelte.esm.js",
       "require": "./dist/teiler-svelte.cjs.ts"
-    },
-    "./ThemeProvider.svelte": "./src/ThemeProvider.svelte"
+    }
   },
   "scripts": {
     "build": "rollup --config --bundleConfigAsCjs",
