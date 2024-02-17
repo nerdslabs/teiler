@@ -12,7 +12,7 @@
 
   const theme: DefaultTheme = getContext(context)
 
-  const className = insert(sheet, styleDefinition, { ...$$restProps, theme })
+  $: className = insert(sheet, styleDefinition, { ...$$restProps, theme })
 
   $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== '_')
   $: filtredProps = Object.fromEntries(filtredPropsEntries)
