@@ -1,9 +1,9 @@
 import type { Sheet } from './sheet'
 import type { HTMLElements } from './tags'
+import type { Pattern } from './pattern'
 
 import hash from './hash'
 import { compile, transpile } from './css'
-import { Pattern } from './pattern'
 
 type DefaultTheme = { [key: string]: string | boolean }
 

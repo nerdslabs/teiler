@@ -11,7 +11,8 @@
   "exports": {
     ".": {
       "import": "./dist/teiler-svelte.esm.js",
-      "require": "./dist/teiler-svelte.cjs.ts"
+      "require": "./dist/teiler-svelte.cjs.ts",
+      "types": "./dist/teiler-svelte.d.ts"
     }
   },
   "scripts": {

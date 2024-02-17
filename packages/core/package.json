@@ -12,7 +12,8 @@
   "exports": {
     ".": {
       "import": "./dist/teiler-core.esm.js",
-      "require": "./dist/teiler-core.cjs.ts"
+      "require": "./dist/teiler-core.cjs.ts",
+      "types": "./dist/teiler-core.d.ts"
     },
     "./package.json": "./package.json"
   },
