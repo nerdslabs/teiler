@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.18
+
+### Patch Changes
+
+- Add typing to package.json exports
+
 ## 0.0.17
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @teiler/svelte
 
+## 0.0.18
+
+### Patch Changes
+
+- Make Theme reactive
+- Make `className` reactive in Svelte Styled component
+- Add typing to package.json exports
+- Updated dependencies
+  - @teiler/core@0.0.18
+
 ## 0.0.17
 
 ### Patch Changes
