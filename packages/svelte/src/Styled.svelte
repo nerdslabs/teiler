@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { DefaultTheme, HTMLElements, Sheet, StyleDefinition } from '@teiler/core'
-  import { insert } from '@teiler/core'
+  import type { Writable } from 'svelte/store'
 
+  import { insert } from '@teiler/core'
   import { getStyleSheet } from './sheet'
   import { getContext } from 'svelte'
   import { context } from './ThemeProvider.svelte'
@@ -10,9 +11,9 @@
 
   const sheet: Sheet = getStyleSheet()
 
-  const theme: DefaultTheme = getContext(context)
+  const theme: Writable<DefaultTheme> = getContext(context)
 
-  $: className = insert(sheet, styleDefinition, { ...$$restProps, theme })
+  $: className = insert(sheet, styleDefinition, { ...$$restProps, theme: $theme })
 
   $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== '_')
   $: filtredProps = Object.fromEntries(filtredPropsEntries)
