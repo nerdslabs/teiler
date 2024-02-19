@@ -13,16 +13,18 @@
 
   const theme: Writable<DefaultTheme> = getContext(context)
 
-  $: className = insert(sheet, styleDefinition, { ...$$restProps, theme: $theme })
+  $: styleClassName = insert(sheet, styleDefinition, { ...$$restProps, theme: $theme })
 
-  $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== '_')
+  $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== '_' && key !== 'class')
   $: filtredProps = Object.fromEntries(filtredPropsEntries)
+
+  $: className = $$restProps.class ? `${styleClassName} ${styleDefinition.id} ${$$restProps.class}` : `${styleClassName} ${styleDefinition.id}`
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <svelte:element
   this={styleDefinition.tag}
-  class={className + ' ' + styleDefinition.id}
+  class={className}
   {...filtredProps}
   on:copy
   on:cut
