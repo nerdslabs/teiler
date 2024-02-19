@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.19
+
+### Patch Changes
+
+- Support for `class` attribute
+
 ## 0.0.18
 
 ### Patch Changes

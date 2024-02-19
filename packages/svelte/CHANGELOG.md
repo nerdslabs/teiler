@@ -1,5 +1,13 @@
 # @teiler/svelte
 
+## 0.0.19
+
+### Patch Changes
+
+- Support for `class` attribute
+- Updated dependencies
+  - @teiler/core@0.0.19
+
 ## 0.0.18
 
 ### Patch Changes
