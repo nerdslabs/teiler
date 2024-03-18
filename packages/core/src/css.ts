@@ -29,7 +29,8 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
               } else {
                 const exec = property(props)
                 if (typeof exec === 'object' && '__css__' in exec) {
-                  const { css: style } = compile<Props>(exec.styles, props)
+                  const { css: style, definitions: definitions } = compile<Props>(exec.styles, props)
+                  result.definitions = [...result.definitions, ...definitions]
                   value = style
                 } else {
                   if (typeof exec === 'string' && exec.includes('[object Object]')) {
