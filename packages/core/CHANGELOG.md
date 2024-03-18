@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.20
+
+### Patch Changes
+
+- Fix missing definitions from `css` function compile
+
 ## 0.0.19
 
 ### Patch Changes

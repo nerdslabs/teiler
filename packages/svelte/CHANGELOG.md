@@ -1,5 +1,13 @@
 # @teiler/svelte
 
+## 0.0.20
+
+### Patch Changes
+
+- Fix missing definitions from `css` function compile
+- Updated dependencies
+  - @teiler/core@0.0.20
+
 ## 0.0.19
 
 ### Patch Changes
