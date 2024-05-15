@@ -6,16 +6,16 @@ import hash from './hash'
 
 type PropertiesWithPattern<Props> = Properties<Props> | Pattern<HTMLElements, Props>
 
-type Pattern<Target extends HTMLElements, Props> = {
+type Pattern<Target extends HTMLElements | null, Props> = {
   styles: Style<Props>[]
   tag: Target
   id: string
   __pattern__: true
 }
 
-type ExtendCallback<Target extends HTMLElements, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => Pattern<Target, Infer<Component, Props>>
+type ExtendCallback<Target extends HTMLElements | null, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => Pattern<Target, Infer<Component, Props>>
 
-type Constructor<Target extends HTMLElements> = {
+type Constructor<Target extends HTMLElements | null> = {
   <Props>(pattern: Pattern<Target, Props>): ExtendCallback<Target, Props>
   <Props>(string: ReadonlyArray<string>, ...properties: PropertiesWithPattern<Props>[]): Pattern<Target, Props>
 }

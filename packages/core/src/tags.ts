@@ -135,4 +135,4 @@ const elements = [
 ] as const
 
 export default new Set(elements)
-export type HTMLElements = (typeof elements)[number] | null
+export type HTMLElements = (typeof elements)[number]

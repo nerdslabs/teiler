@@ -17,7 +17,7 @@ type Raw = string | number
 type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | Pattern<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
 type Style<Props> = [string[], Properties<Props>[]]
 
-type StyleDefinition<Target extends HTMLElements, Props> = {
+type StyleDefinition<Target extends HTMLElements | null, Props> = {
   type: 'component' | 'global' | 'keyframes'
   id: string
   styles: Array<Style<Props>>
@@ -53,7 +53,7 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   }
 }
 
-type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>) => StyleDefinition<Target, Props>
+type Compiler = <Target extends HTMLElements | null, Props>(tag: Target, styles: Array<Style<Props>>) => StyleDefinition<Target, Props>
 
 const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
