@@ -21,24 +21,22 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
 
           if (property) {
             let value = null
-            if (typeof property === 'function') {
-              if ('styleDefinition' in property) {
-                const styleDefinition = property.styleDefinition as StyleDefinition<HTMLElements, Props>
-                result.definitions = [...result.definitions, styleDefinition]
-                value = '.' + styleDefinition.id
+            if ((typeof property === 'object' || typeof property === 'function') && 'styleDefinition' in property) {
+              const styleDefinition = property.styleDefinition as StyleDefinition<HTMLElements, Props>
+              result.definitions = [...result.definitions, styleDefinition]
+              value = '.' + styleDefinition.id
+            } else if (typeof property === 'function') {
+              const exec = property(props)
+              if (typeof exec === 'object' && '__css__' in exec) {
+                const { css: style, definitions: definitions } = compile<Props>(exec.styles, props)
+                result.definitions = [...result.definitions, ...definitions]
+                value = style
               } else {
-                const exec = property(props)
-                if (typeof exec === 'object' && '__css__' in exec) {
-                  const { css: style, definitions: definitions } = compile<Props>(exec.styles, props)
-                  result.definitions = [...result.definitions, ...definitions]
-                  value = style
-                } else {
-                  if (typeof exec === 'string' && exec.includes('[object Object]')) {
-                    console.error('[teiler]', `If you trying to use nested component/pattern selector inside function use function \`css\`, sample: \n\${({ someProperty }) => css\`\${NastedComponent} {...}\`}`)
-                  }
-
-                  value = exec
+                if (typeof exec === 'string' && exec.includes('[object Object]')) {
+                  console.error('[teiler]', `If you trying to use nested component/pattern selector inside function use function \`css\`, sample: \n\${({ someProperty }) => css\`\${NastedComponent} {...}\`}`)
                 }
+
+                value = exec
               }
             } else if (typeof property === 'object' && '__pattern__' in property) {
               const pattern = property as Pattern<HTMLElements, Props>
