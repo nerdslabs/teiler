@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Button, ExtendedButton} from './palette'
 
-  // import teiler from '@teiler/svelte'
   import { createEventDispatcher } from 'svelte'
 
   export let _primary = false
