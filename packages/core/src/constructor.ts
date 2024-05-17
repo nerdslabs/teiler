@@ -8,7 +8,7 @@ import { compile, transpile } from './css'
 type DefaultTheme = { [key: string]: string | boolean }
 
 type Arguments<Props> = {
-  theme?: DefaultTheme
+  theme: DefaultTheme
 } & Props
 
 type CSS = { styles: Style<unknown>[]; id: string; __css__: true }
