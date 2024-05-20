@@ -1,4 +1,4 @@
-import type { CustomTheme } from "./Theme.svelte";
+import type { CustomTheme } from "./customTheme";
 
 declare module '@teiler/core' {
   export interface DefaultTheme extends CustomTheme {}

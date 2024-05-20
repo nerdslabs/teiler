@@ -21,8 +21,9 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "skipLibCheck": true
   },
+  "composite": true,
   "compileOnSave": false,
 }

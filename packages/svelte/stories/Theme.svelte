@@ -1,9 +1,6 @@
-<script context="module" lang="ts">
-  export type CustomTheme = {
-    fontColor: string,
-  }
-</script>
 <script lang="ts">
+  import type { CustomTheme } from './customTheme'
+
   import ThemeProvider from '../src/ThemeProvider.svelte'
   import { Component } from './theme'
 
