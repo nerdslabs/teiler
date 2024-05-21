@@ -67,7 +67,7 @@ const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefini
   return {
     styleDefinition: styles,
     render() {
-      const className = insert(sheet, styles, {})
+      const className = insert(sheet, styles, { theme: {} })
 
       if (className) {
         return `<${styles.tag} class="${className}">component</${styles.tag}>`

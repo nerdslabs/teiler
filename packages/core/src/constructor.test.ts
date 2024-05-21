@@ -188,7 +188,7 @@ describe('insert', () => {
       type: 'component',
     }
 
-    const props = {}
+    const props = { theme: {} }
 
     const result = insert(sheet, definition, props)
 
@@ -209,7 +209,7 @@ describe('insert', () => {
       type: 'keyframes',
     }
 
-    const props = {}
+    const props = { theme: {} }
 
     const result = insert(sheet, definition, props)
 
@@ -230,7 +230,7 @@ describe('insert', () => {
       type: 'global',
     }
 
-    const props = {}
+    const props = { theme: {} }
 
     const result = insert(sheet, definition, props)
 

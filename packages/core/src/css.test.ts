@@ -26,7 +26,7 @@ describe('transpile', () => {
 describe('compile', () => {
   test('without props', () => {
     const style: Style<{}> = [['color: blue;'], []]
-    const compiled = compile<{}>([style], {})
+    const compiled = compile<{}>([style], { theme: {} })
 
     expect(compiled).toEqual({ css: 'color: blue;', definitions: [] })
   })
@@ -35,7 +35,7 @@ describe('compile', () => {
     type Props = { color: string }
 
     const style: Style<Props> = [['color: ', ';'], [({ color }) => color]]
-    const compiled = compile<Props>([style], { color: 'red' })
+    const compiled = compile<Props>([style], { color: 'red', theme: {} })
 
     expect(compiled).toEqual({ css: 'color: red;', definitions: [] })
   })
@@ -54,7 +54,7 @@ describe('compile', () => {
     }
 
     const style: Style<{}> = [['animation: ', ' 5s;'], [keyframes]]
-    const compiled = compile<{}>([style], {})
+    const compiled = compile<{}>([style], { theme: {} })
 
     expect(compiled).toEqual({
       css: 'animation: teiler-1vxhd59 5s;',
@@ -73,7 +73,7 @@ describe('compile', () => {
     }
 
     const style: Style<{}> = [['& ', ' { color: blue; }'], [component]]
-    const compiled = compile<{}>([style], {})
+    const compiled = compile<{}>([style], { theme: {} })
 
     expect(compiled).toEqual({
       css: '& .twq229y { color: blue; }',
@@ -83,7 +83,7 @@ describe('compile', () => {
 
   test('with function', () => {
     const style: Style<{}> = [['color: ', ';'], [() => 'blue']]
-    const compiled = compile<{}>([style], {})
+    const compiled = compile<{}>([style], { theme: {} })
 
     expect(compiled).toEqual({
       css: 'color: blue;',
@@ -97,7 +97,7 @@ describe('compile', () => {
     const fn = () => `${{}} { background: yellow; }`
 
     const style: Style<{}> = [['color: red;', ''], [fn]]
-    const compiled = compile<{}>([style], {})
+    const compiled = compile<{}>([style], { theme: {} })
 
     expect(compiled).toEqual({
       css: 'color: red;[object Object] { background: yellow; }',
@@ -118,7 +118,7 @@ describe('compile', () => {
     }
 
     const style: Style<{}> = [['& ', ' { color: blue; }'], [pattern]]
-    const compiled = compile<{}>([style], {})
+    const compiled = compile<{}>([style], { theme: {} })
 
     expect(compiled).toEqual({
       css: '& .twq229y { color: blue; }',
@@ -134,7 +134,7 @@ describe('compile', () => {
     }
 
     const style: Style<{}> = [['color: #fff; '], [() => css]]
-    const compiled = compile<{}>([style], {})
+    const compiled = compile<{}>([style], { theme: {} })
 
     expect(compiled).toEqual({
       css: 'color: #fff; background: red;',
