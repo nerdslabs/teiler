@@ -22,7 +22,10 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@teiler/core": ["../core/src"]
+    }
   },
   "composite": true,
   "compileOnSave": false,

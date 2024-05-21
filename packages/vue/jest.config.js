@@ -3,7 +3,7 @@ export default {
     '^.+\\.tsx?$': [
       'ts-jest',
       {
-        tsconfig: 'tsconfig.json',
+        tsconfig: '<rootDir>/packages/vue/tsconfig.json',
       },
     ],
   },
@@ -18,7 +18,7 @@ export default {
   rootDir: '../..',
   testMatch: ['<rootDir>/packages/vue/**/*.test.ts'],
   moduleNameMapper: {
-    '^@teiler\\/(.*)$': '<rootDir>/packages/$1',
+    '^@teiler/(.*)$': '<rootDir>/packages/$1/src',
   },
   coverageThreshold: {
     global: {

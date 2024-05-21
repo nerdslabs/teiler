@@ -4,7 +4,7 @@ export default {
       'ts-jest',
       {
         useESM: true,
-        tsconfig: 'tsconfig.json',
+        tsconfig: '<rootDir>/packages/svelte/tsconfig.json',
       },
     ],
     '^.+\\.svelte$': [
@@ -27,7 +27,7 @@ export default {
   rootDir: '../..',
   testMatch: ['<rootDir>/packages/svelte/**/*.test.ts'],
   moduleNameMapper: {
-    '^@teiler\\/(.*)$': '<rootDir>/packages/$1',
+    '^@teiler/(.*)$': '<rootDir>/packages/$1/src',
   },
   coverageThreshold: {
     global: {
