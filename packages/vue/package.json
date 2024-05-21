@@ -1,6 +1,6 @@
 {
   "name": "@teiler/vue",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "github:nerdslabs/teiler"
@@ -24,7 +24,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@teiler/core": "0.0.21"
+    "@teiler/core": "0.0.22"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.3.4",

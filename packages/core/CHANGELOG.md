@@ -1,5 +1,15 @@
 # @teiler/core
 
+## 0.0.22
+
+### Patch Changes
+
+- Make `theme` in `Arguments` optional
+
+- Fix `compile` function when property is object
+
+- Fix typings
+
 ## 0.0.21
 
 ### Patch Changes

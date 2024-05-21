@@ -6,5 +6,9 @@ module.exports = {
       title: 'Svelte',
       url: 'http://localhost:6006',
     },
+    vue: {
+      title: 'Vue',
+      url: 'http://localhost:6007',
+    },
   },
 }

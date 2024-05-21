@@ -4,9 +4,18 @@
 
 **Teiler** is an open source library that simplifies the creation of stylish components for various frameworks.
 
-Currently in the **alpha phase**, the library is actively being developed and improved. It currently provides support solely for Svelte CSR (Client-Side Rendering).
+Currently in the **alpha phase**, the library is actively being developed and improved.
 
 Join our community on our [Discord Server](https://discord.gg/J6Sv9sQ64t) to stay informed about the latest developments, exchange ideas, and connect with fellow developers. We are continuously working on expanding our support to include more frameworks, allowing developers to effortlessly create components across various environments. 
+
+## Features
+
+- 🧰 **Multiple** frameworks support
+- 🪡 **Patterns system** for UI libraries
+- 🚉 **Server-Side Rendering** (SSR)*
+- ⚡ **Babel** not required
+
+\* Not all frameworks, more details [here](#frameworks)
 
 ### Example
 
@@ -37,92 +46,16 @@ const Button = component.button<{
 
 These are the frameworks we are currently working on and planning to support in the future.
 
-| Framework     | CSR   | SSR  |
-| :---          | :---- | :--- |
-| Svelte        | ✓     | ✕    |
-| React         | ✕     | ✕    |
-| VueJS         | ✕     | ✕    |
-| SolidJS       | ✕     | ✕    |
+| Framework     | CSR   | SSR  | More details |
+| :---          | :---- | :--- | :----------- |
+| Svelte v4     | ✓     | ✕    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/svelte/README.md) |
+| VueJS         | ✓     | ✓    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/vue/README.md) |
+| SolidJS       | ✕     | ✕    | ---          |
+| React         | ✕     | ✕    | ---          |
 
-*CSR - Client Side Rendering*\
-*SSR - Server Side Rendering*
-
-## Keyframes
-
-```typescript
-import { component, keyframes } from '@teiler/svelte'
-
-const bouncing = keyframes`
-  from, 20%, 53%, 80%, to {
-    transform: translate3d(0,0,0);
-  }
-
-  40%, 43% {
-    transform: translate3d(0, -40px, 0);
-  }
-
-  70% {
-    transform: translate3d(0, -15px, 0);
-  }
-
-  90% {
-    transform: translate3d(0,-4px,0);
-  }
-`
-
-const Button = component.button<{}>`
-  animation: ${bouncing} 1s ease infinite;
-  display: inline-block;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  line-height: 1.5rem;
-  background: transparent;
-  box-shadow: 0 0 0 3px #CBCBCB inset;
-`
-```
-
-## Theme
-
-Example how to use themes.
-
-```typescript
-// Main component inside application (`App.svelte`)
-<script context="module" lang="ts">
-  export type CustomTheme = {
-    fontColor: string,
-  }
-</script>
-<script lang="ts">
-  import ThemeProvider from '../src/ThemeProvider.svelte'
-  import { Component } from './theme'
-
-  export let theme: CustomTheme = {
-    fontColor: 'red',
-  }
-</script>
-
-<ThemeProvider {theme}>
-  <Component>Some test text</Component>
-</ThemeProvider>
-
-// Component with theme usage
-import { component } from '@teiler/svelte'
-
-const Component = component.div`
-  color: ${({ theme }) => theme.fontColor};
-`
-
-export { Component }
-```
-
-To add typing for Typescript applications you need to add `extend` inside declaration file (`d.ts`)
-```typescript
-import type { CustomTheme } from "./App.svelte";
-
-declare module '@teiler/core' {
-  export interface DefaultTheme extends CustomTheme {}
-}
-```
+> [!NOTE]
+> CSR - Client Side Rendering*\
+> SSR - Server Side Rendering*
 
 ## Sew a Pattern
 
@@ -148,7 +81,7 @@ export default ButtonPattern
 // Usage of Pattern
 import { ButtonPattern } from 'some-uikit-library'
 import { sew } from '@teiler/core'
-import { createComponent } from '@teiler/svelte'
+import { createComponent } from '@teiler/framework'
 
 const Button = sew(ButtonPattern, createComponent)
 
