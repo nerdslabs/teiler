@@ -1,0 +1,28 @@
+{
+  "include": [
+    "src/**/*",
+    "stories/stories.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "target": "es6",
+    "lib": [
+      "esnext",
+      "DOM"
+    ],
+    "module": "esNext",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "strict": false,
+    "strictPropertyInitialization": false,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": false,
+    "skipLibCheck": true
+  },
+  "compileOnSave": false,
+}
