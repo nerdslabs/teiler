@@ -10,6 +10,8 @@
     "lint": "eslint packages/*/src",
     "check-format": "prettier -c packages/**/src/*",
     "dev": "turbo run dev",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
     "storybook": "storybook dev -p 6005",
     "storybook-packages": "turbo run storybook",
     "wait": "wait-on tcp:6006 && wait-on tcp:6007"
