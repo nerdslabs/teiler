@@ -20,7 +20,7 @@ Join our community on our [Discord Server](https://discord.gg/J6Sv9sQ64t) to sta
 ### Example
 
 ```typescript
-import { component } from '@teiler/svelte'
+import { component } from '@teiler/framework'
 
 const Button = component.button<{
   _primary: boolean
@@ -94,3 +94,4 @@ export default Button
 | :---          | :------ | :---- |
 | Core          | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fcore) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fcore) |
 | Svelte        | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fsvelte) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fsvelte) |
+| Vue           | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fvue) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fvue) |

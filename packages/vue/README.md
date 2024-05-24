@@ -113,6 +113,49 @@ declare module '@teiler/core' {
 }
 ```
 
+## SSR
+
+To generate all styles at Server Side Rendering, you need to provide the style sheet before the app renders and dump all styles at the end. The `dump` method generates only the CSS used during rendering.
+
+```ts
+// provide:
+import { createStyleSheet } from "@teiler/core"
+const styleSheet = createStyleSheet({})
+
+provide('STYLE_SHEET', styleSheet)
+
+// dump:
+styleSheet.dump()
+```
+
+### NuxtJS
+
+To use it in NuxtJS you need to create a plugin:
+
+```ts
+import { createStyleSheet } from "@teiler/core"
+
+export default defineNuxtPlugin({
+  name: "teiler",
+  enforce: "pre",
+  async setup(nuxtApp) {
+    const styleSheet = createStyleSheet({})
+    nuxtApp.vueApp.provide('styleSheet', styleSheet)
+
+    if (process.server) {
+      useHead(() => {
+        return ({
+          style: [{ children: styleSheet.dump(), type: 'text/css', 'data-teiler': true }],
+        })
+      })
+    }
+  },
+  env: {
+    islands: true,
+  },
+});
+```
+
 ## Sew a Pattern
 
 This tool simplifies the creation of consistent and reusable visual styles for components across various web frameworks. It provides a pattern-based approach, where patterns serve as blueprints for defining the visual style of components.
