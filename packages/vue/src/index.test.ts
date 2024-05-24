@@ -23,7 +23,7 @@ describe('createComponent', () => {
       global: {
         provide: {
           THEME: {},
-          styleSheet: styleSheet,
+          STYLE_SHEET: styleSheet,
         },
       },
     })
@@ -77,7 +77,7 @@ describe('component', () => {
       global: {
         provide: {
           THEME: {},
-          styleSheet: styleSheet,
+          STYLE_SHEET: styleSheet,
         },
       },
     })
@@ -108,7 +108,7 @@ describe('component', () => {
           THEME: {
             fontColor: 'green',
           },
-          styleSheet: styleSheet,
+          STYLE_SHEET: styleSheet,
         },
       },
     })
@@ -140,7 +140,7 @@ describe('component', () => {
       global: {
         provide: {
           THEME: {},
-          styleSheet: styleSheet,
+          STYLE_SHEET: styleSheet,
         },
       },
     })
@@ -171,7 +171,7 @@ describe('global', () => {
       global: {
         provide: {
           THEME: {},
-          styleSheet: styleSheet,
+          STYLE_SHEET: styleSheet,
         },
       },
     })
@@ -202,7 +202,7 @@ describe('global', () => {
           THEME: {
             fontColor: 'green',
           },
-          styleSheet: styleSheet,
+          STYLE_SHEET: styleSheet,
         },
       },
     })
@@ -233,7 +233,7 @@ describe('global', () => {
         global: {
           provide: {
             THEME: {},
-            styleSheet: styleSheet,
+            STYLE_SHEET: styleSheet,
           },
         },
       })
@@ -268,7 +268,7 @@ describe('ThemeProvider', () => {
       },
       global: {
         provide: {
-          styleSheet: styleSheet,
+          STYLE_SHEET: styleSheet,
         },
       },
     })
@@ -289,7 +289,7 @@ describe('ThemeProvider', () => {
     const wrapper = mount(layout, {
       global: {
         provide: {
-          styleSheet: styleSheet,
+          STYLE_SHEET: styleSheet,
         },
       },
     })
