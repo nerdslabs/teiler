@@ -12,9 +12,9 @@ export default function <Target extends HTMLElements, Props>(styleDefinition: St
       const slots = this.$slots
       const attrs = toRaw(this.$attrs)
 
-      const styleSheet = inject<Sheet>('styleSheet', () => createStyleSheet({}), true)
+      const styleSheet = inject<Sheet>('STYLE_SHEET', () => createStyleSheet({}), true)
 
-      const theme = toRaw(toValue(inject(context)))
+      const theme = toRaw(toValue(inject(context, {})))
 
       const styleClassName = insert(styleSheet, styleDefinition, { ...attrs, theme })
 
