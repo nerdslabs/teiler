@@ -1,10 +1,11 @@
 import type { Compiler, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
-import { type DefineComponent } from 'vue'
+import type { DefineComponent, HTMLAttributes } from 'vue'
+
 import Styled from './Styled'
 
 import { component, global, keyframes, styled, tags } from '@teiler/core'
 
-type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<{}, {}, {}, {}, {}>
+type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<Props & HTMLAttributes, {}, {}, {}, {}>
 
 const createComponent = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): VueTeilerComponent<Target, Props> => {
   const component = Styled(styleDefinition)
