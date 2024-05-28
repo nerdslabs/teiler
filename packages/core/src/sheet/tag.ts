@@ -3,6 +3,7 @@ type Tag = {
   deleteRule(key: string): void
   getRule(key: string): string
   getAllRules(): string
+  getAllKeys(): string[]
   [k: string]: unknown
 }
 
@@ -34,6 +35,9 @@ export function createServerTag(): Tag {
     getAllRules: function (): string {
       return Object.values(rules).join(' ')
     },
+    getAllKeys: function (): string[] {
+      return Object.keys(rules)
+    },
   }
 }
 
@@ -59,6 +63,9 @@ export function createBrowserTag(container?: HTMLElement): Tag {
     },
     getAllRules: function (): string {
       return Array.from(inserted.values()).reduce((string, node) => string + ' ' + node.textContent, '')
+    },
+    getAllKeys: function (): string[] {
+      return Array.from(inserted.keys())
     },
   }
 }

@@ -179,6 +179,8 @@ describe('insert', () => {
     const sheet = {
       insert: jest.fn(),
       dump: jest.fn<() => string>(),
+      extract: jest.fn<() => { css: string; ids: string[] }>(),
+      hydrate: jest.fn<(ids: string[]) => void>(),
     }
 
     const definition: StyleDefinition<'div', {}> = {
@@ -200,6 +202,8 @@ describe('insert', () => {
     const sheet = {
       insert: jest.fn(),
       dump: jest.fn<() => string>(),
+      extract: jest.fn<() => { css: string; ids: string[] }>(),
+      hydrate: jest.fn<(ids: string[]) => void>(),
     }
 
     const definition: StyleDefinition<'div', {}> = {
@@ -221,6 +225,8 @@ describe('insert', () => {
     const sheet = {
       insert: jest.fn(),
       dump: jest.fn<() => string>(),
+      extract: jest.fn<() => { css: string; ids: string[] }>(),
+      hydrate: jest.fn<(ids: string[]) => void>(),
     }
 
     const definition: StyleDefinition<'div', {}> = {

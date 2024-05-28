@@ -32,3 +32,22 @@ describe('createStyleSheet SSR', () => {
     expect(sheet.dump()).toContain('my-rule { color: red }')
   })
 })
+
+describe('extract', () => {
+  test('should extract the CSS and IDs from the stylesheet', () => {
+    const sheet = createStyleSheet({})
+    sheet.insert('my-rule', 'my-rule { color: red }')
+    const { css, ids } = sheet.extract()
+    expect(css).toContain('my-rule { color: red }')
+    expect(ids).toContain('my-rule')
+  })
+})
+
+describe('hydrate', () => {
+  test('should fill the cache with the provided IDs', () => {
+    const sheet = createStyleSheet({})
+    sheet.hydrate(['my-rule'])
+    sheet.insert('my-rule', 'my-rule { color: red }')
+    expect(sheet.dump()).toContain('')
+  })
+})

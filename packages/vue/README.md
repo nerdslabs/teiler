@@ -140,7 +140,7 @@ export default defineNuxtPlugin({
   enforce: "pre",
   async setup(nuxtApp) {
     const styleSheet = createStyleSheet({})
-    nuxtApp.vueApp.provide('styleSheet', styleSheet)
+    nuxtApp.vueApp.provide('STYLE_SHEET', styleSheet)
 
     if (process.server) {
       useHead(() => {
@@ -154,6 +154,43 @@ export default defineNuxtPlugin({
     islands: true,
   },
 });
+```
+
+## Hydration
+
+This method allows you to pre-fill the cache with specific style IDs, optimizing performance by avoiding redundant insertions. Here's how you can use it with **NuxtJS**:
+
+```ts
+import { createStyleSheet } from "@teiler/core"
+
+export default defineNuxtPlugin({
+  name: "teiler",
+  enforce: "pre",
+  async setup(nuxtApp) {
+    const styleSheet = createStyleSheet({})
+    nuxtApp.vueApp.provide('STYLE_SHEET', styleSheet)
+
+    if (process.server) {
+      useHead(() => {
+        const { css, ids } = styleSheet.extract()
+
+        return ({
+          style: [{ children: css, type: 'text/css', 'data-teiler': ids.join(' ')}],
+        })
+      })
+    } else {
+      const element = document.querySelector('style[data-teiler]')
+      if (element) {
+        const ids = element.getAttribute('data-teiler')?.split(' ') || []
+        styleSheet.hydrate(ids)
+      }
+    }
+  },
+  env: {
+    islands: true,
+  },
+});
+
 ```
 
 ## Sew a Pattern
