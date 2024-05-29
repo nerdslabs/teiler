@@ -24,7 +24,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@teiler/core": "0.0.22",
+    "@teiler/core": "0.0.23",
     "svelte": "^4.2.10"
   },
   "devDependencies": {

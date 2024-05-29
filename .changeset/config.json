@@ -7,6 +7,6 @@
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
-  "bumpVersionsWithWorkspaceProtocolOnly": true,
+  "bumpVersionsWithWorkspaceProtocolOnly": false,
   "ignore": []
 }
