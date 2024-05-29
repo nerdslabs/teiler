@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.23
+
+### Patch Changes
+
+- [`2416abd`](https://github.com/nerdslabs/teiler/commit/2416abd6e7c91ca77c4d27f3541588eadd795dd4) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Add `hydrate` method to style sheet
+
 ## 0.0.22
 
 ### Patch Changes
