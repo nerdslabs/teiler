@@ -1,15 +1,15 @@
 import { type Sheet, createStyleSheet } from '@teiler/core'
-import { getContext } from 'svelte'
+import { inject } from 'vue'
 
 export let styleSheet = null
 
 export const StyleSheet = 'STYLE_SHEET'
 
 export function getStyleSheet(): Sheet {
-  const fromContext = getContext<Sheet>(StyleSheet)
+  const provided = inject<Sheet>('STYLE_SHEET', () => createStyleSheet({}), true)
 
-  if (fromContext) {
-    return fromContext
+  if (provided) {
+    return provided
   }
 
   if (styleSheet === null) {

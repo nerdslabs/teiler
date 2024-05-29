@@ -1,8 +1,9 @@
 import type { HTMLElements, Sheet, StyleDefinition } from '@teiler/core'
 
-import { createStyleSheet, insert } from '@teiler/core'
+import { insert } from '@teiler/core'
 import { defineComponent, h, inject, toRaw, toValue } from 'vue'
 import { context } from './ThemeProvider'
+import { getStyleSheet } from './sheet'
 
 export default function <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>) {
   const component = defineComponent({
@@ -12,7 +13,7 @@ export default function <Target extends HTMLElements, Props>(styleDefinition: St
       const slots = this.$slots
       const attrs = toRaw(this.$attrs)
 
-      const styleSheet = inject<Sheet>('STYLE_SHEET', () => createStyleSheet({}), true)
+      const styleSheet: Sheet = getStyleSheet()
 
       const theme = toRaw(toValue(inject(context, {})))
 
