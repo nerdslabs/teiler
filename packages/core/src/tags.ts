@@ -10,7 +10,6 @@ const elements = [
   'base',
   'bdi',
   'bdo',
-  'big',
   'blockquote',
   'body',
   'br',
@@ -63,7 +62,6 @@ const elements = [
   'map',
   'mark',
   'menu',
-  'menuitem',
   'meta',
   'meter',
   'nav',
@@ -131,7 +129,6 @@ const elements = [
   'stop',
   'svg',
   'text',
-  'tspan',
 ] as const
 
 export default new Set(elements)
