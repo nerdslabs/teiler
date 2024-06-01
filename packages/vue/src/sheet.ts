@@ -6,7 +6,7 @@ export let styleSheet = null
 export const StyleSheet = 'STYLE_SHEET'
 
 export function getStyleSheet(): Sheet {
-  const provided = inject<Sheet>('STYLE_SHEET', () => createStyleSheet({}), true)
+  const provided = inject<Sheet>('STYLE_SHEET', () => null, true)
 
   if (provided) {
     return provided
