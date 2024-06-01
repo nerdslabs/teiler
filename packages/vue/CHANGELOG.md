@@ -1,5 +1,13 @@
 # @teiler/vue
 
+## 0.0.4
+
+### Patch Changes
+
+- [`585e821`](https://github.com/nerdslabs/teiler/commit/585e8212fb961bf20919de90bea9653155c2ebd8) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Fix `inject` issue in styled component
+
+- [`83c608c`](https://github.com/nerdslabs/teiler/commit/83c608c5dafe0ba99562a0b9752197518c301de2) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Fix style sheet default value
+
 ## 0.0.3
 
 ### Patch Changes
