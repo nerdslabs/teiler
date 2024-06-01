@@ -1,12 +1,13 @@
 import type { Compiler, DefaultTheme, HTMLElements, Properties, Sheet, StyleDefinition, TeilerComponent } from '@teiler/core'
-import type { DefineComponent, HTMLAttributes } from 'vue'
+import type { DefineComponent, IntrinsicElementAttributes } from 'vue'
 
 import Styled from './Styled'
 
 import { component, global, keyframes, styled, tags } from '@teiler/core'
 
+type Attributes<Target extends HTMLElements> = Pick<IntrinsicElementAttributes, Target>[Target]
 type VueRawBindings = { styleSheet: Sheet; theme: DefaultTheme }
-type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<Props & HTMLAttributes, VueRawBindings, {}, {}, {}>
+type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<Props & Attributes<Target>, VueRawBindings, {}, {}, {}>
 
 const createComponent = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): VueTeilerComponent<Target, Props> => {
   const component = Styled(styleDefinition)
@@ -14,7 +15,7 @@ const createComponent = <Target extends HTMLElements, Props>(styleDefinition: St
 }
 
 type InferProps<Component, Props> = Component extends VueTeilerComponent<HTMLElements, infer P> ? P & Props : Props
-type InferComponent<Component, Props> = Component extends VueTeilerComponent<infer E, infer P> ? VueTeilerComponent<E, Props & P> : VueTeilerComponent<HTMLElements, Props>
+type InferComponent<Component, Props> = Component extends VueTeilerComponent<infer E extends HTMLElements, infer P> ? VueTeilerComponent<E, Props & P> : VueTeilerComponent<HTMLElements, Props>
 
 type Component<Target extends HTMLElements> = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueTeilerComponent<Target, Props>
