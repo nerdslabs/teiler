@@ -32,6 +32,7 @@ describe('createComponent', () => {
       inheritAttrs: false,
       styleDefinition: styleDefinition,
       render: expect.any(Function),
+      setup: expect.any(Function),
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-wq229y twq229y">Hello</div>')
@@ -60,6 +61,7 @@ describe('component', () => {
         type: 'component',
       },
       render: expect.any(Function),
+      setup: expect.any(Function),
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-1r77qux t1r77qux"></div>')
@@ -91,6 +93,7 @@ describe('component', () => {
         type: 'component',
       },
       render: expect.any(Function),
+      setup: expect.any(Function),
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-100tn2k t10upe3l"></div>')
@@ -122,6 +125,7 @@ describe('component', () => {
         type: 'component',
       },
       render: expect.any(Function),
+      setup: expect.any(Function),
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t10upe3l"></div>')
@@ -154,6 +158,7 @@ describe('component', () => {
         type: 'component',
       },
       render: expect.any(Function),
+      setup: expect.any(Function),
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t1dc5e1n custom-class"></div>')
@@ -185,6 +190,7 @@ describe('global', () => {
         type: 'global',
       },
       render: expect.any(Function),
+      setup: expect.any(Function),
     })
 
     expect(wrapper.html()).toBe('')
@@ -216,6 +222,7 @@ describe('global', () => {
         type: 'global',
       },
       render: expect.any(Function),
+      setup: expect.any(Function),
     })
 
     expect(wrapper.html()).toBe('')

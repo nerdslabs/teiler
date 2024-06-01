@@ -1,7 +1,7 @@
 import type { HTMLElements, Sheet, StyleDefinition } from '@teiler/core'
 
 import { insert } from '@teiler/core'
-import { defineComponent, h, inject, toRaw, toValue } from 'vue'
+import { defineComponent, h, inject, toRaw } from 'vue'
 import { context } from './ThemeProvider'
 import { getStyleSheet } from './sheet'
 
@@ -9,15 +9,17 @@ export default function <Target extends HTMLElements, Props>(styleDefinition: St
   const component = defineComponent({
     inheritAttrs: false,
     styleDefinition,
+    setup() {
+      const styleSheet: Sheet = getStyleSheet()
+      const theme = inject(context, {})
+
+      return { styleSheet, theme }
+    },
     render() {
       const slots = this.$slots
       const attrs = toRaw(this.$attrs)
 
-      const styleSheet: Sheet = getStyleSheet()
-
-      const theme = toRaw(toValue(inject(context, {})))
-
-      const styleClassName = insert(styleSheet, styleDefinition, { ...attrs, theme })
+      const styleClassName = insert(this.styleSheet, styleDefinition, { ...attrs, theme: this.theme })
 
       const filtredPropsEntries = Object.entries(attrs).filter(([key]) => key[0] !== '_' && key !== 'class')
       const filtredProps = Object.fromEntries(filtredPropsEntries)
