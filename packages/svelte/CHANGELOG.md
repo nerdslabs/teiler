@@ -1,5 +1,12 @@
 # @teiler/svelte
 
+## 0.0.24
+
+### Patch Changes
+
+- Updated dependencies [[`46272a7`](https://github.com/nerdslabs/teiler/commit/46272a7fe16ed077053ba75c2a2a299a77d55751)]:
+  - @teiler/core@0.0.24
+
 ## 0.0.23
 
 ### Patch Changes

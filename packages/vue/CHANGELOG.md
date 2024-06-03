@@ -1,5 +1,14 @@
 # @teiler/vue
 
+## 0.0.5
+
+### Patch Changes
+
+- [`8b9f3f7`](https://github.com/nerdslabs/teiler/commit/8b9f3f7958262b9bfa10aee5fc4fc846682a60e1) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Fix elements attributes per type
+
+- Updated dependencies [[`46272a7`](https://github.com/nerdslabs/teiler/commit/46272a7fe16ed077053ba75c2a2a299a77d55751)]:
+  - @teiler/core@0.0.24
+
 ## 0.0.4
 
 ### Patch Changes
