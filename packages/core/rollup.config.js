@@ -36,6 +36,9 @@ export default [
       },
     ],
     plugins: defaultPlugins,
+    watch: {
+      clearScreen: false
+    }
   },
   {
     input: 'src/index.ts',
@@ -44,5 +47,8 @@ export default [
       format: 'es',
     },
     plugins: [dts.default()],
+    watch: {
+      clearScreen: false
+    }
   },
 ]

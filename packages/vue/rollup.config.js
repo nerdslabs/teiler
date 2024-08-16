@@ -43,6 +43,9 @@ export default [
     ],
     plugins: [...defaultPlugins, terser()],
     external: ["vue"],
+    watch: {
+      clearScreen: false
+    }
   },
   {
     input: 'src/index.ts',
@@ -51,5 +54,8 @@ export default [
       format: 'es',
     },
     plugins: [...defaultPlugins, dts.default()],
+    watch: {
+      clearScreen: false
+    }
   },
 ]

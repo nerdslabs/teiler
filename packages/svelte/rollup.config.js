@@ -68,6 +68,9 @@ export default [
       },
     ],
     plugins: [...defaultPlugins, terser()],
+    watch: {
+      clearScreen: false
+    }
   },
   {
     input: 'src/index.ts',
@@ -76,5 +79,8 @@ export default [
       format: 'es',
     },
     plugins: [...defaultPlugins, dts.default()],
+    watch: {
+      clearScreen: false
+    }
   },
 ]
