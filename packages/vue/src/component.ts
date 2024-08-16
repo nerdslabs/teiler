@@ -1,13 +1,12 @@
 import type { Compiler, DefaultTheme, HTMLElements, Properties, Sheet, StyleDefinition, TeilerComponent } from '@teiler/core'
-import type { DefineComponent, IntrinsicElementAttributes } from 'vue'
+import type { ComponentOptionsMixin, DefineComponent, IntrinsicElementAttributes } from 'vue'
 
 import Styled from './Styled'
 
 import { component, global, keyframes, styled, tags } from '@teiler/core'
 
-type Attributes<Target extends HTMLElements> = Pick<IntrinsicElementAttributes, Target>[Target]
 type VueRawBindings = { styleSheet: Sheet; theme: DefaultTheme }
-type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<Props & Attributes<Target>, VueRawBindings, {}, {}, {}>
+type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<Props, VueRawBindings, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, IntrinsicElementAttributes[Target]>
 
 const createComponent = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): VueTeilerComponent<Target, Props> => {
   const component = Styled(styleDefinition)
