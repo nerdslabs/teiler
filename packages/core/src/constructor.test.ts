@@ -39,7 +39,7 @@ describe('styled', () => {
 
     const extend = styled('div', component, createComponent, existingComponent)
 
-    type Callable = Extract<typeof extend, Function>
+    type Callable = Extract<typeof extend, (array: string[]) => {}>
 
     const test = jest.fn(extend as Callable)
 

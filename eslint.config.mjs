@@ -15,7 +15,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['**/dist/*', '**/*.test.*'],
+    ignores: ['**/dist/*'],
   },
   ...compat.extends('eslint:recommended', 'plugin:@typescript-eslint/recommended'),
   {
@@ -24,10 +24,7 @@ export default [
     },
 
     languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        project: './packages/**/tsconfig.json',
-      }
+      parser: tsParser
     },
 
     rules: {
