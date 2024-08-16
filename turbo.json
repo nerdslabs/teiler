@@ -1,8 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": [
         "dist/**"
       ]
@@ -12,7 +14,7 @@
       "persistent": true
     },
     "test": {
-      "dependsOn": [],
+      "dependsOn": ["build"],
       "outputs": []
     },
     "storybook": {
@@ -21,7 +23,9 @@
       ]
     },
     "//#storybook": {
-      "dependsOn": ["wait"]
+      "dependsOn": [
+        "wait"
+      ]
     },
     "//#wait": {
       "dependsOn": []
