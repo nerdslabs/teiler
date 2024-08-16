@@ -39,6 +39,8 @@
     "@storybook/test": "^8.1.1",
     "@storybook/vue3": "^8.1.1",
     "@storybook/vue3-vite": "^8.1.1",
+    "@swc/core": "^1.5.24",
+    "@swc/jest": "^0.2.36",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/test-utils": "^2.4.6",
     "esbuild": "^0.20.0",
@@ -50,7 +52,6 @@
     "rollup-plugin-esbuild": "^6.1.1",
     "rollup-plugin-terser": "^7.0.2",
     "storybook": "^8.1.1",
-    "ts-jest": "^29.1.2",
     "typescript": "^5.5.4",
     "vue": "3.4.37"
   }
