@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 21.x]
+        node-version: [18.x, 20.x, 22.x]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,9 +19,9 @@ jobs:
         id: yarn-cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-${{ matrix.node-version }}-yarn-
       - name: Install Dependencies
         run: yarn install
       - name: Run tests
