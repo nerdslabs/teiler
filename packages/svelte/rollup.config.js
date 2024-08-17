@@ -3,9 +3,9 @@ import { nodeResolve } from '@rollup/plugin-node-resolve'
 import json from '@rollup/plugin-json'
 import svelte from 'rollup-plugin-svelte'
 import sveltePreprocess from 'svelte-preprocess'
-import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
-import { transformSync } from 'esbuild'
+import swc from '@rollup/plugin-swc';
+import { transformSync } from '@swc/core'
 
 import { terser } from 'rollup-plugin-terser'
 
@@ -16,26 +16,18 @@ const globals = {
 
 const defaultPlugins = [
   commonjs(),
-  nodeResolve({ resolveOnly: [/^(?!svelte.*$)/] }),
+  nodeResolve({ extensions: ['.ts'] }),
   json(),
-  esbuild.default({ sourceMap: true }),
+  swc({ include: ['src/**/*.ts'] }),
   svelte({
     emitCss: false,
     compilerOptions: {
-      // dev: production === false,
       sourcemap: true,
-      // generate: 'ssr',
     },
     preprocess: sveltePreprocess({
-      typescript({ content }) {
+      typescript({ content, filename }) {
         const { code, map } = transformSync(content, {
-          loader: 'ts',
-          tsconfigRaw: {
-            compilerOptions: {
-              importsNotUsedAsValues: 'error',
-              preserveValueImports: true,
-            },
-          },
+          filename: `${filename}.ts`,
         })
         return { code, map }
       },
