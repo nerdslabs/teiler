@@ -1,12 +1,6 @@
 export default {
   transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        useESM: true,
-        tsconfig: '<rootDir>/packages/svelte/tsconfig.json',
-      },
-    ],
+    '^.+\\.(t|j)sx?$': '@swc/jest',
     '^.+\\.svelte$': [
       'svelte-jester',
       {

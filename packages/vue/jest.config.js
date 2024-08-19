@@ -1,11 +1,6 @@
 export default {
   transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        tsconfig: '<rootDir>/packages/vue/tsconfig.json',
-      },
-    ],
+    '^.+\\.(t|j)sx?$': '@swc/jest',
   },
   testEnvironment: 'jsdom',
   testEnvironmentOptions: {

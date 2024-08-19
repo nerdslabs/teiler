@@ -1,7 +1,7 @@
 import commonjs from '@rollup/plugin-commonjs'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import json from '@rollup/plugin-json'
-import esbuild from 'rollup-plugin-esbuild'
+import swc from '@rollup/plugin-swc';
 import dts from 'rollup-plugin-dts'
 
 import { terser } from 'rollup-plugin-terser'
@@ -12,9 +12,9 @@ const globals = {
 
 const defaultPlugins = [
   commonjs(),
-  nodeResolve({}),
+  nodeResolve({ extensions: ['.ts'], }),
   json(),
-  esbuild.default({ sourceMap: true }),
+  swc(),
 ]
 
 export default [
@@ -43,6 +43,9 @@ export default [
     ],
     plugins: [...defaultPlugins, terser()],
     external: ["vue"],
+    watch: {
+      clearScreen: false
+    }
   },
   {
     input: 'src/index.ts',
@@ -51,5 +54,8 @@ export default [
       format: 'es',
     },
     plugins: [...defaultPlugins, dts.default()],
+    watch: {
+      clearScreen: false
+    }
   },
 ]
