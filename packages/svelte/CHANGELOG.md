@@ -1,5 +1,14 @@
 # @teiler/svelte
 
+## 0.0.25
+
+### Patch Changes
+
+- [#9](https://github.com/nerdslabs/teiler/pull/9) [`bd16828`](https://github.com/nerdslabs/teiler/commit/bd168288b500a340ae922fa0e6d97ade3be0bdc0) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Update dependencies
+
+- Updated dependencies [[`bd16828`](https://github.com/nerdslabs/teiler/commit/bd168288b500a340ae922fa0e6d97ade3be0bdc0)]:
+  - @teiler/core@0.0.25
+
 ## 0.0.24
 
 ### Patch Changes
