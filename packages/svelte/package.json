@@ -21,6 +21,7 @@
     "dev": "rollup --config --bundleConfigAsCjs --watch",
     "test": "node --experimental-vm-modules $(yarn bin jest)",
     "storybook": "storybook dev -p 6006 --no-open",
+    "storybook-test": "test-storybook --url http://localhost:6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
@@ -39,6 +40,7 @@
     "@storybook/svelte": "^8.1.1",
     "@storybook/svelte-vite": "^8.1.1",
     "@storybook/test": "^8.1.1",
+    "@storybook/test-runner": "0.16.0",
     "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "@swc/core": "^1.7.11",
     "@swc/jest": "^0.2.36",
