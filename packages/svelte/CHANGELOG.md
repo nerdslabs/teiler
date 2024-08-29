@@ -1,5 +1,11 @@
 # @teiler/svelte
 
+## 0.0.26
+
+### Patch Changes
+
+- [`dd8d40d`](https://github.com/nerdslabs/teiler/commit/dd8d40da4bc2d20af90bc25ed1d559fd17020222) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Fix rollup config
+
 ## 0.0.25
 
 ### Patch Changes
