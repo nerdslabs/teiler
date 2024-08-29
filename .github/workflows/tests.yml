@@ -45,7 +45,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.node-version }}-yarn-
       - name: Install Dependencies
-        run: yarn install
+        run: |
+          yarn install
+          yarn dlx playwright install --with-deps
       - name: Build
         run: yarn build
       - name: Run tests
