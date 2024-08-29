@@ -16,7 +16,7 @@ const globals = {
 
 const defaultPlugins = [
   commonjs(),
-  nodeResolve({ extensions: ['.ts'] }),
+  nodeResolve({ extensions: ['.ts'], resolveOnly: [/^(?!svelte.*$)/] }),
   json(),
   swc({ include: ['src/**/*.ts'] }),
   svelte({
