@@ -21,6 +21,7 @@
     "dev": "rollup --config --bundleConfigAsCjs --watch",
     "test": "jest",
     "storybook": "storybook dev -p 6007 --no-open",
+    "storybook-test": "test-storybook --url http://localhost:6007",
     "build-storybook": "storybook build"
   },
   "dependencies": {
@@ -38,6 +39,7 @@
     "@storybook/addon-links": "^8.1.1",
     "@storybook/blocks": "^8.1.1",
     "@storybook/test": "^8.1.1",
+    "@storybook/test-runner": "0.16.0",
     "@storybook/vue3": "^8.1.1",
     "@storybook/vue3-vite": "^8.1.1",
     "@swc/core": "^1.7.11",
