@@ -17,7 +17,7 @@ describe('createStyleSheet CSR', () => {
 })
 
 describe('createStyleSheet SSR', () => {
-  beforeAll(() => (global.document = undefined))
+  beforeAll(() => (global.document = undefined!))
 
   test('should create a new StyleSheet object', () => {
     const sheet = createStyleSheet({})

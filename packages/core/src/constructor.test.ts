@@ -206,7 +206,7 @@ describe('insert', () => {
       hydrate: jest.fn<(ids: string[]) => void>(),
     }
 
-    const definition: StyleDefinition<'div', {}> = {
+    const definition: StyleDefinition<null, {}> = {
       id: 'teiler-1ep7axc',
       styles: [[['from { background-color: red; } to { background-color: green; }'], []]],
       tag: null,
@@ -229,7 +229,7 @@ describe('insert', () => {
       hydrate: jest.fn<(ids: string[]) => void>(),
     }
 
-    const definition: StyleDefinition<'div', {}> = {
+    const definition: StyleDefinition<null, {}> = {
       id: 'tytz3vv',
       styles: [[['body { color: red; }'], []]],
       tag: null,

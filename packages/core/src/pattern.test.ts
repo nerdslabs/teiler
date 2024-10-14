@@ -57,13 +57,13 @@ describe('pattern', () => {
   })
 })
 
-type TestComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & {
+type TestComponent<Target extends HTMLElements> = TeilerComponent<Target, {}> & {
   render(): string
 }
 
 const sheet = createStyleSheet({})
 
-const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefinition<Target, Props>): TestComponent<Target, Props> => {
+const createComponent = <Target extends HTMLElements>(styles: StyleDefinition<Target, {}>): TestComponent<Target> => {
   return {
     styleDefinition: styles,
     render() {

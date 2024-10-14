@@ -6,29 +6,29 @@ import hash from './hash'
 
 type PropertiesWithPattern<Props> = Properties<Props> | Pattern<HTMLElements, Props>
 
-type Pattern<Target extends HTMLElements | null, Props> = {
+type Pattern<Target extends HTMLElements, Props = {}> = {
   styles: Style<Props>[]
   tag: Target
   id: string
   __pattern__: true
 }
 
-type ExtendCallback<Target extends HTMLElements | null, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => Pattern<Target, Infer<Component, Props>>
+type ExtendCallback<Target extends HTMLElements, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => Pattern<Target, Infer<Component, Props>>
 
-type Constructor<Target extends HTMLElements | null> = {
-  <Props>(pattern: Pattern<Target, Props>): ExtendCallback<Target, Props>
-  <Props>(string: ReadonlyArray<string>, ...properties: PropertiesWithPattern<Props>[]): Pattern<Target, Props>
+type Constructor<Target extends HTMLElements> = {
+  <Props = {}>(pattern: Pattern<Target, Props>): ExtendCallback<Target, Props>
+  <Props = {}>(string: ReadonlyArray<string>, ...properties: PropertiesWithPattern<Props>[]): Pattern<Target, Props>
 }
-
-type ConstructorWithTags = Constructor<'div'> & { [K in HTMLElements]: Constructor<K> } & { global: Constructor<null> }
 
 type Infer<Component, Props> = Component extends Pattern<HTMLElements, infer P> ? P & Props : Props
 
-const construct = (tag: HTMLElements) => {
-  return <Props>(stringOrPattern: Pattern<HTMLElements, Props> | ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<HTMLElements, Props> | ExtendCallback<HTMLElements, Props> => {
+const construct = <Target extends HTMLElements>(tag: Target) => {
+  function create<Props = {}>(stringOrPattern: Pattern<Target, Props>): ExtendCallback<Target, Props>
+  function create<Props = {}>(stringOrPattern: ReadonlyArray<string>, ...properties: PropertiesWithPattern<Props>[]): Pattern<Target, Props>
+  function create<Props>(stringOrPattern: Pattern<Target, Props> | ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<Target, Props> | ExtendCallback<Target, Props> {
     if ('__pattern__' in stringOrPattern) {
       return <Component>(strings: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => {
-        const style: Style<Props> = [Array.from(strings), properties]
+        const style: Style<Infer<Component, Props>> = [Array.from(strings), properties]
         const styles = [...stringOrPattern.styles, style]
         const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
         return { styles: styles, id: 't' + hash(id), tag: stringOrPattern.tag, __pattern__: true }
@@ -41,11 +41,18 @@ const construct = (tag: HTMLElements) => {
       return { styles: styles, id: 't' + hash(id), tag, __pattern__: true }
     }
   }
+
+  return create
 }
 
-const pattern = construct('div')
+type HTMLElementsWithoutNull = Exclude<HTMLElements, null>
+type ConstructorWithTags = Constructor<'div'> & { [K in HTMLElementsWithoutNull]: Constructor<K> } & { global: Constructor<null> }
+
+const pattern = construct('div') as ConstructorWithTags
 
 tags.forEach((tag) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   pattern[tag] = construct(tag)
 })
 
