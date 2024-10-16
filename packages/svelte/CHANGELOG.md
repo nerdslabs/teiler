@@ -1,5 +1,14 @@
 # @teiler/svelte
 
+## 0.0.27
+
+### Patch Changes
+
+- [#13](https://github.com/nerdslabs/teiler/pull/13) [`f492af9`](https://github.com/nerdslabs/teiler/commit/f492af9abb94f9e96844c1dacaaa23032cf926f4) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Change `strict` to `true` in `tsconfig.json`
+
+- Updated dependencies [[`f492af9`](https://github.com/nerdslabs/teiler/commit/f492af9abb94f9e96844c1dacaaa23032cf926f4)]:
+  - @teiler/core@0.0.26
+
 ## 0.0.26
 
 ### Patch Changes
