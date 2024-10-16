@@ -5,8 +5,10 @@ import Styled from './Styled'
 
 import { component, global, keyframes, styled, tags } from '@teiler/core'
 
+type ElementAttributes<Target extends HTMLElements> = Target extends keyof IntrinsicElementAttributes ? IntrinsicElementAttributes[Target] : {}
+
 type VueRawBindings = { styleSheet: Sheet; theme: DefaultTheme }
-type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<Props, VueRawBindings, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, IntrinsicElementAttributes[Target]>
+type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<Props, VueRawBindings, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, ElementAttributes<Target>>
 
 const createComponent = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): VueTeilerComponent<Target, Props> => {
   const component = Styled(styleDefinition)
@@ -25,7 +27,7 @@ type Global = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueTeilerComponent<HTMLElements, Props>
 }
 
-type ComponentWithTags = Component<'div'> & { [K in HTMLElements]: Component<K> }
+type ComponentWithTags = Component<'div'> & { [K in Exclude<HTMLElements, null>]: Component<K> }
 
 const construct = (tag: HTMLElements, compiler: Compiler) => {
   return <Props extends object = {}>(stringOrBinded: TeilerComponent<HTMLElements, Props> | TemplateStringsArray, ...properties: Properties<Props>[]) => {
@@ -33,13 +35,13 @@ const construct = (tag: HTMLElements, compiler: Compiler) => {
   }
 }
 
-const baseComponent = construct('div', component)
+const vueComponent = construct('div', component) as ComponentWithTags
 
 tags.forEach((tag) => {
-  baseComponent[tag] = construct(tag, component)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  vueComponent[tag] = construct(tag, component)
 })
-
-const vueComponent = baseComponent as ComponentWithTags
 
 const vueGlobal = construct(null, global) as Global
 

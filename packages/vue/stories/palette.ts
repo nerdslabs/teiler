@@ -31,4 +31,12 @@ const ExtendedButton = component(Button)<{ _test: boolean }>`
   `}
 `
 
-export { Button, ExtendedButton }
+const TestGlobal = pattern.global`
+  body {
+    background: #f0f0f0;
+  }
+`
+
+const Global = sew(TestGlobal, createComponent)
+
+export { Button, ExtendedButton, Global }

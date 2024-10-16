@@ -1,7 +1,7 @@
 type Tag = {
   insertRule(key: string, rule: string): number
   deleteRule(key: string): void
-  getRule(key: string): string
+  getRule(key: string): string | null
   getAllRules(): string
   getAllKeys(): string[]
   [k: string]: unknown
@@ -55,7 +55,7 @@ export function createBrowserTag(container?: HTMLElement): Tag {
       return inserted.size
     },
     deleteRule: function (key: string): void {
-      rules.removeChild(inserted.get(key))
+      rules.removeChild(inserted.get(key)!)
       inserted.delete(key)
     },
     getRule: function (key: string): string | null {

@@ -1,4 +1,4 @@
-import type { Arguments, HTMLElements } from './constructor'
+import type { Arguments, HTMLElements, Raw } from './constructor'
 import type { Pattern, Style, StyleDefinition } from '.'
 
 import { middleware, prefixer, rulesheet, serialize, stringify, compile as stylisCompile } from 'stylis'
@@ -11,10 +11,10 @@ type CompileResult<Props> = {
 }
 
 function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): CompileResult<Props> {
-  return styles.reduce(
+  return styles.reduce<CompileResult<Props>>(
     (result, [strings, properties]) => {
       const compiled = strings
-        .reduce((acc, strings, index) => {
+        .reduce<(string | true | Raw)[]>((acc, strings, index) => {
           acc = [...acc, strings]
 
           const property = properties.at(index)
@@ -67,7 +67,7 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
 }
 
 function transpile(css: string): string {
-  const results = []
+  const results: string[] = []
 
   serialize(
     stylisCompile(css),

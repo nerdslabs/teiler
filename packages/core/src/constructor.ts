@@ -5,23 +5,23 @@ import type { Pattern } from './pattern'
 import hash from './hash'
 import { compile, transpile } from './css'
 
-type DefaultTheme = { [key: string]: string | boolean }
+type DefaultTheme = {}
 
 type Arguments<Props> = {
   theme: DefaultTheme
 } & Props
 
-type CSS = { styles: Style<unknown>[]; id: string; __css__: true }
-type Expression<Props> = (props: Arguments<Props>) => string | boolean | CSS
+type CSS<Props> = { styles: Style<Props>[]; id: string; __css__: true }
+type Expression<Props> = (props: Arguments<Props>) => string | boolean | CSS<Props>
 type Raw = string | number
 type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | Pattern<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
 type Style<Props> = [string[], Properties<Props>[]]
 
-type StyleDefinition<Target extends HTMLElements | null, Props> = {
+type StyleDefinition<Target extends HTMLElements, Props> = {
   type: 'component' | 'global' | 'keyframes'
   id: string
   styles: Array<Style<Props>>
-  tag: Target | null
+  tag: Target
 }
 
 type TeilerComponent<Target extends HTMLElements, Props> = {
@@ -37,7 +37,7 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   createComponent: CreateCallback<Type, Props>,
   stringOrBinded: TeilerComponent<HTMLElements, Props> | ReadonlyArray<string>,
   ...properties: Properties<Props>[]
-): ExtendCallback<Type, Props> | Type {
+): Type | ExtendCallback<Type, Props> {
   if (Array.isArray(stringOrBinded)) {
     const strings = stringOrBinded as ReadonlyArray<string>
     const style: Style<Props> = [Array.from(strings), properties]
@@ -45,7 +45,7 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
     return createComponent(styleDefinition)
   } else {
     const binded = stringOrBinded as TeilerComponent<HTMLElements, Props>
-    return (strings: ReadonlyArray<string>, ...properties: Expression<Props>[]) => {
+    return (strings: ReadonlyArray<string>, ...properties: Properties<Props>[]) => {
       const style: Style<Props> = [Array.from(strings), properties]
       const styleDefinition = compiler(binded.styleDefinition.tag, [...binded.styleDefinition.styles, style])
       return createComponent(styleDefinition)
@@ -53,7 +53,7 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   }
 }
 
-type Compiler = <Target extends HTMLElements | null, Props>(tag: Target, styles: Array<Style<Props>>) => StyleDefinition<Target, Props>
+type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>) => StyleDefinition<Target, Props>
 
 const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
@@ -66,7 +66,7 @@ const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, st
   }
 }
 
-const global: Compiler = <Target extends HTMLElements, Props>(tag: null, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
+const global: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
 
   return {
@@ -89,14 +89,14 @@ function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleD
   }
 }
 
-function css<Props>(strings: ReadonlyArray<string>, ...properties: Exclude<Properties<Props>, Expression<Props>>[]): CSS {
+function css<Props>(strings: ReadonlyArray<string>, ...properties: Exclude<Properties<Props>, Expression<Props>>[]): CSS<Props> {
   const style: Style<Props> = [Array.from(strings), properties]
   const styles = [style]
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
   return { styles: styles, id: 't' + hash(id), __css__: true }
 }
 
-function insert(sheet: Sheet, definition: StyleDefinition<HTMLElements, unknown>, props: Arguments<unknown>): string | null {
+function insert<Props = {}>(sheet: Sheet, definition: StyleDefinition<HTMLElements, Props>, props: Arguments<Props>): string | null {
   const { styles, type } = definition
   const { css, definitions } = compile(styles, props)
   const compiledId = hash(css)
@@ -120,5 +120,5 @@ function insert(sheet: Sheet, definition: StyleDefinition<HTMLElements, unknown>
   return null
 }
 
-export type { Arguments, Compiler, CreateCallback, CSS, DefaultTheme, Properties, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
+export type { Arguments, Compiler, CreateCallback, CSS, DefaultTheme, Properties, Raw, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
 export { component, css, global, insert, keyframes, styled }
