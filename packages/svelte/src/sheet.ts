@@ -1,7 +1,7 @@
 import { type Sheet, createStyleSheet } from '@teiler/core'
 import { getContext } from 'svelte'
 
-export let styleSheet = null
+export let styleSheet: Sheet | null = null
 
 export const StyleSheet = 'STYLE_SHEET'
 

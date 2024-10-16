@@ -58,8 +58,6 @@ tags.forEach((tag) => {
 
 pattern['global'] = construct(null)
 
-const binded = pattern as ConstructorWithTags
-
 type CreateCallback<Target extends HTMLElements, Type extends TeilerComponent<Target, Props>, Props> = (styles: StyleDefinition<Target, Props>) => Type
 
 function sew<Target extends HTMLElements, Props, Type extends TeilerComponent<Target, Props>>(pattern: Pattern<Target, Props>, createComponent: CreateCallback<Target, Type, Props>): Type {
@@ -71,5 +69,5 @@ function sew<Target extends HTMLElements, Props, Type extends TeilerComponent<Ta
   })
 }
 
-export { binded as pattern, sew }
+export { pattern, sew }
 export type { Pattern }

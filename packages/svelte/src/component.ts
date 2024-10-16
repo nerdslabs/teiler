@@ -6,11 +6,13 @@ import Styled from './Styled.svelte'
 
 type SvelteTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & ComponentType<SvelteComponent>
 
-const createComponent = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): SvelteTeilerComponent<Target, Props> => {
-  return class extends Styled {
+type Options = ConstructorParameters<typeof Styled>[0]
+
+const createComponent = <Target extends HTMLElements, Props extends object = {}>(styleDefinition: StyleDefinition<Target, Props>): SvelteTeilerComponent<Target, Props> => {
+  return class extends Styled<{}, Props> {
     static styleDefinition = styleDefinition
 
-    constructor(options) {
+    constructor(options: Options) {
       super({
         ...options,
         props: {
@@ -34,7 +36,7 @@ type Global = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): SvelteTeilerComponent<HTMLElements, Props>
 }
 
-type ComponentWithTags = Component<'div'> & { [K in HTMLElements]: Component<K> }
+type ComponentWithTags = Component<'div'> & { [K in Exclude<HTMLElements, null>]: Component<K> }
 
 const construct = (tag: HTMLElements, compiler: Compiler) => {
   return <Props extends object = {}>(stringOrBinded: TeilerComponent<HTMLElements, Props> | TemplateStringsArray, ...properties: Properties<Props>[]) => {
@@ -42,13 +44,13 @@ const construct = (tag: HTMLElements, compiler: Compiler) => {
   }
 }
 
-const baseComponent = construct('div', component)
+const svelteComponent = construct('div', component) as ComponentWithTags
 
 tags.forEach((tag) => {
-  baseComponent[tag] = construct(tag, component)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  svelteComponent[tag] = construct(tag, component)
 })
-
-const svelteComponent = baseComponent as ComponentWithTags
 
 const svelteGlobal = construct(null, global) as Global
 

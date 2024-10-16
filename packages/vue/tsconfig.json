@@ -1,7 +1,6 @@
 {
   "include": [
-    "src/**/*",
-    "stories/stories.d.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules"
@@ -16,7 +15,7 @@
     "importHelpers": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "strict": false,
+    "strict": true,
     "strictPropertyInitialization": false,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,

@@ -1,4 +1,11 @@
 <script lang="ts">
+  type _Ignore = $$Generic
+  type Props = $$Generic<object>
+
+  type $$Props = {
+    styleDefinition: StyleDefinition<HTMLElements, Props>
+  }
+
   import type { DefaultTheme, HTMLElements, Sheet, StyleDefinition } from '@teiler/core'
   import type { Writable } from 'svelte/store'
 
@@ -7,13 +14,15 @@
   import { getContext } from 'svelte'
   import { context } from './ThemeProvider.svelte'
 
-  export let styleDefinition: StyleDefinition<HTMLElements, unknown>
+  export let styleDefinition: StyleDefinition<HTMLElements, Props>
 
   const sheet: Sheet = getStyleSheet()
 
   const theme: Writable<DefaultTheme> = getContext(context)
 
-  $: styleClassName = insert(sheet, styleDefinition, { ...$$restProps, theme: $theme })
+  $: props = $$restProps as Record<string, unknown> & Props
+
+  $: styleClassName = insert(sheet, styleDefinition, { ...props, theme: $theme })
 
   $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== '_' && key !== 'class')
   $: filtredProps = Object.fromEntries(filtredPropsEntries)

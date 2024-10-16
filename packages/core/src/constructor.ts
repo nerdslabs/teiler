@@ -5,7 +5,7 @@ import type { Pattern } from './pattern'
 import hash from './hash'
 import { compile, transpile } from './css'
 
-type DefaultTheme = { [key: string]: string | boolean }
+type DefaultTheme = {}
 
 type Arguments<Props> = {
   theme: DefaultTheme
