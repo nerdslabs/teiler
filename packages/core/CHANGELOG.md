@@ -1,5 +1,13 @@
 # @teiler/core
 
+## 0.0.26
+
+### Patch Changes
+
+- [#13](https://github.com/nerdslabs/teiler/pull/13) [`f492af9`](https://github.com/nerdslabs/teiler/commit/f492af9abb94f9e96844c1dacaaa23032cf926f4) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Change `strict` to `true` in `tsconfig.json`
+
+- [`38f8858`](https://github.com/nerdslabs/teiler/commit/38f8858426d63b283ae20131e82a9ad7dab3c8a9) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Fix `DefaultTheme` interface
+
 ## 0.0.25
 
 ### Patch Changes
