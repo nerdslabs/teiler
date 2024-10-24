@@ -5,14 +5,16 @@ import type { Pattern } from './pattern'
 import hash from './hash'
 import { compile, transpile } from './css'
 
-type DefaultTheme = {}
+interface DefaultTheme {
+  [key: string]: unknown
+}
 
 type Arguments<Props> = {
   theme: DefaultTheme
 } & Props
 
 type CSS<Props> = { styles: Style<Props>[]; id: string; __css__: true }
-type Expression<Props> = (props: Arguments<Props>) => string | boolean | CSS<Props>
+type Expression<Props> = (props: Arguments<Props>) => string | boolean | undefined | CSS<Props>
 type Raw = string | number
 type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | Pattern<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
 type Style<Props> = [string[], Properties<Props>[]]
