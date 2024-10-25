@@ -19,9 +19,7 @@ const config: StorybookConfig = {
     name: getAbsolutePath('@storybook/vue3-vite'),
     options: {},
   },
-  docs: {
-    autodocs: 'tag',
-  },
+  docs: {},
   async viteFinal(config, options) {
     return mergeConfig(config, {
       plugins: [vue()],
