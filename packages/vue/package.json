@@ -2,9 +2,10 @@
   "name": "@teiler/vue",
   "version": "0.0.6",
   "repository": {
-    "type": "git",
-    "url": "github:nerdslabs/teiler"
+    "url": "nerdslabs/teiler",
+    "directory": "packages/vue"
   },
+  "homepage": "https://github.com/nerdslabs/teiler/tree/master/packages/vue#readme",
   "type": "module",
   "main": "dist/teiler-vue.cjs.js",
   "module": "./dist/teiler-vue.esm.js",

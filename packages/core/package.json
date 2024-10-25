@@ -2,9 +2,10 @@
   "name": "@teiler/core",
   "version": "0.0.25",
   "repository": {
-    "type": "git",
-    "url": "github:nerdslabs/teiler"
+    "url": "nerdslabs/teiler",
+    "directory": "packages/core"
   },
+  "homepage": "https://github.com/nerdslabs/teiler/tree/master/packages/core#readme",
   "type": "module",
   "main": "src/index.ts",
   "module": "./dist/teiler-core.esm.js",
