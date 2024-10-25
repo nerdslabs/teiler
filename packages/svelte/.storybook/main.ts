@@ -13,9 +13,12 @@ function getAbsolutePath(value: string): any {
 const config: StorybookConfig = {
   stories: ['../stories/*.mdx', '../stories/*.stories.@(js|jsx|ts|tsx|svelte)'],
   addons: [getAbsolutePath('@storybook/addon-links'), getAbsolutePath('@storybook/addon-essentials'), getAbsolutePath('@chromatic-com/storybook'), getAbsolutePath('@storybook/addon-interactions')],
+
   framework: {
     name: getAbsolutePath('@storybook/svelte-vite'),
     options: {},
-  }
+  },
+
+  docs: {}
 }
 export default config

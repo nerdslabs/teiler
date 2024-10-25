@@ -40,7 +40,7 @@
     "@storybook/addon-links": "^8.3.6",
     "@storybook/blocks": "^8.3.6",
     "@storybook/test": "^8.3.6",
-    "@storybook/test-runner": "0.19.1",
+    "@storybook/test-runner": "^0.19.1",
     "@storybook/vue3": "^8.3.6",
     "@storybook/vue3-vite": "^8.3.6",
     "@swc/core": "^1.7.39",

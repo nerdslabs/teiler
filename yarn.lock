@@ -5319,7 +5319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/test-runner@npm:0.19.1":
+"@storybook/test-runner@npm:0.19.1, @storybook/test-runner@npm:^0.19.1":
   version: 0.19.1
   resolution: "@storybook/test-runner@npm:0.19.1"
   dependencies:
@@ -5708,7 +5708,7 @@ __metadata:
     "@storybook/addon-links": "npm:^8.3.6"
     "@storybook/blocks": "npm:^8.3.6"
     "@storybook/test": "npm:^8.3.6"
-    "@storybook/test-runner": "npm:0.19.1"
+    "@storybook/test-runner": "npm:^0.19.1"
     "@storybook/vue3": "npm:^8.3.6"
     "@storybook/vue3-vite": "npm:^8.3.6"
     "@swc/core": "npm:^1.7.39"
