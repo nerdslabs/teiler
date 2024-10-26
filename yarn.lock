@@ -5633,7 +5633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@teiler/core@npm:0.0.25, @teiler/core@workspace:packages/core":
+"@teiler/core@npm:0.0.26, @teiler/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@teiler/core@workspace:packages/core"
   dependencies:
@@ -5675,7 +5675,7 @@ __metadata:
     "@sveltejs/vite-plugin-svelte": "npm:^3.1.2"
     "@swc/core": "npm:^1.7.39"
     "@swc/jest": "npm:^0.2.36"
-    "@teiler/core": "npm:0.0.25"
+    "@teiler/core": "npm:0.0.26"
     "@testing-library/svelte": "npm:^5.2.4"
     jest: "npm:^29.7.0"
     jest-environment-jsdom: "npm:^29.7.0"
@@ -5713,7 +5713,7 @@ __metadata:
     "@storybook/vue3-vite": "npm:^8.3.6"
     "@swc/core": "npm:^1.7.39"
     "@swc/jest": "npm:^0.2.36"
-    "@teiler/core": "npm:0.0.25"
+    "@teiler/core": "npm:0.0.26"
     "@vitejs/plugin-vue": "npm:^5.1.4"
     "@vue/test-utils": "npm:^2.4.6"
     jest: "npm:^29.7.0"
