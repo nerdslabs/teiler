@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.27
+
+### Patch Changes
+
+- [`7e1b1e2`](https://github.com/nerdslabs/teiler/commit/7e1b1e22f262dfd7b81c7e97637f7cd374874ed9) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Fix `css` helper function types
+
 ## 0.0.26
 
 ### Patch Changes
