@@ -5,7 +5,7 @@ import tags from './tags'
 import hash from './hash'
 
 type Pattern<Target extends HTMLElements, Props> = {
-  styles: Array<Style<Props>>,
+  styles: Array<Style<Props>>
   tag: Target
   id: string
   __pattern__: true
