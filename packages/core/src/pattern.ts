@@ -4,10 +4,8 @@ import type { HTMLElements } from './tags'
 import tags from './tags'
 import hash from './hash'
 
-type PropertiesWithPattern<Props> = Properties<Props> | Pattern<HTMLElements, Props>
-
-type Pattern<Target extends HTMLElements, Props = {}> = {
-  styles: Style<Props>[]
+type Pattern<Target extends HTMLElements, Props> = {
+  styles: Array<Style<Props>>,
   tag: Target
   id: string
   __pattern__: true
@@ -17,14 +15,14 @@ type ExtendCallback<Target extends HTMLElements, Props> = <Component>(string: Re
 
 type Constructor<Target extends HTMLElements> = {
   <Props = {}>(pattern: Pattern<Target, Props>): ExtendCallback<Target, Props>
-  <Props = {}>(string: ReadonlyArray<string>, ...properties: PropertiesWithPattern<Props>[]): Pattern<Target, Props>
+  <Props = {}>(string: ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<Target, Props>
 }
 
 type Infer<Component, Props> = Component extends Pattern<HTMLElements, infer P> ? P & Props : Props
 
 const construct = <Target extends HTMLElements>(tag: Target) => {
   function create<Props = {}>(stringOrPattern: Pattern<Target, Props>): ExtendCallback<Target, Props>
-  function create<Props = {}>(stringOrPattern: ReadonlyArray<string>, ...properties: PropertiesWithPattern<Props>[]): Pattern<Target, Props>
+  function create<Props = {}>(stringOrPattern: ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<Target, Props>
   function create<Props>(stringOrPattern: Pattern<Target, Props> | ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<Target, Props> | ExtendCallback<Target, Props> {
     if ('__pattern__' in stringOrPattern) {
       return <Component>(strings: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => {

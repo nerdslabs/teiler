@@ -91,8 +91,9 @@ function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleD
   }
 }
 
-function css<Props>(strings: ReadonlyArray<string>, ...properties: Exclude<Properties<Props>, Expression<Props>>[]): CSS<Props> {
-  const style: Style<Props> = [Array.from(strings), properties]
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function css(strings: ReadonlyArray<string>, ...properties: Exclude<Properties<any>, Expression<unknown>>[]): CSS<unknown> {
+  const style: Style<unknown> = [Array.from(strings), properties]
   const styles = [style]
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
   return { styles: styles, id: 't' + hash(id), __css__: true }
