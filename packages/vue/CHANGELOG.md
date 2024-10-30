@@ -1,5 +1,12 @@
 # @teiler/vue
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`7e1b1e2`](https://github.com/nerdslabs/teiler/commit/7e1b1e22f262dfd7b81c7e97637f7cd374874ed9)]:
+  - @teiler/core@0.0.27
+
 ## 0.0.7
 
 ### Patch Changes
