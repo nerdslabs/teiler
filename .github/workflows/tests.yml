@@ -6,7 +6,7 @@ on:
 
 jobs:
   jest:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
@@ -27,7 +27,7 @@ jobs:
       - name: Run tests
         run: yarn test -- --ci --coverage
   storybook:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
@@ -57,7 +57,7 @@ jobs:
             "yarn storybook" \
             "yarn dlx wait-on tcp:${{ matrix.package.port }} && yarn test-storybook --url http://localhost:${{ matrix.package.port }}"
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -75,7 +75,7 @@ jobs:
       - name: Run tests
         run: yarn lint
   format:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
