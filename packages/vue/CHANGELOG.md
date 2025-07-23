@@ -1,5 +1,16 @@
 # @teiler/vue
 
+## 0.0.9
+
+### Patch Changes
+
+- [#19](https://github.com/nerdslabs/teiler/pull/19) [`339d5ef`](https://github.com/nerdslabs/teiler/commit/339d5ef6312ec24858edd011fdd77dacf24355ca) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Fix issue with className
+
+- [#17](https://github.com/nerdslabs/teiler/pull/17) [`ee02204`](https://github.com/nerdslabs/teiler/commit/ee02204db86c00c50128593e0cddd3caefc0feb7) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Update dependencies
+
+- Updated dependencies [[`ee02204`](https://github.com/nerdslabs/teiler/commit/ee02204db86c00c50128593e0cddd3caefc0feb7)]:
+  - @teiler/core@0.0.28
+
 ## 0.0.8
 
 ### Patch Changes

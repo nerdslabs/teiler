@@ -1,5 +1,11 @@
 # @teiler/core
 
+## 0.0.28
+
+### Patch Changes
+
+- [#17](https://github.com/nerdslabs/teiler/pull/17) [`ee02204`](https://github.com/nerdslabs/teiler/commit/ee02204db86c00c50128593e0cddd3caefc0feb7) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Update dependencies
+
 ## 0.0.27
 
 ### Patch Changes
