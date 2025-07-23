@@ -30,7 +30,7 @@ export default function <Target extends HTMLElements, Props>(styleDefinition: St
       const defaultSlot = slots.default ? slots.default() : undefined
 
       if (styleDefinition.tag) {
-        return h(styleDefinition.tag, { ...filtredProps, className }, defaultSlot)
+        return h(styleDefinition.tag, { ...filtredProps, class: className }, defaultSlot)
       } else {
         return null
       }
