@@ -7,7 +7,7 @@ import { component, global, keyframes, styled, tags } from '@teiler/core'
 
 type ElementAttributes<Target extends HTMLElements> = Target extends keyof IntrinsicElementAttributes ? IntrinsicElementAttributes[Target] : {}
 
-type VueRawBindings = { styleSheet: Sheet; theme: DefaultTheme }
+type VueRawBindings = { styleSheet: Sheet; theme: DefaultTheme; element: HTMLElement | null }
 type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<Props, VueRawBindings, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, ElementAttributes<Target>>
 
 const createComponent = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): VueTeilerComponent<Target, Props> => {

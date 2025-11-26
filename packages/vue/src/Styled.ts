@@ -1,7 +1,7 @@
 import type { HTMLElements, Sheet, StyleDefinition } from '@teiler/core'
 
 import { DefaultTheme, insert } from '@teiler/core'
-import { defineComponent, h, inject, toRaw } from 'vue'
+import { defineComponent, h, inject, ref, toRaw } from 'vue'
 import { context } from './ThemeProvider'
 import { getStyleSheet } from './sheet'
 
@@ -9,11 +9,15 @@ export default function <Target extends HTMLElements, Props>(styleDefinition: St
   const component = defineComponent({
     inheritAttrs: false,
     styleDefinition,
-    setup() {
+    setup(_, { expose }) {
       const styleSheet: Sheet = getStyleSheet()
       const theme = inject<DefaultTheme>(context, {})
 
-      return { styleSheet, theme }
+      const element = ref<HTMLElement | null>(null)
+
+      expose({ element })
+
+      return { styleSheet, theme, element }
     },
     render() {
       const slots = this.$slots
@@ -30,7 +34,7 @@ export default function <Target extends HTMLElements, Props>(styleDefinition: St
       const defaultSlot = slots.default ? slots.default() : undefined
 
       if (styleDefinition.tag) {
-        return h(styleDefinition.tag, { ...filtredProps, class: className }, defaultSlot)
+        return h(styleDefinition.tag, { ...filtredProps, class: className, ref: 'element' }, defaultSlot)
       } else {
         return null
       }
