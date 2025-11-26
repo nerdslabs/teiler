@@ -1,5 +1,11 @@
 # @teiler/vue
 
+## 0.0.10
+
+### Patch Changes
+
+- [#20](https://github.com/nerdslabs/teiler/pull/20) [`175a715`](https://github.com/nerdslabs/teiler/commit/175a715f332db053585e2a7813627541ea3f8ed8) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Expose `element` ref from styled component
+
 ## 0.0.9
 
 ### Patch Changes
