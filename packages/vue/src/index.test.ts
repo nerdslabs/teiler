@@ -64,6 +64,9 @@ describe('component', () => {
       setup: expect.any(Function),
     })
 
+    expect(wrapper.vm.element).toBeDefined()
+    expect(wrapper.vm.element).not.toBeNull()
+
     expect(wrapper.html()).toBe('<div class="teiler-1r77qux t1r77qux"></div>')
   })
 
