@@ -7,6 +7,8 @@ import { transformSync } from '@swc/core'
 
 const globals = {
   'svelte/internal': 'svelte/internal',
+  'svelte/internal/disclose-version': 'svelte/internal/disclose-version',
+  'svelte/store': 'svelte/store',
   svelte: 'svelte',
 }
 
@@ -57,6 +59,7 @@ function sveltePlugin() {
 export default [
   {
     input: 'src/index.ts',
+    external: ['svelte', 'svelte/internal', /^svelte\//],
     output: [
       {
         file: 'dist/teiler-svelte.umd.js',
@@ -89,7 +92,7 @@ export default [
     output: {
       dir: 'dist',
       format: 'es',
-      entryFileNames: (chunk) => chunk.name.endsWith('.d') ? 'teiler-svelte.d.ts' : '_entry.js',
+      entryFileNames: (chunk) => (chunk.name.endsWith('.d') ? 'teiler-svelte.d.ts' : '_entry.js'),
     },
     plugins: [
       {
