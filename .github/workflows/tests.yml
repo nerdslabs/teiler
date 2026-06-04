@@ -9,53 +9,57 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [20.x, 22.x, 24.x]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Enable corepack
+        run: corepack enable
       - uses: actions/cache@v4
-        id: yarn-cache
+        id: pnpm-cache
         with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-${{ matrix.node-version }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.node-version }}-yarn-
+            ${{ runner.os }}-${{ matrix.node-version }}-pnpm-
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
       - name: Run tests
-        run: yarn test -- --ci --coverage
+        run: pnpm test -- --ci --coverage
   storybook:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [20.x, 22.x, 24.x]
         package: [{ name: 'svelte', port: 6006 }, { name: 'vue', port: 6007 }]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Enable corepack
+        run: corepack enable
       - uses: actions/cache@v4
-        id: yarn-cache
+        id: pnpm-cache
         with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-${{ matrix.node-version }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.node-version }}-yarn-
+            ${{ runner.os }}-${{ matrix.node-version }}-pnpm-
       - name: Install Dependencies
         run: |
-          yarn install
-          yarn playwright install --with-deps chromium
+          pnpm install
+          pnpm playwright install --with-deps chromium
       - name: Build
-        run: yarn build
+        run: pnpm build
       - name: Run tests
         run: |
           cd packages/${{ matrix.package.name }}
-          yarn dlx concurrently -k -s first -n "STORYBOOK,TEST" -c "magenta,blue" \
-            "yarn storybook" \
-            "yarn dlx wait-on tcp:${{ matrix.package.port }} && yarn test-storybook --url http://localhost:${{ matrix.package.port }}"
+          pnpm dlx concurrently -k -s first -n "STORYBOOK,TEST" -c "magenta,blue" \
+            "pnpm storybook" \
+            "pnpm dlx wait-on tcp:${{ matrix.package.port }} && pnpm test-storybook --url http://localhost:${{ matrix.package.port }}"
   lint:
     runs-on: ubuntu-22.04
     steps:
@@ -63,17 +67,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
+      - name: Enable corepack
+        run: corepack enable
       - uses: actions/cache@v4
-        id: yarn-cache
+        id: pnpm-cache
         with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-pnpm-
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
       - name: Run tests
-        run: yarn lint
+        run: pnpm lint
   format:
     runs-on: ubuntu-22.04
     steps:
@@ -81,14 +87,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
+      - name: Enable corepack
+        run: corepack enable
       - uses: actions/cache@v4
-        id: yarn-cache
+        id: pnpm-cache
         with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-pnpm-
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
       - name: Run tests
-        run: yarn check-format
+        run: pnpm check-format
