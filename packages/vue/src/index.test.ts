@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals'
 import { mount } from '@vue/test-utils'
 import { StyleDefinition, createStyleSheet } from '@teiler/core'
 import { ThemeProvider, component, createComponent, global, keyframes } from './index'
-import { h } from 'vue'
+import { defineComponent, h } from 'vue'
 
 describe('createComponent', () => {
   test('should create a component', () => {
@@ -166,6 +166,92 @@ describe('component', () => {
 
     expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t1dc5e1n custom-class"></div>')
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+  })
+})
+
+describe('as', () => {
+  test('should render component as a different element', () => {
+    const styleSheet = createStyleSheet({})
+
+    const StyledComponent = component.button`color: green;`
+
+    const wrapper = mount(StyledComponent, {
+      attrs: {
+        as: 'a',
+        href: '/link',
+      },
+      slots: {
+        default: 'Link',
+      },
+      global: {
+        provide: {
+          THEME: {},
+          STYLE_SHEET: styleSheet,
+        },
+      },
+    })
+
+    expect(wrapper.html()).toBe('<a href="/link" class="teiler-1dc5e1n t1dc5e1n">Link</a>')
+    expect(wrapper.vm.element).toBeInstanceOf(HTMLAnchorElement)
+    expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+  })
+
+  test('should render component as another component', () => {
+    const styleSheet = createStyleSheet({})
+
+    const Link = defineComponent({
+      props: { to: { type: String, required: true } },
+      setup(props, { slots }) {
+        return () => h('a', { href: props.to }, slots.default?.())
+      },
+    })
+
+    const StyledComponent = component.button<{ _active: boolean }>`color: ${({ _active }) => (_active ? 'red' : 'green')};`
+
+    const wrapper = mount(StyledComponent, {
+      attrs: {
+        as: Link,
+        to: '/home',
+        _active: true,
+      },
+      slots: {
+        default: 'Home',
+      },
+      global: {
+        provide: {
+          THEME: {},
+          STYLE_SHEET: styleSheet,
+        },
+      },
+    })
+
+    expect(wrapper.html()).toBe('<a href="/home" class="teiler-wq229y t10upe3l">Home</a>')
+    expect(wrapper.vm.element).toBeInstanceOf(HTMLAnchorElement)
+    expect(styleSheet.dump()).toBe(' .teiler-wq229y{color:red;}')
+  })
+
+  test('should extend component with different element', () => {
+    const Button = component.button`color: green;`
+    const ButtonLink = component.a(Button)``
+
+    const wrapper = mount(ButtonLink, {
+      global: {
+        provide: {
+          THEME: {},
+        },
+      },
+    })
+
+    expect(ButtonLink.styleDefinition.tag).toBe('a')
+    expect(ButtonLink.styleDefinition.id).not.toBe(Button.styleDefinition.id)
+    expect(wrapper.element.tagName).toBe('A')
+  })
+
+  test('should keep element of extended component when tag is not specified', () => {
+    const Button = component.button`color: green;`
+    const ExtendedButton = component(Button)`background: red;`
+
+    expect(ExtendedButton.styleDefinition.tag).toBe('button')
   })
 })
 

@@ -33,8 +33,9 @@ type TeilerComponent<Target extends HTMLElements, Props> = {
 type CreateCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (styles: StyleDefinition<HTMLElements, Props>) => Type
 type ExtendCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
 
+// `tag` is undefined when not chosen explicitly, e.g. `component(Button)` keeps the tag of `Button`
 function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
-  tag: HTMLElements,
+  tag: HTMLElements | undefined,
   compiler: Compiler,
   createComponent: CreateCallback<Type, Props>,
   stringOrBinded: TeilerComponent<HTMLElements, Props> | ReadonlyArray<string>,
@@ -43,13 +44,22 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   if (Array.isArray(stringOrBinded)) {
     const strings = stringOrBinded as ReadonlyArray<string>
     const style: Style<Props> = [Array.from(strings), properties]
-    const styleDefinition = compiler(tag, [style])
+    const styleDefinition = compiler(tag === undefined ? 'div' : tag, [style])
     return createComponent(styleDefinition)
   } else {
     const binded = stringOrBinded as TeilerComponent<HTMLElements, Props>
+    const bindedTag = binded.styleDefinition.tag
+    const target = tag === undefined ? bindedTag : tag
+
     return (strings: ReadonlyArray<string>, ...properties: Properties<Props>[]) => {
       const style: Style<Props> = [Array.from(strings), properties]
-      const styleDefinition = compiler(binded.styleDefinition.tag, [...binded.styleDefinition.styles, style])
+      const styleDefinition = compiler(target, [...binded.styleDefinition.styles, style])
+
+      // id is hashed from template strings only, without tag `component.a(Button)``` would share selector with `Button`
+      if (target !== bindedTag) {
+        return createComponent({ ...styleDefinition, id: 't' + hash(styleDefinition.id + target) })
+      }
+
       return createComponent(styleDefinition)
     }
   }

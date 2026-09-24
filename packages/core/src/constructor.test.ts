@@ -57,6 +57,84 @@ describe('styled', () => {
       },
     })
   })
+
+  test('should create div component when tag is not specified', () => {
+    const template = ['color: red;']
+    const test = jest.fn(styled)
+
+    test(undefined, component, createComponent, template)
+
+    expect(test).toHaveReturnedWith({
+      styleDefinition: {
+        id: 'twq229y',
+        styles: [[['color: red;'], []]],
+        tag: 'div',
+        type: 'component',
+      },
+    })
+  })
+
+  test('should keep tag of extended component when tag is not specified', () => {
+    const existingComponent: TeilerComponent<'button', {}> = {
+      styleDefinition: {
+        type: 'component',
+        id: 'a',
+        tag: 'button',
+        styles: [[['color: red;'], []]],
+      },
+    }
+
+    const extend = styled(undefined, component, createComponent, existingComponent)
+
+    type Callable = Extract<typeof extend, (array: string[]) => {}>
+
+    const test = jest.fn(extend as Callable)
+
+    test(['background: blue;'])
+
+    expect(test).toHaveReturnedWith({
+      styleDefinition: {
+        id: 't18maiqm',
+        styles: [
+          [['color: red;'], []],
+          [['background: blue;'], []],
+        ],
+        tag: 'button',
+        type: 'component',
+      },
+    })
+  })
+
+  test('should extend component with different tag', () => {
+    const existingComponent: TeilerComponent<'button', {}> = {
+      styleDefinition: {
+        type: 'component',
+        id: 'twq229y',
+        tag: 'button',
+        styles: [[['color: red;'], []]],
+      },
+    }
+
+    const extend = styled('a', component, createComponent, existingComponent)
+
+    type Callable = Extract<typeof extend, (array: string[]) => {}>
+
+    const test = jest.fn(extend as Callable)
+
+    test([''])
+
+    expect(test).toHaveReturnedWith({
+      styleDefinition: {
+        id: 't60xyk8',
+        styles: [
+          [['color: red;'], []],
+          [[''], []],
+        ],
+        tag: 'a',
+        type: 'component',
+      },
+    })
+  })
 })
 
 describe('component', () => {
