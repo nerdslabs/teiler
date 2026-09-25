@@ -40,6 +40,26 @@ describe('compile', () => {
     expect(compiled).toEqual({ css: 'color: red;', definitions: [] })
   })
 
+  test('with zero', () => {
+    const style: Style<{}> = [
+      ['margin: ', 'px; padding: ', ';'],
+      [0, () => 0],
+    ]
+    const compiled = compile<{}>([style], { theme: {} })
+
+    expect(compiled).toEqual({ css: 'margin: 0px; padding: 0;', definitions: [] })
+  })
+
+  test('without falsy values', () => {
+    const style: Style<{}> = [
+      ['a', 'b', 'c', 'd', 'e'],
+      ['', () => false, () => undefined, () => null as unknown as undefined],
+    ]
+    const compiled = compile<{}>([style], { theme: {} })
+
+    expect(compiled).toEqual({ css: 'abcde', definitions: [] })
+  })
+
   test('with object', () => {
     const keyframes: StyleDefinition<null, {}> = {
       tag: null,

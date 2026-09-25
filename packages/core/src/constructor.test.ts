@@ -136,7 +136,7 @@ describe('keyframes', () => {
     const keyframesDefinition = keyframes`from { background-color: ${props.from}; } to { background-color: ${props.to}; }`
 
     expect(keyframesDefinition).toEqual({
-      id: 'teiler-1vxhd59',
+      id: 'teiler-14uknit',
       styles: [
         [
           ['from { background-color: ', '; } to { background-color: ', '; }'],
@@ -146,6 +146,15 @@ describe('keyframes', () => {
       tag: null,
       type: 'keyframes',
     })
+  })
+
+  test('should create different ids for different property values', () => {
+    const fadeHalf = keyframes`from { opacity: ${0.5}; } to { opacity: 1; }`
+    const fadeZero = keyframes`from { opacity: ${0}; } to { opacity: 1; }`
+    const fadeZeroAgain = keyframes`from { opacity: ${0}; } to { opacity: 1; }`
+
+    expect(fadeHalf.id).not.toEqual(fadeZero.id)
+    expect(fadeZero.id).toEqual(fadeZeroAgain.id)
   })
 })
 
