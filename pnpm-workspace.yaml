@@ -12,3 +12,6 @@ allowBuilds:
   esbuild: false
   svelte-preprocess: false
   unrs-resolver: false
+
+# adapters pin @teiler/core by exact version (bumped by changesets), link it from the workspace
+linkWorkspacePackages: true
