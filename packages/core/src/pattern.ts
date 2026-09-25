@@ -2,7 +2,7 @@ import type { Properties, Style, StyleDefinition, TeilerComponent } from './cons
 import type { HTMLElements } from './tags'
 
 import tags from './tags'
-import hash from './hash'
+import { createId } from './constructor'
 
 type Pattern<Target extends HTMLElements, Props> = {
   styles: Array<Style<Props>>
@@ -28,15 +28,13 @@ const construct = <Target extends HTMLElements>(tag: Target) => {
       return <Component>(strings: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => {
         const style: Style<Infer<Component, Props>> = [Array.from(strings), properties]
         const styles = [...stringOrPattern.styles, style]
-        const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
-        return { styles: styles, id: 't' + hash(id), tag: stringOrPattern.tag, __pattern__: true }
+        return { styles: styles, id: createId(stringOrPattern.tag, styles), tag: stringOrPattern.tag, __pattern__: true }
       }
     } else {
       const strings = stringOrPattern as ReadonlyArray<string>
       const style: Style<Props> = [Array.from(strings), properties]
       const styles = [style]
-      const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
-      return { styles: styles, id: 't' + hash(id), tag, __pattern__: true }
+      return { styles: styles, id: createId(tag, styles), tag, __pattern__: true }
     }
   }
 

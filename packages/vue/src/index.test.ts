@@ -55,7 +55,7 @@ describe('component', () => {
     expect(StyledComponent).toEqual({
       inheritAttrs: false,
       styleDefinition: {
-        id: 't1r77qux',
+        id: 't1wzpox7',
         styles: [[['color: blue;'], []]],
         tag: 'div',
         type: 'component',
@@ -67,7 +67,7 @@ describe('component', () => {
     expect(wrapper.vm.element).toBeDefined()
     expect(wrapper.vm.element).not.toBeNull()
 
-    expect(wrapper.html()).toBe('<div class="teiler-1r77qux t1r77qux"></div>')
+    expect(wrapper.html()).toBe('<div class="teiler-1r77qux t1wzpox7"></div>')
   })
 
   test('should create a component with props', () => {
@@ -90,7 +90,7 @@ describe('component', () => {
     expect(StyledComponent).toEqual({
       inheritAttrs: false,
       styleDefinition: {
-        id: 't10upe3l',
+        id: 'tnc696h',
         styles: [[['color: ', ';'], [expect.any(Function)]]],
         tag: 'div',
         type: 'component',
@@ -99,7 +99,7 @@ describe('component', () => {
       setup: expect.any(Function),
     })
 
-    expect(wrapper.html()).toBe('<div class="teiler-100tn2k t10upe3l"></div>')
+    expect(wrapper.html()).toBe('<div class="teiler-100tn2k tnc696h"></div>')
     expect(styleSheet.dump()).toBe(' .teiler-100tn2k{color:yellow;}')
   })
 
@@ -122,7 +122,7 @@ describe('component', () => {
     expect(StyledComponent).toEqual({
       inheritAttrs: false,
       styleDefinition: {
-        id: 't10upe3l',
+        id: 'tnc696h',
         styles: [[['color: ', ';'], [expect.any(Function)]]],
         tag: 'div',
         type: 'component',
@@ -131,7 +131,7 @@ describe('component', () => {
       setup: expect.any(Function),
     })
 
-    expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t10upe3l"></div>')
+    expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n tnc696h"></div>')
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
   })
 
@@ -155,7 +155,7 @@ describe('component', () => {
     expect(StyledComponent).toEqual({
       inheritAttrs: false,
       styleDefinition: {
-        id: 't1dc5e1n',
+        id: 'ts1fy62',
         styles: [[['color: green;'], []]],
         tag: 'div',
         type: 'component',
@@ -164,7 +164,7 @@ describe('component', () => {
       setup: expect.any(Function),
     })
 
-    expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t1dc5e1n custom-class"></div>')
+    expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n ts1fy62 custom-class"></div>')
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
   })
 })
@@ -191,7 +191,7 @@ describe('as', () => {
       },
     })
 
-    expect(wrapper.html()).toBe('<a href="/link" class="teiler-1dc5e1n t1dc5e1n">Link</a>')
+    expect(wrapper.html()).toBe('<a href="/link" class="teiler-1dc5e1n tvrq7v">Link</a>')
     expect(wrapper.vm.element).toBeInstanceOf(HTMLAnchorElement)
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
   })
@@ -225,7 +225,7 @@ describe('as', () => {
       },
     })
 
-    expect(wrapper.html()).toBe('<a href="/home" class="teiler-wq229y t10upe3l">Home</a>')
+    expect(wrapper.html()).toBe('<a href="/home" class="teiler-wq229y t1o2b35u">Home</a>')
     expect(wrapper.vm.element).toBeInstanceOf(HTMLAnchorElement)
     expect(styleSheet.dump()).toBe(' .teiler-wq229y{color:red;}')
   })
@@ -369,7 +369,7 @@ describe('ThemeProvider', () => {
       },
     })
 
-    expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t10upe3l"></div>')
+    expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n tnc696h"></div>')
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
   })
 

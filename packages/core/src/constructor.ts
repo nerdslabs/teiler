@@ -48,18 +48,11 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
     return createComponent(styleDefinition)
   } else {
     const binded = stringOrBinded as TeilerComponent<HTMLElements, Props>
-    const bindedTag = binded.styleDefinition.tag
-    const target = tag === undefined ? bindedTag : tag
+    const target = tag === undefined ? binded.styleDefinition.tag : tag
 
     return (strings: ReadonlyArray<string>, ...properties: Properties<Props>[]) => {
       const style: Style<Props> = [Array.from(strings), properties]
       const styleDefinition = compiler(target, [...binded.styleDefinition.styles, style])
-
-      // id is hashed from template strings only, without tag `component.a(Button)``` would share selector with `Button`
-      if (target !== bindedTag) {
-        return createComponent({ ...styleDefinition, id: 't' + hash(styleDefinition.id + target) })
-      }
-
       return createComponent(styleDefinition)
     }
   }
@@ -67,23 +60,25 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
 
 type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>) => StyleDefinition<Target, Props>
 
-const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
+// tag is part of id, otherwise `component.a` and `component.button` with same template (also `component.a(Button)`) would share selector
+function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>): string {
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
+  return 't' + hash(tag === null ? id : tag + id)
+}
 
+const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
   return {
     type: 'component',
-    id: 't' + hash(id),
+    id: createId(tag, styles),
     styles,
     tag,
   }
 }
 
 const global: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
-  const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
-
   return {
     type: 'global',
-    id: 't' + hash(id),
+    id: createId(tag, styles),
     styles,
     tag,
   }
@@ -130,4 +125,4 @@ function insert<Props = {}>(sheet: Sheet, definition: StyleDefinition<HTMLElemen
 }
 
 export type { Arguments, Compiler, CreateCallback, CSS, DefaultTheme, Properties, Raw, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
-export { component, css, global, insert, keyframes, styled }
+export { component, createId, css, global, insert, keyframes, styled }

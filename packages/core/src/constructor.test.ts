@@ -18,7 +18,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 'twq229y',
+        id: 't17bpjkr',
         styles: [[['color: red;'], []]],
         tag: 'div',
         type: 'component',
@@ -47,7 +47,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 't18maiqm',
+        id: 'tl6tzvb',
         styles: [
           [['color: red;'], []],
           [['background: blue;'], []],
@@ -66,7 +66,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 'twq229y',
+        id: 't17bpjkr',
         styles: [[['color: red;'], []]],
         tag: 'div',
         type: 'component',
@@ -94,7 +94,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 't18maiqm',
+        id: 'tusxsns',
         styles: [
           [['color: red;'], []],
           [['background: blue;'], []],
@@ -125,7 +125,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 't60xyk8',
+        id: 't12eqcfl',
         styles: [
           [['color: red;'], []],
           [[''], []],
@@ -144,7 +144,7 @@ describe('component', () => {
     test('div', [[['color: red;'], []]])
 
     expect(test).toHaveReturnedWith({
-      id: 'twq229y',
+      id: 't17bpjkr',
       styles: [[['color: red;'], []]],
       tag: 'div',
       type: 'component',
@@ -157,11 +157,18 @@ describe('component', () => {
     test('div', [[['color: ', ';'], [({ color }) => color]]])
 
     expect(test).toHaveReturnedWith({
-      id: 't10upe3l',
+      id: 'tnc696h',
       styles: [[['color: ', ';'], [expect.any(Function)]]],
       tag: 'div',
       type: 'component',
     })
+  })
+
+  test('should create different ids for same styles with different tags', () => {
+    const div = component('div', [[['color: red;'], []]])
+    const button = component('button', [[['color: red;'], []]])
+
+    expect(div.id).not.toBe(button.id)
   })
 })
 

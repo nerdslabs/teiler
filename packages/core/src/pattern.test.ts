@@ -12,7 +12,7 @@ describe('pattern', () => {
       styles: [[['background: blue;'], []]],
       tag: 'div',
       __pattern__: true,
-      id: 't1iflo4h',
+      id: 't13mxbpz',
     })
   })
 
@@ -33,7 +33,7 @@ describe('pattern', () => {
       ],
       tag: 'div',
       __pattern__: true,
-      id: 'tu2c2va',
+      id: 'tgtmkp',
     })
   })
 
