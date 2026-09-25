@@ -13,18 +13,21 @@ export default [
         name: 'teiler-vue',
         format: 'umd',
         sourcemap: true,
+        minify: true,
         globals,
       },
       {
         file: 'dist/teiler-vue.cjs.js',
         format: 'cjs',
         sourcemap: true,
+        minify: true,
         globals,
       },
       {
         file: 'dist/teiler-vue.esm.js',
         format: 'esm',
         sourcemap: true,
+        minify: true,
         globals,
       },
     ],
@@ -35,7 +38,7 @@ export default [
   },
   {
     input: 'src/index.ts',
-    external: ['vue', /^vue\//],
+    external: ['vue', /^vue\//, '@teiler/core'],
     output: {
       dir: 'dist',
       format: 'es',
