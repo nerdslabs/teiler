@@ -1,18 +1,4 @@
-import commonjs from '@rollup/plugin-commonjs'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
-import json from '@rollup/plugin-json'
-import swc from '@rollup/plugin-swc';
-import dts from 'rollup-plugin-dts'
-
-import { terser } from 'rollup-plugin-terser'
-
-const defaultPlugins = [
-  commonjs(),
-  nodeResolve({ extensions: ['.ts'], }),
-  json(),
-  swc(),
-  terser(),
-]
+import { dts } from 'rolldown-plugin-dts'
 
 export default [
   {
@@ -35,7 +21,6 @@ export default [
         sourcemap: true,
       },
     ],
-    plugins: defaultPlugins,
     watch: {
       clearScreen: false
     }
@@ -43,10 +28,11 @@ export default [
   {
     input: 'src/index.ts',
     output: {
-      file: `dist/teiler-core.d.ts`,
+      dir: 'dist',
       format: 'es',
+      entryFileNames: (chunk) => chunk.name.endsWith('.d') ? 'teiler-core.d.ts' : '_entry.js',
     },
-    plugins: [dts.default()],
+    plugins: [dts({ emitDtsOnly: true })],
     watch: {
       clearScreen: false
     }

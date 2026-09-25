@@ -9,86 +9,66 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [22.x, 24.x, 26.x]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.node-version }}-yarn-
+          cache: pnpm
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
       - name: Run tests
-        run: yarn test -- --ci --coverage
+        run: pnpm test -- --ci --coverage
   storybook:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [22.x, 24.x, 26.x]
         package: [{ name: 'svelte', port: 6006 }, { name: 'vue', port: 6007 }]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.node-version }}-yarn-
+          cache: pnpm
       - name: Install Dependencies
         run: |
-          yarn install
-          yarn playwright install --with-deps chromium
+          pnpm install
+          pnpm playwright install --with-deps chromium
       - name: Build
-        run: yarn build
+        run: pnpm build
       - name: Run tests
         run: |
           cd packages/${{ matrix.package.name }}
-          yarn dlx concurrently -k -s first -n "STORYBOOK,TEST" -c "magenta,blue" \
-            "yarn storybook" \
-            "yarn dlx wait-on tcp:${{ matrix.package.port }} && yarn test-storybook --url http://localhost:${{ matrix.package.port }}"
+          pnpm dlx concurrently -k -s first -n "STORYBOOK,TEST" -c "magenta,blue" \
+            "pnpm storybook" \
+            "pnpm dlx wait-on tcp:${{ matrix.package.port }} && pnpm test-storybook --url http://localhost:${{ matrix.package.port }}"
   lint:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20.x
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 24.x
+          cache: pnpm
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
       - name: Run tests
-        run: yarn lint
+        run: pnpm lint
   format:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20.x
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 24.x
+          cache: pnpm
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
       - name: Run tests
-        run: yarn check-format
+        run: pnpm check-format

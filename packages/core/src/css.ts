@@ -20,7 +20,7 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
           const property = properties.at(index)
 
           if (property) {
-            let value = null
+            let value: unknown
             if ((typeof property === 'object' || typeof property === 'function') && 'styleDefinition' in property) {
               const styleDefinition = property.styleDefinition as StyleDefinition<HTMLElements, Props>
               result.definitions = [...result.definitions, styleDefinition]

@@ -1,21 +1,8 @@
-import commonjs from '@rollup/plugin-commonjs'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
-import json from '@rollup/plugin-json'
-import swc from '@rollup/plugin-swc';
-import dts from 'rollup-plugin-dts'
-
-import { terser } from 'rollup-plugin-terser'
+import { dts } from 'rolldown-plugin-dts'
 
 const globals = {
   vue: 'Vue',
 }
-
-const defaultPlugins = [
-  commonjs(),
-  nodeResolve({ extensions: ['.ts'], }),
-  json(),
-  swc(),
-]
 
 export default [
   {
@@ -41,19 +28,20 @@ export default [
         globals,
       },
     ],
-    plugins: [...defaultPlugins, terser()],
-    external: ["vue"],
+    external: ['vue'],
     watch: {
       clearScreen: false
     }
   },
   {
     input: 'src/index.ts',
+    external: ['vue', /^vue\//],
     output: {
-      file: `dist/teiler-vue.d.ts`,
+      dir: 'dist',
       format: 'es',
+      entryFileNames: (chunk) => chunk.name.endsWith('.d') ? 'teiler-vue.d.ts' : '_entry.js',
     },
-    plugins: [...defaultPlugins, dts.default()],
+    plugins: [dts({ emitDtsOnly: true })],
     watch: {
       clearScreen: false
     }

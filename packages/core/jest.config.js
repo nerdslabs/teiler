@@ -2,8 +2,7 @@ export default {
   transform: {
     '^.+\\.(t|j)sx?$': '@swc/jest',
   },
-  testEnvironment: 'node',
-  setupFiles: ['./jest.client.ts'],
+  testEnvironment: 'jsdom',
   coverageThreshold: {
     global: {
       branches: 90,
