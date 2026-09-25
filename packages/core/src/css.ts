@@ -19,7 +19,7 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
 
           const property = properties.at(index)
 
-          if (property) {
+          if (property !== undefined && property !== null) {
             let value: unknown
             if ((typeof property === 'object' || typeof property === 'function') && 'styleDefinition' in property) {
               const styleDefinition = property.styleDefinition as StyleDefinition<HTMLElements, Props>
@@ -27,7 +27,7 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
               value = '.' + styleDefinition.id
             } else if (typeof property === 'function') {
               const exec = property(props)
-              if (typeof exec === 'object' && '__css__' in exec) {
+              if (typeof exec === 'object' && exec !== null && '__css__' in exec) {
                 const { css: style, definitions: definitions } = compile<Props>(exec.styles, props)
                 result.definitions = [...result.definitions, ...definitions]
                 value = style
