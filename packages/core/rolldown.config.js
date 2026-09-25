@@ -9,16 +9,19 @@ export default [
         name: 'teiler-core',
         format: 'umd',
         sourcemap: true,
+        minify: true,
       },
       {
         file: 'dist/teiler-core.cjs.js',
         format: 'cjs',
         sourcemap: true,
+        minify: true,
       },
       {
         file: 'dist/teiler-core.esm.js',
         format: 'esm',
         sourcemap: true,
+        minify: true,
       },
     ],
     watch: {

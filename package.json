@@ -1,7 +1,7 @@
 {
   "name": "teiler",
   "private": true,
-  "packageManager": "pnpm@10.34.5",
+  "packageManager": "pnpm@12.6.0",
   "workspaces": [
     "packages/*"
   ],
@@ -18,8 +18,8 @@
     "wait": "wait-on tcp:6006 && wait-on tcp:6007"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "^0.7.0",
-    "@changesets/cli": "^2.31.0",
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
     "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^10.0.1",
     "@storybook/html-vite": "^10.6.0",

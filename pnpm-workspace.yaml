@@ -1,2 +1,46 @@
 packages:
   - packages/*
+
+overrides:
+  # GHSA-w5hq-g745-h8pq, @storybook/test-runner (and its jest-junit, nyc) still depend on uuid 8
+  'uuid@<11.1.1': 11.1.1
+
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
+  esbuild: false
+  svelte-preprocess: false
+  unrs-resolver: false
+
+linkWorkspacePackages: true
+
+minimumReleaseAgeExclude:
+  - rolldown@1.2.11
+  - '@rolldown/binding-android-arm-eabi@1.2.11'
+  - '@rolldown/binding-android-arm64@1.2.11'
+  - '@rolldown/binding-darwin-arm64@1.2.11'
+  - '@rolldown/binding-darwin-x64@1.2.11'
+  - '@rolldown/binding-freebsd-x64@1.2.11'
+  - '@rolldown/binding-linux-arm-gnueabihf@1.2.11'
+  - '@rolldown/binding-linux-arm64-gnu@1.2.11'
+  - '@rolldown/binding-linux-arm64-musl@1.2.11'
+  - '@rolldown/binding-linux-ppc64-gnu@1.2.11'
+  - '@rolldown/binding-linux-s390x-gnu@1.2.11'
+  - '@rolldown/binding-linux-x64-gnu@1.2.11'
+  - '@rolldown/binding-linux-x64-musl@1.2.11'
+  - '@rolldown/binding-openharmony-arm64@1.2.11'
+  - '@rolldown/binding-win32-arm64-msvc@1.2.11'
+  - '@rolldown/binding-win32-x64-msvc@1.2.11'
+  - turbo@2.11.4
+  - '@turbo/darwin-64@2.11.4'
+  - '@turbo/darwin-arm64@2.11.4'
+  - '@turbo/linux-64@2.11.4'
+  - '@turbo/linux-arm64@2.11.4'
+  - '@turbo/windows-64@2.11.4'
+  - '@turbo/windows-arm64@2.11.4'
+  - vite@8.3.1
+  - browserslist@4.29.1
+  - caniuse-lite@1.0.30001812
+  - electron-to-chromium@1.5.439
+  - baseline-browser-mapping@2.11.26
+  - esrap@2.3.12

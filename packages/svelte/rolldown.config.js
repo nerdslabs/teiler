@@ -60,24 +60,32 @@ export default [
   {
     input: 'src/index.ts',
     external: ['svelte', 'svelte/internal', /^svelte\//],
+    resolve: {
+      alias: {
+        '@teiler/core': path.resolve('../core/src/index.ts'),
+      },
+    },
     output: [
       {
         file: 'dist/teiler-svelte.umd.js',
         name: 'teiler-svelte',
         format: 'umd',
         sourcemap: true,
+        minify: true,
         globals,
       },
       {
         file: 'dist/teiler-svelte.cjs.js',
         format: 'cjs',
         sourcemap: true,
+        minify: true,
         globals,
       },
       {
         file: 'dist/teiler-svelte.esm.js',
         format: 'esm',
         sourcemap: true,
+        minify: true,
         globals,
       },
     ],
@@ -88,7 +96,7 @@ export default [
   },
   {
     input: 'src/index.ts',
-    external: ['svelte', 'svelte/internal', /^svelte\//],
+    external: ['svelte', 'svelte/internal', /^svelte\//, '@teiler/core'],
     output: {
       dir: 'dist',
       format: 'es',
