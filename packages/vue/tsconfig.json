@@ -13,7 +13,7 @@
     ],
     "module": "esNext",
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "strict": true,
     "strictPropertyInitialization": false,
