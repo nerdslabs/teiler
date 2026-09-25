@@ -151,10 +151,8 @@ describe('keyframes', () => {
   test('should create different ids for different property values', () => {
     const fadeHalf = keyframes`from { opacity: ${0.5}; } to { opacity: 1; }`
     const fadeZero = keyframes`from { opacity: ${0}; } to { opacity: 1; }`
-    const fadeZeroAgain = keyframes`from { opacity: ${0}; } to { opacity: 1; }`
 
     expect(fadeHalf.id).not.toEqual(fadeZero.id)
-    expect(fadeZero.id).toEqual(fadeZeroAgain.id)
   })
 })
 

@@ -81,7 +81,6 @@ const global: Compiler = <Target extends HTMLElements, Props>(tag: Target, style
 
 function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleDefinition<null, {}> {
   const style: Style<{}> = [Array.from(strings), properties]
-  // values are part of id, otherwise keyframes with same template but different values would share animation name
   const id = strings.reduce((acc, string, index) => acc + string + (index < properties.length ? String(properties[index]) : ''), '')
 
   return {
