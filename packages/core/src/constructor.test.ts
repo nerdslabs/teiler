@@ -177,6 +177,7 @@ describe('css', () => {
 describe('insert', () => {
   test('should insert component styles into the sheet', () => {
     const sheet = {
+      has: jest.fn(() => false),
       insert: jest.fn(),
       dump: jest.fn<() => string>(),
       extract: jest.fn<() => { css: string; ids: string[] }>(),
@@ -200,6 +201,7 @@ describe('insert', () => {
 
   test('should insert keyframes styles into the sheet', () => {
     const sheet = {
+      has: jest.fn(() => false),
       insert: jest.fn(),
       dump: jest.fn<() => string>(),
       extract: jest.fn<() => { css: string; ids: string[] }>(),
@@ -223,6 +225,7 @@ describe('insert', () => {
 
   test('should insert global styles into the sheet', () => {
     const sheet = {
+      has: jest.fn(() => false),
       insert: jest.fn(),
       dump: jest.fn<() => string>(),
       extract: jest.fn<() => { css: string; ids: string[] }>(),
@@ -242,5 +245,33 @@ describe('insert', () => {
 
     expect(sheet.insert).toHaveBeenCalledWith('ytz3vv', 'body{color:red;}')
     expect(result).toBeNull()
+  })
+
+  test('should transpile the same styles only once', async () => {
+    const stylis = jest.requireActual<typeof import('stylis')>('stylis')
+    const stylisCompile = jest.fn(stylis.compile)
+    jest.doMock('stylis', () => ({ ...stylis, compile: stylisCompile }))
+
+    let core!: typeof import('.')
+    await jest.isolateModulesAsync(async () => {
+      core = await import('.')
+    })
+    jest.dontMock('stylis')
+
+    const sheet = core.createStyleSheet({})
+
+    const definition: StyleDefinition<'div', {}> = {
+      id: 'twq229y',
+      styles: [[['color: red;'], []]],
+      tag: 'div',
+      type: 'component',
+    }
+
+    const first = core.insert(sheet, definition, { theme: {} })
+    const second = core.insert(sheet, definition, { theme: {} })
+
+    expect(stylisCompile).toHaveBeenCalledTimes(1)
+    expect(second).toBe(first)
+    expect(sheet.dump()).toBe(' .teiler-wq229y{color:red;}')
   })
 })

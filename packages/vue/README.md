@@ -193,6 +193,36 @@ export default defineNuxtPlugin({
 
 ```
 
+## Content Security Policy
+
+With a strict `style-src` policy, pass a `nonce` to the style sheet and provide it to the app. Without an explicit `nonce` no attribute is set, and the default style sheet never has one.
+
+On the server, `extract` returns the nonce, so it can be set on the rendered `<style>` tag:
+
+```ts
+import { createStyleSheet } from "@teiler/core"
+
+const styleSheet = createStyleSheet({ nonce })
+app.provide('STYLE_SHEET', styleSheet)
+
+// after render:
+const { css, ids, nonce } = styleSheet.extract()
+const styleTag = `<style data-teiler="${ids.join(' ')}" nonce="${nonce}">${css}</style>`
+```
+
+On the client, read the nonce from the server rendered tag before creating the style sheet:
+
+```ts
+import { createStyleSheet } from "@teiler/core"
+
+const element = document.querySelector<HTMLStyleElement>('style[data-teiler]')
+const styleSheet = createStyleSheet({ nonce: element?.nonce })
+app.provide('STYLE_SHEET', styleSheet)
+```
+
+> [!NOTE]
+> Use the `nonce` property, not `getAttribute('nonce')`. Browsers hide the attribute when the policy is sent in a header, so `getAttribute` returns an empty string.
+
 ## Sew a Pattern
 
 This tool simplifies the creation of consistent and reusable visual styles for components across various web frameworks. It provides a pattern-based approach, where patterns serve as blueprints for defining the visual style of components.
