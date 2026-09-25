@@ -4,3 +4,11 @@ packages:
 overrides:
   # GHSA-w5hq-g745-h8pq, @storybook/test-runner (and its jest-junit, nyc) still depend on uuid 8
   'uuid@<11.1.1': 11.1.1
+
+# install scripts stay disabled as before; native binaries come from optional dependencies
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
+  esbuild: false
+  svelte-preprocess: false
+  unrs-resolver: false
