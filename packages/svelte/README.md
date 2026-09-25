@@ -110,6 +110,25 @@ declare module '@teiler/core' {
 }
 ```
 
+## Content Security Policy
+
+With a strict `style-src` policy, create the style sheet with a `nonce` and set it in the context of the main component. Without an explicit `nonce` no attribute is set, and the default style sheet never has one.
+
+```svelte
+<!-- Main component inside application (`App.svelte`) -->
+<script lang="ts">
+  import { createStyleSheet } from '@teiler/core'
+  import { setContext } from 'svelte'
+
+  export let nonce: string
+
+  setContext('STYLE_SHEET', createStyleSheet({ nonce }))
+</script>
+```
+
+> [!NOTE]
+> When reading the nonce from an existing element, use the `nonce` property, not `getAttribute('nonce')`. Browsers hide the attribute when the policy is sent in a header, so `getAttribute` returns an empty string.
+
 ## Sew a Pattern
 
 This tool simplifies the creation of consistent and reusable visual styles for components across various web frameworks. It provides a pattern-based approach, where patterns serve as blueprints for defining the visual style of components.

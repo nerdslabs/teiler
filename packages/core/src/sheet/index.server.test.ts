@@ -27,6 +27,11 @@ describe('extract', () => {
     expect(css).toContain('my-rule { color: red }')
     expect(ids).toContain('my-rule')
   })
+
+  test('should return the nonce passed in options', () => {
+    const sheet = createStyleSheet({ nonce: 'abc123' })
+    expect(sheet.extract().nonce).toBe('abc123')
+  })
 })
 
 describe('hydrate', () => {
@@ -35,5 +40,14 @@ describe('hydrate', () => {
     sheet.hydrate(['my-rule'])
     sheet.insert('my-rule', 'my-rule { color: red }')
     expect(sheet.dump()).toContain('')
+  })
+
+  test('should report hydrated and inserted keys', () => {
+    const sheet = createStyleSheet({})
+    sheet.hydrate(['hydrated-rule'])
+    sheet.insert('my-rule', 'my-rule { color: red }')
+    expect(sheet.has('hydrated-rule')).toBe(true)
+    expect(sheet.has('my-rule')).toBe(true)
+    expect(sheet.has('other-rule')).toBe(false)
   })
 })

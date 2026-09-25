@@ -2,12 +2,14 @@ import { createBrowserTag, createServerTag } from './tag'
 
 type Options = {
   container?: HTMLElement
+  nonce?: string
 }
 
 export type Sheet = {
+  has(key: string): boolean
   insert(key: string, styles: string): void
   dump(): string
-  extract(): { css: string; ids: string[] }
+  extract(): { css: string; ids: string[]; nonce?: string }
   hydrate(ids: string[]): void
 }
 
@@ -19,14 +21,17 @@ export default function createStyleSheet(_options: Options): Sheet {
     ..._options,
   }
 
-  let cache: string[] = []
+  let cache = new Set<string>()
 
   const isSSR = typeof document === 'undefined'
-  const styleTag = isSSR ? createServerTag() : createBrowserTag(options.container)
+  const styleTag = isSSR ? createServerTag() : createBrowserTag(options.container, options.nonce)
+
+  const has = (key: string) => cache.has(key) || styleTag.hasRule(key)
 
   return {
+    has,
     insert: (key: string, styles: string) => {
-      if (cache.includes(key) === false) {
+      if (has(key) === false) {
         styleTag.insertRule(key, styles)
       }
     },
@@ -37,10 +42,11 @@ export default function createStyleSheet(_options: Options): Sheet {
       return {
         css: styleTag.getAllRules(),
         ids: styleTag.getAllKeys(),
+        nonce: options.nonce,
       }
     },
     hydrate: (ids: string[]) => {
-      cache = ids || []
+      cache = new Set(ids || [])
     },
   }
 }
