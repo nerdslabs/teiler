@@ -60,6 +60,12 @@ export default [
   {
     input: 'src/index.ts',
     external: ['svelte', 'svelte/internal', /^svelte\//],
+    // tsconfig `paths` only apply to .ts files, without alias compiled .svelte files would bundle a second copy of core from node_modules
+    resolve: {
+      alias: {
+        '@teiler/core': path.resolve('../core/src/index.ts'),
+      },
+    },
     output: [
       {
         file: 'dist/teiler-svelte.umd.js',
