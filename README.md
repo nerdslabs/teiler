@@ -88,6 +88,20 @@ const Button = sew(ButtonPattern, createComponent)
 export default Button
 ```
 
+Patterns can be extended. `pattern(ButtonPattern)` keeps the element of the extended pattern, `pattern.<tag>(ButtonPattern)` changes it:
+
+```typescript
+import { pattern } from '@teiler/core'
+
+const PrimaryButtonPattern = pattern(ButtonPattern)`
+  background: #CBCBCB;
+`
+
+const ButtonLinkPattern = pattern.a(ButtonPattern)`
+  text-decoration: none;
+`
+```
+
 ## Packages
 
 | Package       | Download | Size
