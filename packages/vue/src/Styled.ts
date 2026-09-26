@@ -16,7 +16,6 @@ export default function <Target extends HTMLElements, Props>(styleDefinition: St
 
       const element = ref<HTMLElement | null>(null)
 
-      // with `as` set to a component, ref receives its instance, expose its root element instead
       const setElement = (el: Element | ComponentPublicInstance | null) => {
         element.value = (el && '$el' in el ? el.$el : el) as HTMLElement | null
       }

@@ -18,7 +18,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 't17bpjkr',
+        id: 't19bgd6n',
         styles: [[['color: red;'], []]],
         tag: 'div',
         type: 'component',
@@ -47,7 +47,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 'tl6tzvb',
+        id: 't4akc9y',
         styles: [
           [['color: red;'], []],
           [['background: blue;'], []],
@@ -66,7 +66,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 't17bpjkr',
+        id: 't19bgd6n',
         styles: [[['color: red;'], []]],
         tag: 'div',
         type: 'component',
@@ -94,7 +94,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 'tusxsns',
+        id: 't6ptvm5',
         styles: [
           [['color: red;'], []],
           [['background: blue;'], []],
@@ -125,7 +125,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 't12eqcfl',
+        id: 't19i8bub',
         styles: [
           [['color: red;'], []],
           [[''], []],
@@ -144,7 +144,7 @@ describe('component', () => {
     test('div', [[['color: red;'], []]])
 
     expect(test).toHaveReturnedWith({
-      id: 't17bpjkr',
+      id: 't19bgd6n',
       styles: [[['color: red;'], []]],
       tag: 'div',
       type: 'component',
@@ -157,7 +157,7 @@ describe('component', () => {
     test('div', [[['color: ', ';'], [({ color }) => color]]])
 
     expect(test).toHaveReturnedWith({
-      id: 'tnc696h',
+      id: 't1fqd64x',
       styles: [[['color: ', ';'], [expect.any(Function)]]],
       tag: 'div',
       type: 'component',

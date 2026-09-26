@@ -33,7 +33,6 @@ type TeilerComponent<Target extends HTMLElements, Props> = {
 type CreateCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (styles: StyleDefinition<HTMLElements, Props>) => Type
 type ExtendCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
 
-// `tag` is undefined when not chosen explicitly, e.g. `component(Button)` keeps the tag of `Button`
 function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   tag: HTMLElements | undefined,
   compiler: Compiler,
@@ -60,10 +59,9 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
 
 type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>) => StyleDefinition<Target, Props>
 
-// tag is part of id, otherwise `component.a` and `component.button` with same template (also `component.a(Button)`) would share selector
 function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>): string {
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
-  return 't' + hash(tag === null ? id : tag + id)
+  return 't' + hash(tag === null ? id : tag + '|' + id)
 }
 
 const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {

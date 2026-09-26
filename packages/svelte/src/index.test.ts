@@ -36,7 +36,7 @@ describe('component', () => {
 
     const { baseElement } = render(StyledComponent)
 
-    expect(baseElement.innerHTML).toBe('<div><div class="teiler-1r77qux t1wzpox7"></div></div>')
+    expect(baseElement.innerHTML).toBe('<div><div class="teiler-1r77qux t8e9dar"></div></div>')
   })
 
   test('should create a component with props', () => {
@@ -49,7 +49,7 @@ describe('component', () => {
       context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
     })
 
-    expect(baseElement.innerHTML).toBe('<div><div class="teiler-100tn2k tnc696h"></div></div>')
+    expect(baseElement.innerHTML).toBe('<div><div class="teiler-100tn2k t1fqd64x"></div></div>')
     expect(styleSheet.dump()).toBe(' .teiler-100tn2k{color:yellow;}')
   })
 
@@ -62,7 +62,7 @@ describe('component', () => {
       context: new Map(Object.entries({ STYLE_SHEET: styleSheet, THEME: writable({ fontColor: 'green' }) })),
     })
 
-    expect(baseElement.innerHTML).toBe('<div><div class="teiler-1dc5e1n tnc696h"></div></div>')
+    expect(baseElement.innerHTML).toBe('<div><div class="teiler-1dc5e1n t1fqd64x"></div></div>')
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
   })
 
@@ -78,7 +78,7 @@ describe('component', () => {
       context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
     })
 
-    expect(baseElement.innerHTML).toBe('<div><div class="teiler-1dc5e1n ts1fy62 custom-class"></div></div>')
+    expect(baseElement.innerHTML).toBe('<div><div class="teiler-1dc5e1n tsqxzcw custom-class"></div></div>')
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
   })
 })
@@ -143,7 +143,7 @@ describe('ThemeProvider', () => {
       context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
     })
 
-    expect(baseElement.innerHTML).toBe('<div><div class="teiler-9hfnro t4wkn5u">abc</div></div>')
+    expect(baseElement.innerHTML).toBe('<div><div class="teiler-9hfnro thjt86x">abc</div></div>')
     expect(styleSheet.dump()).toBe(' .teiler-9hfnro{color:green;}')
   })
 })
