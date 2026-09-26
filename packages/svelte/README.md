@@ -4,9 +4,16 @@
 
 **Teiler** is an open source library that simplifies the creation of stylish components for various frameworks.
 
-Currently in the **alpha phase**, the library is actively being developed and improved. It currently provides support solely for Svelte CSR (Client-Side Rendering).
+Currently in the **alpha phase**, the library is actively being developed and improved. This package is the **Svelte 5** adapter and supports both CSR (Client-Side Rendering) and SSR (Server-Side Rendering).
 
-Join our community on our [Discord Server](https://discord.gg/J6Sv9sQ64t) to stay informed about the latest developments, exchange ideas, and connect with fellow developers. We are continuously working on expanding our support to include more frameworks, allowing developers to effortlessly create components across various environments. 
+Join our community on our [Discord Server](https://discord.gg/J6Sv9sQ64t) to stay informed about the latest developments, exchange ideas, and connect with fellow developers. We are continuously working on expanding our support to include more frameworks, allowing developers to effortlessly create components across various environments.
+
+## Requirements
+
+- `svelte` `^5.16.0`
+- A Svelte-aware bundler (Vite with `@sveltejs/vite-plugin-svelte`, SvelteKit, `rollup-plugin-svelte`, …)
+
+The package ships uncompiled `.svelte` files through the `svelte` export condition, so your bundler compiles them for the right target (client or server) with the same Svelte version as your application.
 
 ### Example
 
@@ -32,6 +39,19 @@ const Button = component.button<{
   }
 `
 ```
+
+```svelte
+<Button _primary={primary} onclick={() => count++}>Clicked {count} times</Button>
+```
+
+Props prefixed with `_` are used only for styles and are not forwarded to the DOM. Every other prop, including event handlers (`onclick`, `oninput`, …) and `class`, is forwarded to the rendered element.
+
+## Migrating from Svelte 4 (`@teiler/svelte` 0.0.x)
+
+- Svelte 5 is required (`svelte` `^5.16.0`); Svelte 4 is no longer supported.
+- Event handlers are props: `<Button onclick={handler}>` instead of `<Button on:click={handler}>`.
+- If you provide the theme through context yourself, the `THEME` context holds a getter (`() => theme`) instead of a writable store. `ThemeProvider` usage is unchanged.
+- UMD/CJS bundles are gone; the package is consumed as Svelte source by your bundler.
 
 ## Keyframes
 
@@ -92,29 +112,24 @@ const ButtonLink = component.a(Button)`
 
 ## Theme
 
-Example how to use themes.
-
-```typescript
-// Main component inside application (`App.svelte`)
-<script context="module" lang="ts">
-  export type CustomTheme = {
-    fontColor: string,
-  }
-</script>
+```svelte
+<!-- App.svelte -->
 <script lang="ts">
-  import { ThemeProvider } from '@teiler/svelte'
-  import { Component } from './theme'
+  import type { CustomTheme } from './theme'
 
-  export let theme: CustomTheme = {
-    fontColor: 'red',
-  }
+  import { ThemeProvider } from '@teiler/svelte'
+  import { Component } from './components'
+
+  let theme: CustomTheme = $state({ fontColor: 'red' })
 </script>
 
 <ThemeProvider {theme}>
   <Component>Some test text</Component>
 </ThemeProvider>
+```
 
-// Component with theme usage
+```typescript
+// components.ts
 import { component } from '@teiler/svelte'
 
 const Component = component.div`
@@ -125,32 +140,30 @@ export { Component }
 ```
 
 To add typing for Typescript applications you need to add `extend` inside declaration file (`d.ts`)
+
 ```typescript
-import type { CustomTheme } from "./App.svelte";
+import type { CustomTheme } from './theme'
 
 declare module '@teiler/core' {
   export interface DefaultTheme extends CustomTheme {}
 }
 ```
 
-## Content Security Policy
+## Server-Side Rendering
 
-With a strict `style-src` policy, create the style sheet with a `nonce` and set it in the context of the main component. Without an explicit `nonce` no attribute is set, and the default style sheet never has one.
+Styles are collected into a style sheet provided through the `STYLE_SHEET` context. Create one sheet per request, render, then put the extracted CSS into the document head.
 
-```svelte
-<!-- Main component inside application (`App.svelte`) -->
-<script lang="ts">
-  import { createStyleSheet } from '@teiler/core'
-  import { setContext } from 'svelte'
+```typescript
+import { createStyleSheet } from '@teiler/core'
+import { render } from 'svelte/server'
+import App from './App.svelte'
 
-  export let nonce: string
-
-  setContext('STYLE_SHEET', createStyleSheet({ nonce }))
-</script>
+const sheet = createStyleSheet({})
+const { body } = render(App, { context: new Map([['STYLE_SHEET', sheet]]) })
+const { css, ids } = sheet.extract()
 ```
 
-> [!NOTE]
-> When reading the nonce from an existing element, use the `nonce` property, not `getAttribute('nonce')`. Browsers hide the attribute when the policy is sent in a header, so `getAttribute` returns an empty string.
+Read `body` before calling `extract()`: styles are inserted while the component tree renders.
 
 ## Sew a Pattern
 

@@ -1,27 +1,25 @@
 import type { Compiler, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
-import type { ComponentType, SvelteComponent } from 'svelte'
+import type { ComponentProps, Component as SvelteComponent } from 'svelte'
+import type { SvelteHTMLElements } from 'svelte/elements'
 
 import { component, global, keyframes, styled, tags } from '@teiler/core'
 import Styled from './Styled.svelte'
 
-type SvelteTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & ComponentType<SvelteComponent>
+type ElementProps<Target extends HTMLElements> = Target extends keyof SvelteHTMLElements ? SvelteHTMLElements[Target] : {}
 
-type Options = ConstructorParameters<typeof Styled>[0]
+type SvelteTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & SvelteComponent<Props & ElementProps<Target>>
+
+const withStyleDefinition = <Props extends object, Definition>(props: Props, styleDefinition: Definition): Props & { styleDefinition: Definition } => {
+  return new Proxy(props, {
+    get: (target, key) => (key === 'styleDefinition' ? styleDefinition : Reflect.get(target, key)),
+    has: (target, key) => key === 'styleDefinition' || Reflect.has(target, key),
+  }) as Props & { styleDefinition: Definition }
+}
 
 const createComponent = <Target extends HTMLElements, Props extends object = {}>(styleDefinition: StyleDefinition<Target, Props>): SvelteTeilerComponent<Target, Props> => {
-  return class extends Styled<{}, Props> {
-    static styleDefinition = styleDefinition
+  const wrapped: SvelteComponent<Props & ElementProps<Target>> = (internals, props) => Styled(internals, withStyleDefinition(props, styleDefinition) as ComponentProps<typeof Styled>)
 
-    constructor(options: Options) {
-      super({
-        ...options,
-        props: {
-          ...options.props,
-          styleDefinition,
-        },
-      })
-    }
-  }
+  return Object.assign(wrapped, { styleDefinition })
 }
 
 type InferProps<Component, Props> = Component extends SvelteTeilerComponent<HTMLElements, infer P> ? P & Props : Props
