@@ -48,7 +48,7 @@ These are the frameworks we are currently working on and planning to support in 
 
 | Framework     | CSR   | SSR  | More details |
 | :---          | :---- | :--- | :----------- |
-| Svelte v4     | ✓     | ✕    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/svelte/README.md) |
+| Svelte v5     | ✓     | ✓    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/svelte/README.md) |
 | VueJS         | ✓     | ✓    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/vue/README.md) |
 | SolidJS       | ✕     | ✕    | ---          |
 | React         | ✕     | ✕    | ---          |

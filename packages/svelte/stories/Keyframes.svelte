@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Component } from './keyframes'
 
-  export let label = ''
+  const { label = '' }: { label?: string } = $props()
 </script>
 
 <Component>

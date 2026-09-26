@@ -1,22 +1,20 @@
 {
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "stories/stories.d.ts"
   ],
   "exclude": [
     "node_modules"
   ],
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2022",
     "lib": [
       "esnext",
       "DOM"
     ],
     "module": "esNext",
-    "importHelpers": true,
     "moduleResolution": "bundler",
-    "experimentalDecorators": true,
     "strict": true,
-    "strictPropertyInitialization": false,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -25,7 +23,5 @@
     "paths": {
       "@teiler/core": ["../core/src"]
     }
-  },
-  "composite": true,
-  "compileOnSave": false,
+  }
 }

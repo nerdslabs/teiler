@@ -1,28 +1,35 @@
-export default {
+import { fileURLToPath } from 'node:url'
+
+const svelteJester = fileURLToPath(import.meta.resolve('svelte-jester'))
+
+const project = (name, testEnvironment, customExportConditions, generate) => ({
+  displayName: name,
+  rootDir: '../..',
   transform: {
+    '^.+\\.svelte(\\.js)?$': [svelteJester, { compilerOptions: { generate } }],
     '^.+\\.(t|j)sx?$': '@swc/jest',
-    '^.+\\.svelte$': [
-      'svelte-jester',
-      {
-        preprocess: 'svelte.config.js',
-      },
-    ]
   },
+  transformIgnorePatterns: ['/node_modules/(?!.+\\.svelte(\\.js)?$)'],
   moduleFileExtensions: ['js', 'ts', 'svelte'],
   extensionsToTreatAsEsm: ['.svelte', '.ts'],
-  testEnvironment: 'jsdom',
+  testEnvironment,
   testEnvironmentOptions: {
-    customExportConditions: ['node', 'node-addons'],
+    customExportConditions,
   },
+  testMatch: [`<rootDir>/packages/svelte/tests/**/*.${name}.test.ts`],
+  moduleNameMapper: {
+    '^@teiler/(.*)$': '<rootDir>/packages/$1/src',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
+})
+
+export default {
+  projects: [project('client', 'jsdom', ['browser'], 'client'), project('server', 'node', ['node', 'node-addons'], 'server')],
   coveragePathIgnorePatterns: ['/node_module/'],
   collectCoverageFrom: ['<rootDir>/packages/svelte/src/**/*.ts'],
   coverageReporters: ['text'],
   coverageDirectory: '<rootDir>/packages/svelte/coverage',
   rootDir: '../..',
-  testMatch: ['<rootDir>/packages/svelte/**/*.test.ts'],
-  moduleNameMapper: {
-    '^@teiler/(.*)$': '<rootDir>/packages/$1/src',
-  },
   coverageThreshold: {
     global: {
       branches: 90,
