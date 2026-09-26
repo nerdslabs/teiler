@@ -1,28 +1,20 @@
 <script lang="ts">
-  import { Button, ExtendedButton} from './palette'
+  import { Button, ExtendedButton } from './palette'
 
-  import { createEventDispatcher } from 'svelte'
-
-  export let _primary = false
-  export let _primaryColor = "#f18805"
-
-  export let _size: 'normal' | 'small' = 'normal'
-
-  export let label = ''
-
-  export let disabled
-
-  const dispatch = createEventDispatcher()
-
-  /**
-   * Optional click handler
-   */
-  function onClick(event) {
-    dispatch('click', event)
-  }
+  const {
+    _primaryColor = '#f18805',
+    label = '',
+    disabled = false,
+    onclick,
+  }: {
+    _primaryColor?: string
+    label?: string
+    disabled?: boolean
+    onclick?: (event: MouseEvent) => void
+  } = $props()
 </script>
 
-<Button {_primary} {_size} {_primaryColor} {disabled} on:click={onClick}>
+<Button {_primaryColor} {disabled} {onclick}>
   {label}
 </Button>
-<ExtendedButton {_primary} {_size} {_primaryColor} {disabled}>Test</ExtendedButton>
+<ExtendedButton {_primaryColor} {disabled} _test={false}>Test</ExtendedButton>

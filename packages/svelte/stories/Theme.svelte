@@ -1,12 +1,10 @@
 <script lang="ts">
   import type { CustomTheme } from './customTheme'
 
-  import ThemeProvider from '../src/ThemeProvider.svelte'
+  import { ThemeProvider } from '@teiler/svelte'
   import { Component } from './theme'
 
-  export let theme: CustomTheme = {
-    fontColor: 'red',
-  }
+  const { theme = { fontColor: 'red' } }: { theme?: CustomTheme } = $props()
 </script>
 
 <ThemeProvider {theme}>

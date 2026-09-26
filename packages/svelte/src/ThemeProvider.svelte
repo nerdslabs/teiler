@@ -1,19 +1,12 @@
-<script context="module">
-  export const context = 'THEME'
-</script>
-
 <script lang="ts">
   import type { DefaultTheme } from '@teiler/core'
-  import { setContext } from 'svelte'
-  import { writable, type Writable } from 'svelte/store'
+  import type { Snippet } from 'svelte'
 
-  export let theme: DefaultTheme
+  import { setTheme } from './theme.js'
 
-  const themeStore = writable<DefaultTheme>(theme)
+  const { theme, children }: { theme: DefaultTheme; children?: Snippet } = $props()
 
-  setContext<Writable<DefaultTheme>>(context, themeStore)
-
-  $: themeStore.set(theme)
+  setTheme(() => theme)
 </script>
 
-<slot />
+{@render children?.()}
