@@ -1,7 +1,7 @@
 import type { Pattern } from './pattern'
 import type { HTMLElements, StyleDefinition, TeilerComponent } from '.'
 
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 import { pattern, sew } from './pattern'
 import { createStyleSheet, insert } from '.'
 

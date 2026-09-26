@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { StyleDefinition, createStyleSheet } from '@teiler/core'
 import { ThemeProvider, component, createComponent, global, keyframes } from './index'
