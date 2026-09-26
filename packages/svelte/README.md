@@ -67,6 +67,29 @@ const Button = component.button<{}>`
 `
 ```
 
+## Extending
+
+Pass an existing component to `component` to add styles to it. The new component keeps the element of the extended one, unless you pick another element with `component.<tag>`:
+
+```typescript
+import { component } from '@teiler/svelte'
+
+const Button = component.button`
+  display: inline-block;
+  border-radius: 4px;
+`
+
+// renders <button>
+const PrimaryButton = component(Button)`
+  background: #CBCBCB;
+`
+
+// renders <a> with Button styles
+const ButtonLink = component.a(Button)`
+  text-decoration: none;
+`
+```
+
 ## Theme
 
 Example how to use themes.
@@ -158,4 +181,18 @@ import { createComponent } from '@teiler/svelte'
 const Button = sew(ButtonPattern, createComponent)
 
 export default Button
+```
+
+Patterns can be extended the same way as components. `pattern(ButtonPattern)` keeps the element of the extended pattern, `pattern.<tag>(ButtonPattern)` changes it:
+
+```typescript
+import { pattern } from '@teiler/core'
+
+const PrimaryButtonPattern = pattern(ButtonPattern)`
+  background: #CBCBCB;
+`
+
+const ButtonLinkPattern = pattern.a(ButtonPattern)`
+  text-decoration: none;
+`
 ```

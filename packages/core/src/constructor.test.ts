@@ -18,7 +18,7 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 'twq229y',
+        id: 't19bgd6n',
         styles: [[['color: red;'], []]],
         tag: 'div',
         type: 'component',
@@ -47,12 +47,90 @@ describe('styled', () => {
 
     expect(test).toHaveReturnedWith({
       styleDefinition: {
-        id: 't18maiqm',
+        id: 't4akc9y',
         styles: [
           [['color: red;'], []],
           [['background: blue;'], []],
         ],
         tag: 'div',
+        type: 'component',
+      },
+    })
+  })
+
+  test('should create div component when tag is not specified', () => {
+    const template = ['color: red;']
+    const test = jest.fn(styled)
+
+    test(undefined, component, createComponent, template)
+
+    expect(test).toHaveReturnedWith({
+      styleDefinition: {
+        id: 't19bgd6n',
+        styles: [[['color: red;'], []]],
+        tag: 'div',
+        type: 'component',
+      },
+    })
+  })
+
+  test('should keep tag of extended component when tag is not specified', () => {
+    const existingComponent: TeilerComponent<'button', {}> = {
+      styleDefinition: {
+        type: 'component',
+        id: 'a',
+        tag: 'button',
+        styles: [[['color: red;'], []]],
+      },
+    }
+
+    const extend = styled(undefined, component, createComponent, existingComponent)
+
+    type Callable = Extract<typeof extend, (array: string[]) => {}>
+
+    const test = jest.fn(extend as Callable)
+
+    test(['background: blue;'])
+
+    expect(test).toHaveReturnedWith({
+      styleDefinition: {
+        id: 't6ptvm5',
+        styles: [
+          [['color: red;'], []],
+          [['background: blue;'], []],
+        ],
+        tag: 'button',
+        type: 'component',
+      },
+    })
+  })
+
+  test('should extend component with different tag', () => {
+    const existingComponent: TeilerComponent<'button', {}> = {
+      styleDefinition: {
+        type: 'component',
+        id: 'twq229y',
+        tag: 'button',
+        styles: [[['color: red;'], []]],
+      },
+    }
+
+    const extend = styled('a', component, createComponent, existingComponent)
+
+    type Callable = Extract<typeof extend, (array: string[]) => {}>
+
+    const test = jest.fn(extend as Callable)
+
+    test([''])
+
+    expect(test).toHaveReturnedWith({
+      styleDefinition: {
+        id: 't19i8bub',
+        styles: [
+          [['color: red;'], []],
+          [[''], []],
+        ],
+        tag: 'a',
         type: 'component',
       },
     })
@@ -66,7 +144,7 @@ describe('component', () => {
     test('div', [[['color: red;'], []]])
 
     expect(test).toHaveReturnedWith({
-      id: 'twq229y',
+      id: 't19bgd6n',
       styles: [[['color: red;'], []]],
       tag: 'div',
       type: 'component',
@@ -79,11 +157,18 @@ describe('component', () => {
     test('div', [[['color: ', ';'], [({ color }) => color]]])
 
     expect(test).toHaveReturnedWith({
-      id: 't10upe3l',
+      id: 't1fqd64x',
       styles: [[['color: ', ';'], [expect.any(Function)]]],
       tag: 'div',
       type: 'component',
     })
+  })
+
+  test('should create different ids for same styles with different tags', () => {
+    const div = component('div', [[['color: red;'], []]])
+    const button = component('button', [[['color: red;'], []]])
+
+    expect(div.id).not.toBe(button.id)
   })
 })
 

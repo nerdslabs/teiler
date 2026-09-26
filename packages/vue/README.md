@@ -67,6 +67,47 @@ const Button = component.button<{}>`
 `
 ```
 
+## Extending
+
+Pass an existing component to `component` to add styles to it. The new component keeps the element of the extended one, unless you pick another element with `component.<tag>`:
+
+```typescript
+import { component } from '@teiler/vue'
+
+const Button = component.button`
+  display: inline-block;
+  border-radius: 4px;
+`
+
+// renders <button>
+const PrimaryButton = component(Button)`
+  background: #CBCBCB;
+`
+
+// renders <a> with Button styles
+const ButtonLink = component.a(Button)`
+  text-decoration: none;
+`
+```
+
+## `as` prop
+
+Use `as` to render a component as a different element or another component without creating a new styled component. Styles stay the same, `as` is not passed to the rendered element:
+
+```vue
+<script setup lang="ts">
+  import { RouterLink } from 'vue-router'
+  import { Button } from './components'
+</script>
+
+<template>
+  <Button as="a" href="/docs">Docs</Button>
+  <Button :as="RouterLink" to="/home">Home</Button>
+</template>
+```
+
+When `as` is a component, slots are passed to it and style classes are applied through attribute fallthrough, so the component has to render a single root element and must not set `inheritAttrs: false`.
+
 ## Theme
 
 Example how to use themes.
@@ -252,4 +293,18 @@ import { createComponent } from '@teiler/vue'
 const Button = sew(ButtonPattern, createComponent)
 
 export default Button
+```
+
+Patterns can be extended the same way as components. `pattern(ButtonPattern)` keeps the element of the extended pattern, `pattern.<tag>(ButtonPattern)` changes it:
+
+```typescript
+import { pattern } from '@teiler/core'
+
+const PrimaryButtonPattern = pattern(ButtonPattern)`
+  background: #CBCBCB;
+`
+
+const ButtonLinkPattern = pattern.a(ButtonPattern)`
+  text-decoration: none;
+`
 ```

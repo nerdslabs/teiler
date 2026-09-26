@@ -25,26 +25,26 @@ const createComponent = <Target extends HTMLElements, Props extends object = {}>
 }
 
 type InferProps<Component, Props> = Component extends SvelteTeilerComponent<HTMLElements, infer P> ? P & Props : Props
-type InferComponent<Component, Props> = Component extends SvelteTeilerComponent<infer E, infer P> ? SvelteTeilerComponent<E, Props & P> : SvelteTeilerComponent<HTMLElements, Props>
+type InferComponent<Component, Props, Tag> = Component extends SvelteTeilerComponent<infer E, infer P> ? SvelteTeilerComponent<Tag extends HTMLElements ? Tag : E, Props & P> : SvelteTeilerComponent<HTMLElements, Props>
 
-type Component<Target extends HTMLElements> = {
+type Component<Target extends HTMLElements, Tag extends HTMLElements | undefined = Target> = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): SvelteTeilerComponent<Target, Props>
-  <Component>(binded: Component): <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<InferProps<Component, Props>>[]) => InferComponent<Component, Props>
+  <Component>(binded: Component): <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<InferProps<Component, Props>>[]) => InferComponent<Component, Props, Tag>
 }
 
 type Global = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): SvelteTeilerComponent<HTMLElements, Props>
 }
 
-type ComponentWithTags = Component<'div'> & { [K in Exclude<HTMLElements, null>]: Component<K> }
+type ComponentWithTags = Component<'div', undefined> & { [K in Exclude<HTMLElements, null>]: Component<K> }
 
-const construct = (tag: HTMLElements, compiler: Compiler) => {
+const construct = (tag: HTMLElements | undefined, compiler: Compiler) => {
   return <Props extends object = {}>(stringOrBinded: TeilerComponent<HTMLElements, Props> | TemplateStringsArray, ...properties: Properties<Props>[]) => {
     return styled<Props, SvelteTeilerComponent<HTMLElements, Props>>(tag, compiler, createComponent, stringOrBinded, ...properties)
   }
 }
 
-const svelteComponent = construct('div', component) as ComponentWithTags
+const svelteComponent = construct(undefined, component) as ComponentWithTags
 
 tags.forEach((tag) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

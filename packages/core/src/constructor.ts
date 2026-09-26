@@ -34,7 +34,7 @@ type CreateCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = 
 type ExtendCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
 
 function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
-  tag: HTMLElements,
+  tag: HTMLElements | undefined,
   compiler: Compiler,
   createComponent: CreateCallback<Type, Props>,
   stringOrBinded: TeilerComponent<HTMLElements, Props> | ReadonlyArray<string>,
@@ -43,13 +43,15 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   if (Array.isArray(stringOrBinded)) {
     const strings = stringOrBinded as ReadonlyArray<string>
     const style: Style<Props> = [Array.from(strings), properties]
-    const styleDefinition = compiler(tag, [style])
+    const styleDefinition = compiler(tag === undefined ? 'div' : tag, [style])
     return createComponent(styleDefinition)
   } else {
     const binded = stringOrBinded as TeilerComponent<HTMLElements, Props>
+    const target = tag === undefined ? binded.styleDefinition.tag : tag
+
     return (strings: ReadonlyArray<string>, ...properties: Properties<Props>[]) => {
       const style: Style<Props> = [Array.from(strings), properties]
-      const styleDefinition = compiler(binded.styleDefinition.tag, [...binded.styleDefinition.styles, style])
+      const styleDefinition = compiler(target, [...binded.styleDefinition.styles, style])
       return createComponent(styleDefinition)
     }
   }
@@ -57,23 +59,24 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
 
 type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>) => StyleDefinition<Target, Props>
 
-const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
+function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>): string {
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
+  return 't' + hash(tag === null ? id : tag + '|' + id)
+}
 
+const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
   return {
     type: 'component',
-    id: 't' + hash(id),
+    id: createId(tag, styles),
     styles,
     tag,
   }
 }
 
 const global: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
-  const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
-
   return {
     type: 'global',
-    id: 't' + hash(id),
+    id: createId(tag, styles),
     styles,
     tag,
   }
@@ -120,4 +123,4 @@ function insert<Props = {}>(sheet: Sheet, definition: StyleDefinition<HTMLElemen
 }
 
 export type { Arguments, Compiler, CreateCallback, CSS, DefaultTheme, Properties, Raw, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
-export { component, css, global, insert, keyframes, styled }
+export { component, createId, css, global, insert, keyframes, styled }

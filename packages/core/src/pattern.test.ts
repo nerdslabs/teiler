@@ -12,7 +12,7 @@ describe('pattern', () => {
       styles: [[['background: blue;'], []]],
       tag: 'div',
       __pattern__: true,
-      id: 't1iflo4h',
+      id: 't1b79gyl',
     })
   })
 
@@ -33,8 +33,30 @@ describe('pattern', () => {
       ],
       tag: 'div',
       __pattern__: true,
-      id: 'tu2c2va',
+      id: 't1n7eb5r',
     })
+  })
+
+  test('should extend a pattern with different tag', () => {
+    const button = pattern.button`background: blue;`
+    const link: Pattern<'a', {}> = pattern.a(button)`color: red;`
+
+    expect(link).toMatchObject({
+      styles: [
+        [['background: blue;'], []],
+        [['color: red;'], []],
+      ],
+      tag: 'a',
+      __pattern__: true,
+    })
+    expect(link.id).not.toBe(pattern.button(button)`color: red;`.id)
+  })
+
+  test('should keep tag of extended pattern when tag is not specified', () => {
+    const button = pattern.button`background: blue;`
+    const extended: Pattern<'button', {}> = pattern(button)`color: red;`
+
+    expect(extended.tag).toBe('button')
   })
 
   test('should create a pattern with params', () => {
