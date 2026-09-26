@@ -255,7 +255,7 @@ importers:
   packages/svelte:
     dependencies:
       '@teiler/core':
-        specifier: 0.0.28
+        specifier: 0.1.0
         version: link:../core
     devDependencies:
       '@chromatic-com/storybook':
@@ -331,7 +331,7 @@ importers:
   packages/vue:
     dependencies:
       '@teiler/core':
-        specifier: 0.0.28
+        specifier: 0.1.0
         version: link:../core
     devDependencies:
       '@chromatic-com/storybook':
