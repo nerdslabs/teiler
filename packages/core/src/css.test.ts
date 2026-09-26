@@ -1,4 +1,4 @@
-import { describe, expect, jest, test } from '@jest/globals'
+import { describe, expect, test, vi } from 'vitest'
 import { compile, transpile } from './css'
 import { Pattern, Style, StyleDefinition } from '.'
 import { CSS, TeilerComponent } from './constructor'
@@ -112,7 +112,7 @@ describe('compile', () => {
   })
 
   test('with function contain wrong nested component', () => {
-    const spy = jest.spyOn(console, 'error').mockImplementation((...args) => args)
+    const spy = vi.spyOn(console, 'error').mockImplementation((...args) => args)
 
     const fn = () => `${{}} { background: yellow; }`
 

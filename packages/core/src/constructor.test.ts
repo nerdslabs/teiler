@@ -1,6 +1,6 @@
 import type { HTMLElements, StyleDefinition, TeilerComponent } from '.'
 
-import { describe, expect, jest, test } from '@jest/globals'
+import { describe, expect, test, vi } from 'vitest'
 import { component, css, global, insert, keyframes, styled } from '.'
 
 const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefinition<Target, Props>): TeilerComponent<Target, Props> => {
@@ -12,7 +12,7 @@ const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefini
 describe('styled', () => {
   test('should create component', () => {
     const template = ['color: red;']
-    const test = jest.fn(styled)
+    const test = vi.fn(styled)
 
     test('div', component, createComponent, template)
 
@@ -41,7 +41,7 @@ describe('styled', () => {
 
     type Callable = Extract<typeof extend, (array: string[]) => {}>
 
-    const test = jest.fn(extend as Callable)
+    const test = vi.fn(extend as Callable)
 
     test(template)
 
@@ -60,7 +60,7 @@ describe('styled', () => {
 
   test('should create div component when tag is not specified', () => {
     const template = ['color: red;']
-    const test = jest.fn(styled)
+    const test = vi.fn(styled)
 
     test(undefined, component, createComponent, template)
 
@@ -88,7 +88,7 @@ describe('styled', () => {
 
     type Callable = Extract<typeof extend, (array: string[]) => {}>
 
-    const test = jest.fn(extend as Callable)
+    const test = vi.fn(extend as Callable)
 
     test(['background: blue;'])
 
@@ -119,7 +119,7 @@ describe('styled', () => {
 
     type Callable = Extract<typeof extend, (array: string[]) => {}>
 
-    const test = jest.fn(extend as Callable)
+    const test = vi.fn(extend as Callable)
 
     test([''])
 
@@ -139,7 +139,7 @@ describe('styled', () => {
 
 describe('component', () => {
   test('should create style definition from styles', () => {
-    const test = jest.fn(component)
+    const test = vi.fn(component)
 
     test('div', [[['color: red;'], []]])
 
@@ -152,7 +152,7 @@ describe('component', () => {
   })
 
   test('should create style definition from styles with props', () => {
-    const test = jest.fn(component<'div', { color: string }>)
+    const test = vi.fn(component<'div', { color: string }>)
 
     test('div', [[['color: ', ';'], [({ color }) => color]]])
 
@@ -174,7 +174,7 @@ describe('component', () => {
 
 describe('global', () => {
   test('should create style definition from styles', () => {
-    const test = jest.fn(global)
+    const test = vi.fn(global)
 
     test(null, [[['body { color: red; }'], []]])
 
@@ -187,7 +187,7 @@ describe('global', () => {
   })
 
   test('should create style definition from styles with props', () => {
-    const test = jest.fn(global<null, { color: string }>)
+    const test = vi.fn(global<null, { color: string }>)
 
     test(null, [[['body { color: ', '; }'], [({ color }) => color]]])
 
@@ -269,11 +269,11 @@ describe('css', () => {
 describe('insert', () => {
   test('should insert component styles into the sheet', () => {
     const sheet = {
-      has: jest.fn(() => false),
-      insert: jest.fn(),
-      dump: jest.fn<() => string>(),
-      extract: jest.fn<() => { css: string; ids: string[] }>(),
-      hydrate: jest.fn<(ids: string[]) => void>(),
+      has: vi.fn(() => false),
+      insert: vi.fn(),
+      dump: vi.fn<() => string>(),
+      extract: vi.fn<() => { css: string; ids: string[] }>(),
+      hydrate: vi.fn<(ids: string[]) => void>(),
     }
 
     const definition: StyleDefinition<'div', {}> = {
@@ -293,11 +293,11 @@ describe('insert', () => {
 
   test('should insert keyframes styles into the sheet', () => {
     const sheet = {
-      has: jest.fn(() => false),
-      insert: jest.fn(),
-      dump: jest.fn<() => string>(),
-      extract: jest.fn<() => { css: string; ids: string[] }>(),
-      hydrate: jest.fn<(ids: string[]) => void>(),
+      has: vi.fn(() => false),
+      insert: vi.fn(),
+      dump: vi.fn<() => string>(),
+      extract: vi.fn<() => { css: string; ids: string[] }>(),
+      hydrate: vi.fn<(ids: string[]) => void>(),
     }
 
     const definition: StyleDefinition<null, {}> = {
@@ -317,11 +317,11 @@ describe('insert', () => {
 
   test('should insert global styles into the sheet', () => {
     const sheet = {
-      has: jest.fn(() => false),
-      insert: jest.fn(),
-      dump: jest.fn<() => string>(),
-      extract: jest.fn<() => { css: string; ids: string[] }>(),
-      hydrate: jest.fn<(ids: string[]) => void>(),
+      has: vi.fn(() => false),
+      insert: vi.fn(),
+      dump: vi.fn<() => string>(),
+      extract: vi.fn<() => { css: string; ids: string[] }>(),
+      hydrate: vi.fn<(ids: string[]) => void>(),
     }
 
     const definition: StyleDefinition<null, {}> = {
@@ -340,15 +340,13 @@ describe('insert', () => {
   })
 
   test('should transpile the same styles only once', async () => {
-    const stylis = jest.requireActual<typeof import('stylis')>('stylis')
-    const stylisCompile = jest.fn(stylis.compile)
-    jest.doMock('stylis', () => ({ ...stylis, compile: stylisCompile }))
+    const stylis = await vi.importActual<typeof import('stylis')>('stylis')
+    const stylisCompile = vi.fn(stylis.compile)
+    vi.resetModules()
+    vi.doMock('stylis', () => ({ ...stylis, compile: stylisCompile }))
 
-    let core!: typeof import('.')
-    await jest.isolateModulesAsync(async () => {
-      core = await import('.')
-    })
-    jest.dontMock('stylis')
+    const core: typeof import('.') = await import('.')
+    vi.doUnmock('stylis')
 
     const sheet = core.createStyleSheet({})
 
