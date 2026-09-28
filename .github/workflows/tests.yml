@@ -42,6 +42,19 @@ jobs:
         run: pnpm build
       - name: Run tests
         run: pnpm --filter @teiler/${{ matrix.package }} storybook-test
+  typecheck:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: pnpm
+      - name: Install Dependencies
+        run: pnpm install
+      - name: Run typecheck
+        run: pnpm typecheck
   lint:
     runs-on: ubuntu-22.04
     steps:

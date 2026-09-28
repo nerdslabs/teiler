@@ -12,7 +12,7 @@ export default function <Target extends HTMLElements, Props>(styleDefinition: St
     styleDefinition,
     setup(_, { expose }) {
       const styleSheet: Sheet = getStyleSheet()
-      const theme = inject<DefaultTheme>(context, {})
+      const theme = inject<DefaultTheme>(context, {} as DefaultTheme)
 
       const element = ref<HTMLElement | null>(null)
 
