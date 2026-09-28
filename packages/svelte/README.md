@@ -138,8 +138,16 @@ When `as` is a component, it receives `class`, `children` and every other forwar
 <a href={to} class={className}>{@render children?.()}</a>
 ```
 
+Props are typed from `as`: `as="a"` accepts anchor attributes, `as={Link}` accepts the props of `Link` and requires its required props. Without `as`, the component accepts the attributes of its own element. `svelte-check` reports an unknown tag in `as` and attributes the target does not accept:
+
+```svelte
+<Button as="a" href="/docs">Docs</Button> <!-- ok -->
+<Button href="/docs">Docs</Button>        <!-- error: href is not a button attribute -->
+<Button as={Link}>Home</Button>           <!-- error: to is required -->
+```
+
 > [!NOTE]
-> Props are typed from the element of the styled component, not from `as`. `svelte-check` reports attributes that exist only on the `as` target (e.g. `href` with `as="a"` on a `component.button`, or `to` with `as={Link}`), although they work at runtime. Typing props from `as` is planned.
+> `mount()` and `render()` called from TypeScript cannot infer `as`, so there props are typed from the element of the styled component.
 
 ## Theme
 
