@@ -108,6 +108,32 @@ Use `as` to render a component as a different element or another component witho
 
 When `as` is a component, slots are passed to it and style classes are applied through attribute fallthrough, so the component has to render a single root element and must not set `inheritAttrs: false`.
 
+Props are typed from `as`: `as="a"` accepts anchor attributes, `:as="RouterLink"` accepts the props of `RouterLink` and requires its required props. Without `as`, the component accepts the attributes of its own element. `vue-tsc` reports an unknown tag in `as` and missing required props; with `strictTemplates` it also reports attributes the target does not accept:
+
+```vue
+<template>
+  <Button as="a" href="/docs">Docs</Button> <!-- ok -->
+  <Button href="/docs">Docs</Button>        <!-- error with strictTemplates: href is not a button attribute -->
+  <Button :as="RouterLink">Home</Button>    <!-- error: to is required -->
+</template>
+```
+
+The rendered DOM element is exposed as `element`, use a template ref to access it:
+
+```vue
+<script setup lang="ts">
+  import { useTemplateRef } from 'vue'
+  import { Button } from './components'
+
+  const button = useTemplateRef('button')
+  const element = button.value?.element // HTMLElement | null
+</script>
+
+<template>
+  <Button ref="button">Submit</Button>
+</template>
+```
+
 ## Theme
 
 Example how to use themes.

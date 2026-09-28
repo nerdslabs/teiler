@@ -22,6 +22,7 @@
     "build": "rolldown --config",
     "dev": "rolldown --config --watch",
     "test": "vitest run --project unit",
+    "typecheck": "vue-tsc --noEmit",
     "storybook": "storybook dev -p 6007 --no-open",
     "storybook-test": "vitest run --project storybook",
     "build-storybook": "storybook build"
@@ -49,6 +50,7 @@
     "storybook": "^10.6.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11",
-    "vue": "3.5.43"
+    "vue": "3.5.43",
+    "vue-tsc": "^3.3.11"
   }
 }

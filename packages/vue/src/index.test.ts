@@ -4,6 +4,12 @@ import { StyleDefinition, createStyleSheet } from '@teiler/core'
 import { ThemeProvider, component, createComponent, global, keyframes } from './index'
 import { defineComponent, h } from 'vue'
 
+declare module '@teiler/core' {
+  interface DefaultTheme {
+    fontColor?: string
+  }
+}
+
 describe('createComponent', () => {
   test('should create a component', () => {
     const styleSheet = createStyleSheet({})
@@ -31,7 +37,7 @@ describe('createComponent', () => {
     expect(component).toEqual({
       inheritAttrs: false,
       styleDefinition: styleDefinition,
-      render: expect.any(Function),
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -60,7 +66,7 @@ describe('component', () => {
         tag: 'div',
         type: 'component',
       },
-      render: expect.any(Function),
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -95,7 +101,7 @@ describe('component', () => {
         tag: 'div',
         type: 'component',
       },
-      render: expect.any(Function),
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -127,7 +133,7 @@ describe('component', () => {
         tag: 'div',
         type: 'component',
       },
-      render: expect.any(Function),
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -160,7 +166,7 @@ describe('component', () => {
         tag: 'div',
         type: 'component',
       },
-      render: expect.any(Function),
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -281,7 +287,7 @@ describe('global', () => {
         tag: null,
         type: 'global',
       },
-      render: expect.any(Function),
+      name: 'StyledGlobal',
       setup: expect.any(Function),
     })
 
@@ -313,7 +319,7 @@ describe('global', () => {
         tag: null,
         type: 'global',
       },
-      render: expect.any(Function),
+      name: 'StyledGlobal',
       setup: expect.any(Function),
     })
 

@@ -1,6 +1,7 @@
 {
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.vue"
   ],
   "exclude": [
     "node_modules"
@@ -25,6 +26,9 @@
     "paths": {
       "@teiler/core": ["../core/src"]
     }
+  },
+  "vueCompilerOptions": {
+    "strictTemplates": true
   },
   "compileOnSave": false,
 }

@@ -2,4 +2,4 @@
 .storybook
 node_modules
 stories
-rollup.config.js
+rollup.config.js*.fixture.vue

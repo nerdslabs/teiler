@@ -1,31 +1,30 @@
-import type { Compiler, DefaultTheme, HTMLElements, Properties, Sheet, StyleDefinition, TeilerComponent } from '@teiler/core'
-import type { ComponentOptionsMixin, ComponentPublicInstance, DefineComponent, IntrinsicElementAttributes, Component as VueComponent } from 'vue'
+import type { Compiler, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
+import type { DefineSetupFnComponent } from 'vue'
+import type { PolymorphicComponent } from './types'
 
 import Styled from './Styled'
 
 import { component, global, keyframes, styled, tags } from '@teiler/core'
 
-type ElementAttributes<Target extends HTMLElements> = Target extends keyof IntrinsicElementAttributes ? IntrinsicElementAttributes[Target] : {}
+type VueTeilerComponent<Target extends HTMLElements, Props extends object> = PolymorphicComponent<Target, Props> & TeilerComponent<Target, Props>
 
-type VueRawBindings = { styleSheet: Sheet; theme: DefaultTheme; element: HTMLElement | null; setElement: (el: Element | ComponentPublicInstance | null) => void }
-type AsProp = { as?: Exclude<HTMLElements, null> | VueComponent }
-type VueTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & DefineComponent<Props & AsProp, VueRawBindings, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, ElementAttributes<Target>>
+type VueGlobalComponent<Props extends object> = DefineSetupFnComponent<Props> & TeilerComponent<null, Props>
 
-const createComponent = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): VueTeilerComponent<Target, Props> => {
-  const component = Styled(styleDefinition)
-  return component as VueTeilerComponent<Target, Props>
+const createComponent = <Target extends HTMLElements, Props extends object>(styleDefinition: StyleDefinition<Target, Props>): VueTeilerComponent<Target, Props> => {
+  return Styled(styleDefinition)
 }
 
-type InferProps<Component, Props> = Component extends VueTeilerComponent<HTMLElements, infer P> ? P & Props : Props
-type InferComponent<Component, Props, Tag> = Component extends VueTeilerComponent<infer E extends HTMLElements, infer P> ? VueTeilerComponent<Tag extends HTMLElements ? Tag : E, Props & P> : VueTeilerComponent<HTMLElements, Props>
+type InferProps<Component, Props> = Component extends TeilerComponent<HTMLElements, infer P> ? P & Props : Props
+type InferComponent<Component, Props extends object, Extended> =
+  Component extends TeilerComponent<infer E, infer P extends object> ? VueTeilerComponent<Extended extends HTMLElements ? Extended : E, Props & P> : VueTeilerComponent<HTMLElements, Props>
 
-type Component<Target extends HTMLElements, Tag extends HTMLElements | undefined = Target> = {
+type Component<Target extends HTMLElements, Extended extends HTMLElements | undefined = Target> = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueTeilerComponent<Target, Props>
-  <Component>(binded: Component): <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<InferProps<Component, Props>>[]) => InferComponent<Component, Props, Tag>
+  <Component>(binded: Component): <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<InferProps<Component, Props>>[]) => InferComponent<Component, Props, Extended>
 }
 
 type Global = {
-  <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueTeilerComponent<HTMLElements, Props>
+  <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueGlobalComponent<Props>
 }
 
 type ComponentWithTags = Component<'div', undefined> & { [K in Exclude<HTMLElements, null>]: Component<K> }
@@ -46,6 +45,6 @@ tags.forEach((tag) => {
 
 const vueGlobal = construct(null, global) as Global
 
-export type { VueTeilerComponent }
+export type { VueGlobalComponent, VueTeilerComponent }
 
 export { vueComponent as component, vueGlobal as global, keyframes, createComponent }
