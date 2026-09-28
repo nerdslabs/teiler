@@ -1,5 +1,5 @@
 import type { Compiler, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
-import type { ComponentConstructorOptions, ComponentProps, Snippet, Component as SvelteComponent, SvelteComponent as SvelteComponentInstance } from 'svelte'
+import type { ComponentConstructorOptions, ComponentInternals, ComponentProps, Snippet, Component as SvelteComponent, SvelteComponent as SvelteComponentInstance } from 'svelte'
 import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
 
 import { component, global, keyframes, styled, tags } from '@teiler/core'
@@ -9,17 +9,14 @@ type Tag = Exclude<HTMLElements, null>
 
 type ElementProps<Target> = Target extends keyof SvelteHTMLElements ? SvelteHTMLElements[Target] : {}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AsTarget = Tag | SvelteComponent<any>
+type AsTarget = Tag | SvelteComponent<never>
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TargetProps<As> = As extends SvelteComponent<any> ? Omit<ComponentProps<As>, 'class' | 'children'> & { class?: ClassValue; children?: Snippet } : ElementProps<As>
+type TargetProps<As> = As extends SvelteComponent<infer Props> ? Omit<Props, 'class' | 'children'> & { class?: ClassValue; children?: Snippet } : ElementProps<As>
 
 type PolymorphicProps<Target extends HTMLElements, Props, As> = Props & { as?: As } & ([As] extends [never] ? ElementProps<Target> : [AsTarget] extends [As] ? ElementProps<Target> : TargetProps<As>)
 
 interface SvelteTeilerComponent<Target extends HTMLElements, Props extends object> extends TeilerComponent<Target, Props> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  <As extends AsTarget = never>(internals: any, props: PolymorphicProps<Target, Props, As>): {}
+  <As extends AsTarget = never>(internals: ComponentInternals, props: PolymorphicProps<Target, Props, As>): {}
   new <As extends AsTarget = never>(options: ComponentConstructorOptions<PolymorphicProps<Target, Props, As>>): SvelteComponentInstance<PolymorphicProps<Target, Props, As>>
 }
 
@@ -33,9 +30,9 @@ const withStyleDefinition = <Props extends object, Definition>(props: Props, sty
 }
 
 const createComponent = <Target extends HTMLElements, Props extends object = {}>(styleDefinition: StyleDefinition<Target, Props>): SvelteTeilerComponent<Target, Props> => {
-  const wrapped: SvelteComponent<Props> = (internals, props) => Styled(internals, withStyleDefinition(props, styleDefinition) as ComponentProps<typeof Styled>)
+  const wrapped = <As extends AsTarget = never>(internals: ComponentInternals, props: PolymorphicProps<Target, Props, As>) => Styled(internals, withStyleDefinition(props, styleDefinition) as ComponentProps<typeof Styled>)
 
-  return Object.assign(wrapped, { styleDefinition }) as unknown as SvelteTeilerComponent<Target, Props>
+  return Object.assign(wrapped, { styleDefinition }) as SvelteTeilerComponent<Target, Props>
 }
 
 type InferProps<Component, Props> = Component extends TeilerComponent<HTMLElements, infer P> ? P & Props : Props

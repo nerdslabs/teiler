@@ -1,18 +1,17 @@
-import type { HTMLElements, Sheet, StyleDefinition } from '@teiler/core'
-import type { Component, ComponentPublicInstance } from 'vue'
+import type { HTMLElements, StyleDefinition } from '@teiler/core'
+import type { AsTarget, PolymorphicComponent, PolymorphicProps } from './types'
+import type { Component, ComponentPublicInstance, Ref, SetupContext } from 'vue'
 
 import { DefaultTheme, insert } from '@teiler/core'
-import { defineComponent, h, inject, ref, toRaw } from 'vue'
+import { defineComponent, h, inject, ref, toRaw, unref } from 'vue'
 import { context } from './ThemeProvider'
 import { getStyleSheet } from './sheet'
 
-export default function <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>) {
-  const component = defineComponent({
-    inheritAttrs: false,
-    styleDefinition,
-    setup(_, { expose }) {
-      const styleSheet: Sheet = getStyleSheet()
-      const theme = inject<DefaultTheme>(context, {} as DefaultTheme)
+export default function <Target extends HTMLElements, Props extends object>(styleDefinition: StyleDefinition<Target, Props>) {
+  const component = defineComponent(
+    <As extends AsTarget = never>(_props: PolymorphicProps<Target, Props, As>, { attrs, slots, expose }: SetupContext) => {
+      const styleSheet = getStyleSheet()
+      const theme = inject<Ref<DefaultTheme> | DefaultTheme>(context, {} as DefaultTheme)
 
       const element = ref<HTMLElement | null>(null)
 
@@ -22,34 +21,32 @@ export default function <Target extends HTMLElements, Props>(styleDefinition: St
 
       expose({ element })
 
-      return { styleSheet, theme, element, setElement }
-    },
-    render() {
-      const slots = this.$slots
-      const attrs = toRaw(this.$attrs) as Props & Record<string, unknown>
+      return () => {
+        const props = toRaw(attrs) as Props & Record<string, unknown>
 
-      const styleClassName = insert<Props>(this.styleSheet, styleDefinition, { ...attrs, theme: this.theme })
+        const styleClassName = insert<Props>(styleSheet, styleDefinition, { ...props, theme: unref(theme) })
 
-      const filtredPropsEntries = Object.entries(attrs).filter(([key]) => key[0] !== '_' && key !== 'class' && key !== 'as')
-      const filtredProps = Object.fromEntries(filtredPropsEntries)
+        const filtredProps = Object.fromEntries(Object.entries(props).filter(([key]) => key[0] !== '_' && key !== 'class' && key !== 'as'))
 
-      const attrsClass = attrs.class ? ' ' + attrs.class : ''
-      const className = `${styleClassName} ${styleDefinition.id}${attrsClass}`
+        const attrsClass = props.class ? ' ' + props.class : ''
+        const className = `${styleClassName} ${styleDefinition.id}${attrsClass}`
 
-      if (styleDefinition.tag) {
-        const target = toRaw(attrs.as as string | Component | undefined) || styleDefinition.tag
-        const props = { ...filtredProps, class: className, ref: this.setElement }
+        if (styleDefinition.tag) {
+          const target = toRaw(props.as as string | Component | undefined) || styleDefinition.tag
+          const elementProps = { ...filtredProps, class: className, ref: setElement }
 
-        if (typeof target === 'string') {
-          return h(target, props, slots.default ? slots.default() : undefined)
+          if (typeof target === 'string') {
+            return h(target, elementProps, slots.default ? slots.default() : undefined)
+          } else {
+            return h(target, elementProps, slots)
+          }
         } else {
-          return h(target, props, slots)
+          return null
         }
-      } else {
-        return null
       }
     },
-  })
+    { inheritAttrs: false },
+  )
 
-  return component
+  return Object.assign(component as PolymorphicComponent<Target, Props>, { styleDefinition })
 }

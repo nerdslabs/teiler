@@ -118,7 +118,7 @@ Props are typed from `as`: `as="a"` accepts anchor attributes, `:as="RouterLink"
 </template>
 ```
 
-Styled components are typed as generic functional components. The rendered DOM element is exposed as `element`, use a template ref to access it:
+The rendered DOM element is exposed as `element`, use a template ref to access it:
 
 ```vue
 <script setup lang="ts">
