@@ -4,6 +4,12 @@ import { StyleDefinition, createStyleSheet } from '@teiler/core'
 import { ThemeProvider, component, createComponent, global, keyframes } from './index'
 import { defineComponent, h } from 'vue'
 
+declare module '@teiler/core' {
+  interface DefaultTheme {
+    fontColor?: string
+  }
+}
+
 describe('createComponent', () => {
   test('should create a component', () => {
     const styleSheet = createStyleSheet({})

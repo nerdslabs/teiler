@@ -11,7 +11,7 @@ export default function <Target extends HTMLElements, Props extends object>(styl
   const component = defineComponent(
     <As extends AsTarget = never>(_props: PolymorphicProps<Target, Props, As>, { attrs, slots, expose }: SetupContext) => {
       const styleSheet = getStyleSheet()
-      const theme = inject<Ref<DefaultTheme> | DefaultTheme>(context, {} as DefaultTheme)
+      const theme = inject<Ref<DefaultTheme> | DefaultTheme>(context, {})
 
       const element = ref<HTMLElement | null>(null)
 
