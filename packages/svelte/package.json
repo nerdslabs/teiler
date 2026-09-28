@@ -31,7 +31,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@teiler/core": "0.1.0"
+    "@teiler/core": "0.1.0",
+    "clsx": "^2.1.1"
   },
   "peerDependencies": {
     "svelte": "^5.16.0"

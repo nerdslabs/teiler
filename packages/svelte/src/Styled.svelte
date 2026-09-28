@@ -2,6 +2,7 @@
   import type { DefaultTheme, HTMLElements, StyleDefinition } from '@teiler/core'
   import type { Component, Snippet } from 'svelte'
 
+  import { clsx } from 'clsx'
   import { insert } from '@teiler/core'
   import { getStyleSheet } from './sheet.js'
   import { getTheme } from './theme.js'
@@ -21,16 +22,18 @@
 
   const styleClassName = $derived(insert(sheet, styleDefinition, { ...props, theme: theme?.() ?? ({} as DefaultTheme) }))
 
+  const classes = $derived(clsx(styleClassName, styleDefinition.id, className))
+
   const attributes = $derived(Object.fromEntries(Object.entries(props).filter(([key]) => key[0] !== '_')))
 </script>
 
 {#if styleClassName && styleDefinition.tag}
   {@const Target = as ?? styleDefinition.tag}
   {#if typeof Target === 'function'}
-    <Target class={[styleClassName, styleDefinition.id, className]} {...attributes} {children} />
+    <Target class={classes} {...attributes} {children} />
   {:else if children}
-    <svelte:element this={Target} class={[styleClassName, styleDefinition.id, className]} {...attributes}>{@render children()}</svelte:element>
+    <svelte:element this={Target} class={classes} {...attributes}>{@render children()}</svelte:element>
   {:else}
-    <svelte:element this={Target} class={[styleClassName, styleDefinition.id, className]} {...attributes} />
+    <svelte:element this={Target} class={classes} {...attributes} />
   {/if}
 {/if}

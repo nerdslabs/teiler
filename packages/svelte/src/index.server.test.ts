@@ -5,6 +5,7 @@ import { component, global, keyframes } from './index'
 
 import LinkFixture from './Link.fixture.svelte'
 import ParentFixture from './Parent.fixture.svelte'
+import StringClassLinkFixture from './StringClassLink.fixture.svelte'
 import ThemeProviderFixture from './ThemeProvider.fixture.svelte'
 
 const strip = (html: string) => html.replace(/<!--.*?-->/g, '')
@@ -105,6 +106,15 @@ describe('as', () => {
 
     expect(strip(body)).toBe('<a href="/home" class="teiler-1uosih1 t1o3x0cs">yellow</a>')
     expect(styleSheet.dump()).toBe('.teiler-1uosih1{color:yellow;}')
+  })
+
+  test('should pass class as a string to a component', () => {
+    const { body } = render(ParentFixture, {
+      props: { attributes: { as: StringClassLinkFixture, to: '/home', class: 'extra' } },
+      context: new Map(Object.entries({ STYLE_SHEET: createStyleSheet({}) })),
+    })
+
+    expect(strip(body)).toBe('<a href="/home" class="link teiler-1uosih1 t1o3x0cs extra">yellow</a>')
   })
 })
 
