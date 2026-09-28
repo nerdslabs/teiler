@@ -12,7 +12,8 @@ const alias = {
 export default defineConfig({
   test: {
     coverage: {
-      include: ['src/**/*.ts'],
+      include: ['src/**/*.{ts,svelte}'],
+      exclude: ['src/**/*.fixture.svelte'],
       reporter: ['text'],
       thresholds: {
         branches: 90,
