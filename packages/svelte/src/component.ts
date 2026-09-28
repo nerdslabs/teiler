@@ -7,7 +7,10 @@ import Styled from './Styled.svelte'
 
 type ElementProps<Target extends HTMLElements> = Target extends keyof SvelteHTMLElements ? SvelteHTMLElements[Target] : {}
 
-type SvelteTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & SvelteComponent<Props & ElementProps<Target>>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AsProp = { as?: Exclude<HTMLElements, null> | SvelteComponent<any> }
+
+type SvelteTeilerComponent<Target extends HTMLElements, Props> = TeilerComponent<Target, Props> & SvelteComponent<Props & ElementProps<Target> & AsProp>
 
 const withStyleDefinition = <Props extends object, Definition>(props: Props, styleDefinition: Definition): Props & { styleDefinition: Definition } => {
   return new Proxy(props, {
@@ -17,7 +20,7 @@ const withStyleDefinition = <Props extends object, Definition>(props: Props, sty
 }
 
 const createComponent = <Target extends HTMLElements, Props extends object = {}>(styleDefinition: StyleDefinition<Target, Props>): SvelteTeilerComponent<Target, Props> => {
-  const wrapped: SvelteComponent<Props & ElementProps<Target>> = (internals, props) => Styled(internals, withStyleDefinition(props, styleDefinition) as ComponentProps<typeof Styled>)
+  const wrapped: SvelteComponent<Props & ElementProps<Target> & AsProp> = (internals, props) => Styled(internals, withStyleDefinition(props, styleDefinition) as ComponentProps<typeof Styled>)
 
   return Object.assign(wrapped, { styleDefinition })
 }

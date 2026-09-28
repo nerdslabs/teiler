@@ -3,6 +3,7 @@ import { createStyleSheet } from '@teiler/core'
 import { render } from 'svelte/server'
 import { component, global, keyframes } from './index'
 
+import LinkFixture from './Link.fixture.svelte'
 import ParentFixture from './Parent.fixture.svelte'
 import ThemeProviderFixture from './ThemeProvider.fixture.svelte'
 
@@ -78,6 +79,32 @@ describe('component', () => {
     expect(link).toBe(`<a class="teiler-znz8j3 ${ButtonLink.styleDefinition.id}" href="/home"></a>`)
     expect(button).toBe(`<button class="teiler-znz8j3 ${PrimaryButton.styleDefinition.id}"></button>`)
     expect(styleSheet.dump()).toBe('.teiler-znz8j3{color:blue;text-decoration:none;}')
+  })
+})
+
+describe('as', () => {
+  test('should render component as a different element', () => {
+    const styleSheet = createStyleSheet({})
+
+    const { body } = render(ParentFixture, {
+      props: { attributes: { as: 'a', href: '/link' } },
+      context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
+    })
+
+    expect(strip(body)).toBe('<a class="teiler-1uosih1 t1o3x0cs" href="/link">yellow</a>')
+    expect(styleSheet.dump()).toBe('.teiler-1uosih1{color:yellow;}')
+  })
+
+  test('should render component as another component', () => {
+    const styleSheet = createStyleSheet({})
+
+    const { body } = render(ParentFixture, {
+      props: { attributes: { as: LinkFixture, to: '/home' } },
+      context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
+    })
+
+    expect(strip(body)).toBe('<a href="/home" class="teiler-1uosih1 t1o3x0cs">yellow</a>')
+    expect(styleSheet.dump()).toBe('.teiler-1uosih1{color:yellow;}')
   })
 })
 

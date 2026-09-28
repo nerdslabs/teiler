@@ -5,6 +5,7 @@ import { render } from '@testing-library/svelte'
 import { createStyleSheet } from '@teiler/core'
 import { component, createComponent, global, keyframes } from './index'
 
+import LinkFixture from './Link.fixture.svelte'
 import ParentFixture from './Parent.fixture.svelte'
 import ThemeProviderFixture from './ThemeProvider.fixture.svelte'
 
@@ -157,6 +158,45 @@ describe('component', () => {
     expect(warn).not.toHaveBeenCalled()
 
     warn.mockRestore()
+  })
+})
+
+describe('as', () => {
+  test('should render component as a different element', () => {
+    const styleSheet = createStyleSheet({})
+
+    const { container } = render(ParentFixture, {
+      props: { attributes: { as: 'a', href: '/link' } },
+      context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
+    })
+
+    expect(container.innerHTML.replace(/<!--.*?-->/g, '')).toBe('<a class="teiler-1uosih1 t1o3x0cs" href="/link">yellow</a>')
+    expect(styleSheet.dump()).toBe(' .teiler-1uosih1{color:yellow;}')
+  })
+
+  test('should render component as another component', () => {
+    const styleSheet = createStyleSheet({})
+
+    const { container } = render(ParentFixture, {
+      props: { attributes: { as: LinkFixture, to: '/home' } },
+      context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
+    })
+
+    expect(container.innerHTML.replace(/<!--.*?-->/g, '')).toBe('<a href="/home" class="teiler-1uosih1 t1o3x0cs">yellow</a>')
+    expect(styleSheet.dump()).toBe(' .teiler-1uosih1{color:yellow;}')
+  })
+
+  test('should switch rendered element when as changes', async () => {
+    const { container, rerender } = render(ParentFixture, {
+      context: new Map(Object.entries({ STYLE_SHEET: createStyleSheet({}) })),
+    })
+
+    expect(container.querySelector('button')?.className).toBe('teiler-1uosih1 t1o3x0cs')
+
+    await rerender({ attributes: { as: 'a', href: '/link' } })
+
+    expect(container.querySelector('button')).toBeNull()
+    expect(container.querySelector('a')?.className).toBe('teiler-1uosih1 t1o3x0cs')
   })
 })
 

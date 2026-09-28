@@ -110,6 +110,34 @@ const ButtonLink = component.a(Button)`
 `
 ```
 
+## `as` prop
+
+Use `as` to render a component as a different element or another component without creating a new styled component. Styles stay the same, `as` is not passed to the rendered element:
+
+```svelte
+<script lang="ts">
+  import { Button } from './components'
+  import Link from './Link.svelte'
+</script>
+
+<Button as="a" href="/docs">Docs</Button>
+<Button as={Link} to="/home">Home</Button>
+```
+
+When `as` is a component, it receives `class`, `children` and every other forwarded prop. Svelte has no attribute fallthrough, so the component has to apply `class` to its root element:
+
+```svelte
+<!-- Link.svelte -->
+<script lang="ts">
+  import type { Snippet } from 'svelte'
+  import type { ClassValue } from 'svelte/elements'
+
+  const { to, class: className, children }: { to: string; class?: ClassValue; children?: Snippet } = $props()
+</script>
+
+<a href={to} class={className}>{@render children?.()}</a>
+```
+
 ## Theme
 
 ```svelte

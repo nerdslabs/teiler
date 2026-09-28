@@ -1,7 +1,7 @@
 <script lang="ts">
   import { component } from './component'
 
-  const { color = 'yellow', attributes = {}, onclick }: { color?: string; attributes?: Record<string, string>; onclick?: (event: MouseEvent) => void } = $props()
+  const { color = 'yellow', attributes = {}, onclick }: { color?: string; attributes?: Record<string, unknown>; onclick?: (event: MouseEvent) => void } = $props()
 
   const Button = component.button<{ _color: string }>`
     color: ${({ _color }) => _color};
