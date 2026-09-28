@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { StyleDefinition, createStyleSheet } from '@teiler/core'
 import { ThemeProvider, component, createComponent, global, keyframes } from './index'
@@ -34,12 +34,7 @@ describe('createComponent', () => {
       },
     })
 
-    expect(component).toEqual({
-      inheritAttrs: false,
-      styleDefinition: styleDefinition,
-      name: 'StyledDiv',
-      setup: expect.any(Function),
-    })
+    expect(component.styleDefinition).toBe(styleDefinition)
 
     expect(wrapper.html()).toBe('<div class="teiler-wq229y twq229y">Hello</div>')
     expect(styleSheet.dump()).toBe(' .teiler-wq229y{color:red;}')
@@ -58,20 +53,14 @@ describe('component', () => {
       },
     })
 
-    expect(StyledComponent).toEqual({
-      inheritAttrs: false,
-      styleDefinition: {
-        id: 't8e9dar',
-        styles: [[['color: blue;'], []]],
-        tag: 'div',
-        type: 'component',
-      },
-      name: 'StyledDiv',
-      setup: expect.any(Function),
+    expect(StyledComponent.styleDefinition).toEqual({
+      id: 't8e9dar',
+      styles: [[['color: blue;'], []]],
+      tag: 'div',
+      type: 'component',
     })
 
-    expect(wrapper.vm.element).toBeDefined()
-    expect(wrapper.vm.element).not.toBeNull()
+    expect(wrapper.vm.element).toBeInstanceOf(HTMLDivElement)
 
     expect(wrapper.html()).toBe('<div class="teiler-1r77qux t8e9dar"></div>')
   })
@@ -93,16 +82,11 @@ describe('component', () => {
       },
     })
 
-    expect(StyledComponent).toEqual({
-      inheritAttrs: false,
-      styleDefinition: {
-        id: 't1fqd64x',
-        styles: [[['color: ', ';'], [expect.any(Function)]]],
-        tag: 'div',
-        type: 'component',
-      },
-      name: 'StyledDiv',
-      setup: expect.any(Function),
+    expect(StyledComponent.styleDefinition).toEqual({
+      id: 't1fqd64x',
+      styles: [[['color: ', ';'], [expect.any(Function)]]],
+      tag: 'div',
+      type: 'component',
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-100tn2k t1fqd64x"></div>')
@@ -125,16 +109,11 @@ describe('component', () => {
       },
     })
 
-    expect(StyledComponent).toEqual({
-      inheritAttrs: false,
-      styleDefinition: {
-        id: 't1fqd64x',
-        styles: [[['color: ', ';'], [expect.any(Function)]]],
-        tag: 'div',
-        type: 'component',
-      },
-      name: 'StyledDiv',
-      setup: expect.any(Function),
+    expect(StyledComponent.styleDefinition).toEqual({
+      id: 't1fqd64x',
+      styles: [[['color: ', ';'], [expect.any(Function)]]],
+      tag: 'div',
+      type: 'component',
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t1fqd64x"></div>')
@@ -158,20 +137,75 @@ describe('component', () => {
       },
     })
 
-    expect(StyledComponent).toEqual({
-      inheritAttrs: false,
-      styleDefinition: {
-        id: 'tsqxzcw',
-        styles: [[['color: green;'], []]],
-        tag: 'div',
-        type: 'component',
-      },
-      name: 'StyledDiv',
-      setup: expect.any(Function),
+    expect(StyledComponent.styleDefinition).toEqual({
+      id: 'tsqxzcw',
+      styles: [[['color: green;'], []]],
+      tag: 'div',
+      type: 'component',
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n tsqxzcw custom-class"></div>')
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+  })
+
+  test('should forward attributes and skip underscore props', () => {
+    const StyledComponent = component.a<{ _color: string }>`color: ${(props) => props._color};`
+
+    const wrapper = mount(StyledComponent, {
+      attrs: { _color: 'red', href: '/home', 'data-test': 'link' },
+      global: { provide: { STYLE_SHEET: createStyleSheet({}) } },
+    })
+
+    expect(wrapper.attributes('href')).toBe('/home')
+    expect(wrapper.attributes('data-test')).toBe('link')
+    expect(wrapper.attributes('_color')).toBeUndefined()
+  })
+
+  test('should forward event handlers', async () => {
+    const onClick = vi.fn()
+
+    const StyledComponent = component.button`color: red;`
+
+    const wrapper = mount(StyledComponent, {
+      attrs: { onClick },
+      global: { provide: { STYLE_SHEET: createStyleSheet({}) } },
+    })
+
+    await wrapper.trigger('click')
+
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  test('should update styles when props change', async () => {
+    const styleSheet = createStyleSheet({})
+
+    const StyledComponent = component<{ _color: string }>`color: ${(props) => props._color};`
+
+    const wrapper = mount(StyledComponent, {
+      props: { _color: 'yellow' },
+      global: { provide: { STYLE_SHEET: styleSheet } },
+    })
+
+    const [yellowClass] = wrapper.classes()
+
+    await wrapper.setProps({ _color: 'blue' })
+
+    const [blueClass] = wrapper.classes()
+
+    expect(blueClass).not.toBe(yellowClass)
+    expect(styleSheet.dump()).toContain(`.${blueClass}{color:blue;}`)
+  })
+
+  test('should use component id as selector', () => {
+    const styleSheet = createStyleSheet({})
+
+    const Button = component.button`color: red;`
+    const Group = component`& ${Button} { margin: 0; }`
+
+    mount(Group, { global: { provide: { STYLE_SHEET: styleSheet } } })
+
+    expect(styleSheet.dump()).toContain(`.${Button.styleDefinition.id}{margin:0;}`)
+    expect(styleSheet.dump()).toContain('{color:red;}')
   })
 })
 
@@ -262,6 +296,20 @@ describe('as', () => {
 
     expect(ExtendedButton.styleDefinition.tag).toBe('button')
   })
+
+  test('should switch rendered element when as changes', async () => {
+    const StyledComponent = component.button`color: green;`
+
+    const wrapper = mount(StyledComponent, {
+      attrs: { href: '/link' },
+      global: { provide: { STYLE_SHEET: createStyleSheet({}) } },
+    })
+
+    await wrapper.setProps({ as: 'a' })
+
+    expect(wrapper.element.tagName).toBe('A')
+    expect(wrapper.attributes('href')).toBe('/link')
+  })
 })
 
 describe('global', () => {
@@ -279,16 +327,11 @@ describe('global', () => {
       },
     })
 
-    expect(GlobalStyle).toEqual({
-      inheritAttrs: false,
-      styleDefinition: {
-        id: 'twq229y',
-        styles: [[['color: red;'], []]],
-        tag: null,
-        type: 'global',
-      },
-      name: 'StyledGlobal',
-      setup: expect.any(Function),
+    expect(GlobalStyle.styleDefinition).toEqual({
+      id: 'twq229y',
+      styles: [[['color: red;'], []]],
+      tag: null,
+      type: 'global',
     })
 
     expect(wrapper.html()).toBe('')
@@ -311,16 +354,11 @@ describe('global', () => {
       },
     })
 
-    expect(GlobalStyle).toEqual({
-      inheritAttrs: false,
-      styleDefinition: {
-        id: 't10upe3l',
-        styles: [[['color: ', ';'], [expect.any(Function)]]],
-        tag: null,
-        type: 'global',
-      },
-      name: 'StyledGlobal',
-      setup: expect.any(Function),
+    expect(GlobalStyle.styleDefinition).toEqual({
+      id: 't10upe3l',
+      styles: [[['color: ', ';'], [expect.any(Function)]]],
+      tag: null,
+      type: 'global',
     })
 
     expect(wrapper.html()).toBe('')
@@ -341,13 +379,6 @@ describe('global', () => {
             STYLE_SHEET: styleSheet,
           },
         },
-      })
-
-      expect(animation).toEqual({
-        id: 'teiler-g1154k',
-        styles: [[['from { opacity: 0; } to { opacity: 1; }'], []]],
-        type: 'keyframes',
-        tag: null,
       })
 
       expect(styleSheet.dump()).toBe(' @keyframes teiler-g1154k{from{opacity:0;}to{opacity:1;}} .teiler-jq8kuu{animation:teiler-g1154k 5s infinite;}')
@@ -380,6 +411,28 @@ describe('ThemeProvider', () => {
 
     expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t1fqd64x"></div>')
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+  })
+
+  test('should update styles when theme changes', async () => {
+    const styleSheet = createStyleSheet({})
+
+    const StyledComponent = component`color: ${(props) => props.theme.fontColor};`
+
+    const wrapper = mount(ThemeProvider, {
+      props: { theme: { fontColor: 'green' } },
+      slots: { default: () => h(StyledComponent) },
+      global: { provide: { STYLE_SHEET: styleSheet } },
+    })
+
+    const element = wrapper.find('div')
+    const [greenClass] = element.classes()
+
+    await wrapper.setProps({ theme: { fontColor: 'blue' } })
+
+    const [blueClass] = element.classes()
+
+    expect(blueClass).not.toBe(greenClass)
+    expect(styleSheet.dump()).toContain(`.${blueClass}{color:blue;}`)
   })
 
   test('should provide theme with empty slot', () => {

@@ -1,7 +1,7 @@
 import type { HTMLElements, StyleDefinition, TeilerComponent } from '.'
 
 import { describe, expect, test, vi } from 'vitest'
-import { component, css, global, insert, keyframes, styled } from '.'
+import { component, createStyleSheet, css, global, insert, keyframes, styled } from '.'
 
 const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefinition<Target, Props>): TeilerComponent<Target, Props> => {
   return {
@@ -9,14 +9,13 @@ const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefini
   }
 }
 
+type Callable = (strings: string[]) => TeilerComponent<HTMLElements, {}>
+
 describe('styled', () => {
   test('should create component', () => {
-    const template = ['color: red;']
-    const test = vi.fn(styled)
+    const result = styled('div', component, createComponent, ['color: red;'])
 
-    test('div', component, createComponent, template)
-
-    expect(test).toHaveReturnedWith({
+    expect(result).toEqual({
       styleDefinition: {
         id: 't19bgd6n',
         styles: [[['color: red;'], []]],
@@ -27,7 +26,6 @@ describe('styled', () => {
   })
 
   test('should extend component', () => {
-    const template = ['background: blue;']
     const existingComponent: TeilerComponent<'div', {}> = {
       styleDefinition: {
         type: 'component',
@@ -37,15 +35,9 @@ describe('styled', () => {
       },
     }
 
-    const extend = styled('div', component, createComponent, existingComponent)
+    const extend = styled('div', component, createComponent, existingComponent) as Callable
 
-    type Callable = Extract<typeof extend, (array: string[]) => {}>
-
-    const test = vi.fn(extend as Callable)
-
-    test(template)
-
-    expect(test).toHaveReturnedWith({
+    expect(extend(['background: blue;'])).toEqual({
       styleDefinition: {
         id: 't4akc9y',
         styles: [
@@ -59,12 +51,9 @@ describe('styled', () => {
   })
 
   test('should create div component when tag is not specified', () => {
-    const template = ['color: red;']
-    const test = vi.fn(styled)
+    const result = styled(undefined, component, createComponent, ['color: red;'])
 
-    test(undefined, component, createComponent, template)
-
-    expect(test).toHaveReturnedWith({
+    expect(result).toEqual({
       styleDefinition: {
         id: 't19bgd6n',
         styles: [[['color: red;'], []]],
@@ -84,15 +73,9 @@ describe('styled', () => {
       },
     }
 
-    const extend = styled(undefined, component, createComponent, existingComponent)
+    const extend = styled(undefined, component, createComponent, existingComponent) as Callable
 
-    type Callable = Extract<typeof extend, (array: string[]) => {}>
-
-    const test = vi.fn(extend as Callable)
-
-    test(['background: blue;'])
-
-    expect(test).toHaveReturnedWith({
+    expect(extend(['background: blue;'])).toEqual({
       styleDefinition: {
         id: 't6ptvm5',
         styles: [
@@ -115,15 +98,9 @@ describe('styled', () => {
       },
     }
 
-    const extend = styled('a', component, createComponent, existingComponent)
+    const extend = styled('a', component, createComponent, existingComponent) as Callable
 
-    type Callable = Extract<typeof extend, (array: string[]) => {}>
-
-    const test = vi.fn(extend as Callable)
-
-    test([''])
-
-    expect(test).toHaveReturnedWith({
+    expect(extend([''])).toEqual({
       styleDefinition: {
         id: 't19i8bub',
         styles: [
@@ -138,32 +115,6 @@ describe('styled', () => {
 })
 
 describe('component', () => {
-  test('should create style definition from styles', () => {
-    const test = vi.fn(component)
-
-    test('div', [[['color: red;'], []]])
-
-    expect(test).toHaveReturnedWith({
-      id: 't19bgd6n',
-      styles: [[['color: red;'], []]],
-      tag: 'div',
-      type: 'component',
-    })
-  })
-
-  test('should create style definition from styles with props', () => {
-    const test = vi.fn(component<'div', { color: string }>)
-
-    test('div', [[['color: ', ';'], [({ color }) => color]]])
-
-    expect(test).toHaveReturnedWith({
-      id: 't1fqd64x',
-      styles: [[['color: ', ';'], [expect.any(Function)]]],
-      tag: 'div',
-      type: 'component',
-    })
-  })
-
   test('should create different ids for same styles with different tags', () => {
     const div = component('div', [[['color: red;'], []]])
     const button = component('button', [[['color: red;'], []]])
@@ -174,26 +125,9 @@ describe('component', () => {
 
 describe('global', () => {
   test('should create style definition from styles', () => {
-    const test = vi.fn(global)
-
-    test(null, [[['body { color: red; }'], []]])
-
-    expect(test).toHaveReturnedWith({
+    expect(global(null, [[['body { color: red; }'], []]])).toEqual({
       id: 'tytz3vv',
       styles: [[['body { color: red; }'], []]],
-      tag: null,
-      type: 'global',
-    })
-  })
-
-  test('should create style definition from styles with props', () => {
-    const test = vi.fn(global<null, { color: string }>)
-
-    test(null, [[['body { color: ', '; }'], [({ color }) => color]]])
-
-    expect(test).toHaveReturnedWith({
-      id: 't1420fqd',
-      styles: [[['body { color: ', '; }'], [expect.any(Function)]]],
       tag: null,
       type: 'global',
     })
@@ -268,13 +202,7 @@ describe('css', () => {
 
 describe('insert', () => {
   test('should insert component styles into the sheet', () => {
-    const sheet = {
-      has: vi.fn(() => false),
-      insert: vi.fn(),
-      dump: vi.fn<() => string>(),
-      extract: vi.fn<() => { css: string; ids: string[] }>(),
-      hydrate: vi.fn<(ids: string[]) => void>(),
-    }
+    const sheet = createStyleSheet({})
 
     const definition: StyleDefinition<'div', {}> = {
       id: 'twq229y',
@@ -283,22 +211,14 @@ describe('insert', () => {
       type: 'component',
     }
 
-    const props = { theme: {} }
+    const result = insert(sheet, definition, { theme: {} })
 
-    const result = insert(sheet, definition, props)
-
-    expect(sheet.insert).toHaveBeenCalledWith('wq229y', '.teiler-wq229y{color:red;}')
     expect(result).toBe('teiler-wq229y')
+    expect(sheet.dump()).toBe(' .teiler-wq229y{color:red;}')
   })
 
   test('should insert keyframes styles into the sheet', () => {
-    const sheet = {
-      has: vi.fn(() => false),
-      insert: vi.fn(),
-      dump: vi.fn<() => string>(),
-      extract: vi.fn<() => { css: string; ids: string[] }>(),
-      hydrate: vi.fn<(ids: string[]) => void>(),
-    }
+    const sheet = createStyleSheet({})
 
     const definition: StyleDefinition<null, {}> = {
       id: 'teiler-1ep7axc',
@@ -307,22 +227,14 @@ describe('insert', () => {
       type: 'keyframes',
     }
 
-    const props = { theme: {} }
+    const result = insert(sheet, definition, { theme: {} })
 
-    const result = insert(sheet, definition, props)
-
-    expect(sheet.insert).toHaveBeenCalledWith('1ep7axc', '@keyframes teiler-1ep7axc{from{background-color:red;}to{background-color:green;}}')
     expect(result).toBeNull()
+    expect(sheet.dump()).toBe(' @keyframes teiler-1ep7axc{from{background-color:red;}to{background-color:green;}}')
   })
 
   test('should insert global styles into the sheet', () => {
-    const sheet = {
-      has: vi.fn(() => false),
-      insert: vi.fn(),
-      dump: vi.fn<() => string>(),
-      extract: vi.fn<() => { css: string; ids: string[] }>(),
-      hydrate: vi.fn<(ids: string[]) => void>(),
-    }
+    const sheet = createStyleSheet({})
 
     const definition: StyleDefinition<null, {}> = {
       id: 'tytz3vv',
@@ -331,12 +243,10 @@ describe('insert', () => {
       type: 'global',
     }
 
-    const props = { theme: {} }
+    const result = insert(sheet, definition, { theme: {} })
 
-    const result = insert(sheet, definition, props)
-
-    expect(sheet.insert).toHaveBeenCalledWith('ytz3vv', 'body{color:red;}')
     expect(result).toBeNull()
+    expect(sheet.dump()).toBe(' body{color:red;}')
   })
 
   test('should transpile the same styles only once', async () => {

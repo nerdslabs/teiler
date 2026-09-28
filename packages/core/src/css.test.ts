@@ -4,19 +4,19 @@ import { Pattern, Style, StyleDefinition } from '.'
 import { CSS, TeilerComponent } from './constructor'
 
 describe('transpile', () => {
-  test('should return an empty array if the CSS string is empty', () => {
+  test('should return an empty string if the CSS string is empty', () => {
     const css = ''
     const result = transpile(css)
-    expect(result).toHaveLength(0)
+    expect(result).toBe('')
   })
 
-  test('should return an array of CSS strings with comments removed', () => {
+  test('should remove comments', () => {
     const css = '/* This is a comment */ p { color: red; } /* This is another comment */'
     const result = transpile(css)
     expect(result).toBe('p{color:red;}')
   })
 
-  test('should return button with hover from nasted selector ', () => {
+  test('should flatten nested selectors', () => {
     const css = 'button { color: blue; &:hover { color: red; } }'
     const result = transpile(css)
     expect(result).toEqual('button{color:blue;} button:hover{color:red;}')
