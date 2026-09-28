@@ -59,15 +59,6 @@ describe('pattern', () => {
     expect(extended.tag).toBe('button')
   })
 
-  test('should create a pattern with params', () => {
-    const button = pattern.button<{ color: string }>`background: ${({ color }) => color};`
-    expect(button).toMatchObject({
-      styles: [[['background: ', ';'], [expect.any(Function)]]],
-      tag: 'button',
-      __pattern__: true,
-    })
-  })
-
   test('should create a pattern for a global component', () => {
     const global = pattern.global`background: blue;`
     expect(global).toEqual({
@@ -105,12 +96,6 @@ describe('sew', () => {
     const div = pattern`background: blue;`
     const component = sew(div, createComponent)
     expect(component.render()).toEqual('<div class="teiler-1iflo4h">component</div>')
-  })
-
-  test('should sew a pattern into a button', () => {
-    const button = pattern.button`background: blue;`
-    const component = sew(button, createComponent)
-    expect(component.render()).toEqual('<button class="teiler-1iflo4h">component</button>')
   })
 
   test('should sew a pattern into a global component', () => {

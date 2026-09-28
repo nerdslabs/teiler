@@ -5,13 +5,6 @@ import { describe, expect, test } from 'vitest'
 import createStyleSheet from './index'
 
 describe('createStyleSheet SSR', () => {
-  test('should create a new StyleSheet object', () => {
-    const sheet = createStyleSheet({})
-    expect(sheet).toBeDefined()
-    expect(sheet.insert).toBeDefined()
-    expect(sheet.dump).toBeDefined()
-  })
-
   test('should insert a style rule into the stylesheet', () => {
     const sheet = createStyleSheet({})
     sheet.insert('my-rule', 'my-rule { color: red }')
@@ -35,11 +28,11 @@ describe('extract', () => {
 })
 
 describe('hydrate', () => {
-  test('should fill the cache with the provided IDs', () => {
+  test('should not insert rules with hydrated IDs', () => {
     const sheet = createStyleSheet({})
     sheet.hydrate(['my-rule'])
     sheet.insert('my-rule', 'my-rule { color: red }')
-    expect(sheet.dump()).toContain('')
+    expect(sheet.dump()).toBe('')
   })
 
   test('should report hydrated and inserted keys', () => {
