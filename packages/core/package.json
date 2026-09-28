@@ -2,7 +2,8 @@
   "name": "@teiler/core",
   "version": "0.1.0",
   "repository": {
-    "url": "nerdslabs/teiler",
+    "type": "git",
+    "url": "git+https://github.com/nerdslabs/teiler.git",
     "directory": "packages/core"
   },
   "homepage": "https://github.com/nerdslabs/teiler/tree/master/packages/core#readme",
