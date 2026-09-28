@@ -1,5 +1,15 @@
 # @teiler/vue
 
+## 0.1.1
+
+### Patch Changes
+
+- [#32](https://github.com/nerdslabs/teiler/pull/32) [`69220b2`](https://github.com/nerdslabs/teiler/commit/69220b29411f6718916c87ce30edf7c990c7b454) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Type props from the `as` prop: `<Button as="a" href="/docs">` and `<Button :as="RouterLink" to="/home">` type-check, required props of the `as` component are enforced, and an unknown tag in `as` is reported. Without `as`, props are typed from the element of the styled component as before. `global` components no longer accept element attributes.
+
+  Styled components are now typed as a generic component constructor instead of `DefineComponent`. `InstanceType<typeof Button>` and template refs keep the exposed `element: HTMLElement | null`.
+
+- [#32](https://github.com/nerdslabs/teiler/pull/32) [`69220b2`](https://github.com/nerdslabs/teiler/commit/69220b29411f6718916c87ce30edf7c990c7b454) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Styled components get a component name from their tag (`StyledButton`, `StyledGlobal` for `global`), so Vue Devtools and warnings show it instead of `Anonymous`.
+
 ## 0.1.0
 
 ### Minor Changes

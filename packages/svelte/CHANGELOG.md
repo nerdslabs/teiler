@@ -1,5 +1,17 @@
 # @teiler/svelte
 
+## 0.1.0
+
+### Minor Changes
+
+- [#28](https://github.com/nerdslabs/teiler/pull/28) [`8b3d426`](https://github.com/nerdslabs/teiler/commit/8b3d426545578515002f6e2a3a7907ce9d79bcb5) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Support Svelte 5 (CSR and SSR) and drop Svelte 4. `svelte` peer dependency is now `^5.16.0`. The package ships `.svelte` source through the `svelte` export condition instead of pre-compiled UMD/CJS/ESM bundles, so it needs a Svelte-aware bundler (Vite/SvelteKit, rollup-plugin-svelte, …). Event handlers are passed as props (`onclick`) instead of `on:click`, and the `THEME` context now holds a getter (`() => theme`) instead of a writable store.
+
+- [#28](https://github.com/nerdslabs/teiler/pull/28) [`8b3d426`](https://github.com/nerdslabs/teiler/commit/8b3d426545578515002f6e2a3a7907ce9d79bcb5) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Add `as` prop: `<Button as="a">` / `<Button as={Link}>` swaps the rendered element or component at runtime. `as` is not forwarded to the DOM and style classes stay the same.
+
+### Patch Changes
+
+- [#32](https://github.com/nerdslabs/teiler/pull/32) [`69220b2`](https://github.com/nerdslabs/teiler/commit/69220b29411f6718916c87ce30edf7c990c7b454) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Type props from the `as` prop: `<Button as="a" href="/docs">` and `<Button as={Link} to="/home">` type-check, required props of the `as` component are enforced, and an unknown tag in `as` is reported. Without `as`, props are typed from the element of the styled component as before. `global` components no longer accept element attributes.
+
 ## 0.0.30
 
 ### Patch Changes
