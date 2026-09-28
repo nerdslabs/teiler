@@ -37,7 +37,7 @@ describe('createComponent', () => {
     expect(component).toEqual({
       inheritAttrs: false,
       styleDefinition: styleDefinition,
-      name: '',
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -66,7 +66,7 @@ describe('component', () => {
         tag: 'div',
         type: 'component',
       },
-      name: '',
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -101,7 +101,7 @@ describe('component', () => {
         tag: 'div',
         type: 'component',
       },
-      name: '',
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -133,7 +133,7 @@ describe('component', () => {
         tag: 'div',
         type: 'component',
       },
-      name: '',
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -166,7 +166,7 @@ describe('component', () => {
         tag: 'div',
         type: 'component',
       },
-      name: '',
+      name: 'StyledDiv',
       setup: expect.any(Function),
     })
 
@@ -287,7 +287,7 @@ describe('global', () => {
         tag: null,
         type: 'global',
       },
-      name: '',
+      name: 'StyledGlobal',
       setup: expect.any(Function),
     })
 
@@ -319,7 +319,7 @@ describe('global', () => {
         tag: null,
         type: 'global',
       },
-      name: '',
+      name: 'StyledGlobal',
       setup: expect.any(Function),
     })
 

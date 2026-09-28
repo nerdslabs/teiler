@@ -7,6 +7,8 @@ import { defineComponent, h, inject, ref, toRaw, unref } from 'vue'
 import { context } from './ThemeProvider'
 import { getStyleSheet } from './sheet'
 
+const displayName = (tag: HTMLElements) => (tag ? 'Styled' + tag[0].toUpperCase() + tag.slice(1) : 'StyledGlobal')
+
 export default function <Target extends HTMLElements, Props extends object>(styleDefinition: StyleDefinition<Target, Props>) {
   const component = defineComponent(
     <As extends AsTarget = never>(_props: PolymorphicProps<Target, Props, As>, { attrs, slots, expose }: SetupContext) => {
@@ -45,7 +47,7 @@ export default function <Target extends HTMLElements, Props extends object>(styl
         }
       }
     },
-    { inheritAttrs: false },
+    { name: displayName(styleDefinition.tag), inheritAttrs: false },
   )
 
   return Object.assign(component as PolymorphicComponent<Target, Props>, { styleDefinition })
