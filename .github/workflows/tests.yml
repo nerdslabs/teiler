@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  jest:
+  unit:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -20,13 +20,13 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
       - name: Run tests
-        run: pnpm test -- --ci --coverage
+        run: pnpm test -- --coverage
   storybook:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
         node-version: [22.x, 24.x, 26.x]
-        package: [{ name: 'svelte', port: 6006 }, { name: 'vue', port: 6007 }]
+        package: [svelte, vue]
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -41,11 +41,7 @@ jobs:
       - name: Build
         run: pnpm build
       - name: Run tests
-        run: |
-          cd packages/${{ matrix.package.name }}
-          pnpm dlx concurrently -k -s first -n "STORYBOOK,TEST" -c "magenta,blue" \
-            "pnpm storybook" \
-            "pnpm dlx wait-on tcp:${{ matrix.package.port }} && pnpm test-storybook --url http://localhost:${{ matrix.package.port }}"
+        run: pnpm --filter @teiler/${{ matrix.package }} storybook-test
   lint:
     runs-on: ubuntu-22.04
     steps:

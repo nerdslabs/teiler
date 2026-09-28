@@ -1,7 +1,7 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 import createStyleSheet from './index'
 
 describe('createStyleSheet SSR', () => {

@@ -1,6 +1,6 @@
 import type { StyleDefinition } from '@teiler/core'
 
-import { describe, expect, jest, test } from '@jest/globals'
+import { describe, expect, test, vi } from 'vitest'
 import { render } from '@testing-library/svelte'
 import { createStyleSheet } from '@teiler/core'
 import { component, createComponent, global, keyframes } from './index'
@@ -40,6 +40,18 @@ describe('component', () => {
     const { container } = render(StyledComponent)
 
     expect(container.firstElementChild?.className).toBe('teiler-1r77qux t8e9dar')
+  })
+
+  test('should share one style sheet between components without context', () => {
+    render(component`color: orange;`)
+    render(component`color: purple;`)
+
+    const sheets = Array.from(document.querySelectorAll('style[data-teiler]'))
+    const orange = sheets.filter((sheet) => sheet.textContent?.includes('color:orange;'))
+    const purple = sheets.filter((sheet) => sheet.textContent?.includes('color:purple;'))
+
+    expect(orange).toHaveLength(1)
+    expect(purple).toEqual(orange)
   })
 
   test('should create a component with props', () => {
@@ -133,7 +145,7 @@ describe('component', () => {
   })
 
   test('should forward event handlers', () => {
-    const onclick = jest.fn()
+    const onclick = vi.fn()
 
     const { container } = render(ParentFixture, {
       props: { onclick },
@@ -146,7 +158,7 @@ describe('component', () => {
   })
 
   test('should render a void element without warnings', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
     const StyledComponent = component.input`color: red;`
 
