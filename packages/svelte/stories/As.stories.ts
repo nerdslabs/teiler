@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/svelte'
 
 import { expect } from 'storybook/test'
-import As from './As.vue'
+import As from './As.svelte'
 
 const meta = {
   title: 'As',

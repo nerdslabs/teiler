@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/svelte'
+
+import { expect } from 'storybook/test'
 import Palette from './Palette.svelte'
 
 const meta = {
@@ -25,17 +27,30 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+const buttons = (canvasElement: HTMLElement) => Array.from(canvasElement.querySelectorAll('button')).map((button) => getComputedStyle(button))
+
+const play: Story['play'] = async ({ canvasElement }) => {
+  const [button, extended] = buttons(canvasElement)
+
+  await expect(button.backgroundColor).toBe('rgb(241, 136, 5)')
+  await expect(button.fontSize).toBe('15px')
+  await expect(extended.backgroundColor).toBe('rgb(255, 0, 0)')
+  await expect(extended.color).toBe('rgb(0, 0, 255)')
+}
+
 export const Primary: Story = {
   args: {
     _primary: true,
     label: 'Button',
   },
+  play,
 }
 
 export const Secondary: Story = {
   args: {
     label: 'Button',
   },
+  play,
 }
 
 export const Small: Story = {
@@ -43,11 +58,18 @@ export const Small: Story = {
     _size: 'small',
     label: 'Button',
   },
+  play,
 }
 
 export const Disabled: Story = {
   args: {
     disabled: true,
     label: 'Button',
+  },
+  play: async ({ canvasElement }) => {
+    const [button] = buttons(canvasElement)
+
+    await expect(button.backgroundColor).toBe('rgb(128, 128, 128)')
+    await expect(button.cursor).toBe('not-allowed')
   },
 }
