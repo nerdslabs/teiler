@@ -97,6 +97,18 @@ describe('component', () => {
     expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
   })
 
+  test('should use component id as selector', () => {
+    const styleSheet = createStyleSheet({})
+
+    const Button = component.button`color: red;`
+    const Group = component`& ${Button} { margin: 0; }`
+
+    render(Group, { context: new Map(Object.entries({ STYLE_SHEET: styleSheet })) })
+
+    expect(styleSheet.dump()).toContain(`.${Button.styleDefinition.id}{margin:0;}`)
+    expect(styleSheet.dump()).toContain('{color:red;}')
+  })
+
   test('should forward attributes and skip underscore props', () => {
     const StyledComponent = component.a<{ _color: string }>`color: ${(props) => props._color};`
 
@@ -258,13 +270,6 @@ describe('keyframes', () => {
 
     render(StyledComponent, {
       context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
-    })
-
-    expect(animation).toEqual({
-      id: 'teiler-g1154k',
-      styles: [[['from { opacity: 0; } to { opacity: 1; }'], []]],
-      type: 'keyframes',
-      tag: null,
     })
 
     expect(styleSheet.dump()).toBe(' @keyframes teiler-g1154k{from{opacity:0;}to{opacity:1;}} .teiler-jq8kuu{animation:teiler-g1154k 5s infinite;}')

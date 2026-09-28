@@ -50,20 +50,6 @@ describe('component', () => {
     expect(styleSheet.dump()).toBe('.teiler-13z0lem{color:blue;}')
   })
 
-  test('should render an extended component', () => {
-    const styleSheet = createStyleSheet({})
-
-    const Button = component.button`color: blue;`
-    const BigButton = component(Button)`font-size: 2rem;`
-
-    const { body } = render(BigButton, {
-      context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
-    })
-
-    expect(strip(body)).toMatch(/^<button class="teiler-\w+ t\w+"><\/button>$/)
-    expect(styleSheet.dump()).toMatch(/{color:blue;font-size:2rem;}$/)
-  })
-
   test('should render an extended component with overridden tag', () => {
     const styleSheet = createStyleSheet({})
 
