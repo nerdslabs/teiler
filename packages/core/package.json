@@ -1,6 +1,6 @@
 {
   "name": "@teiler/core",
-  "version": "0.0.28",
+  "version": "0.1.0",
   "repository": {
     "url": "nerdslabs/teiler",
     "directory": "packages/core"

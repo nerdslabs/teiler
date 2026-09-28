@@ -1,6 +1,6 @@
 {
   "name": "@teiler/vue",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "repository": {
     "url": "nerdslabs/teiler",
     "directory": "packages/vue"
@@ -26,7 +26,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@teiler/core": "0.0.28"
+    "@teiler/core": "0.1.0"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
