@@ -26,7 +26,7 @@ describe('createComponent', () => {
     })
 
     expect(component.styleDefinition).toBe(styleDefinition)
-    expect(container.firstElementChild?.outerHTML).toBe('<div class="teiler-wq229y twq229y"><!----></div>')
+    expect(container.firstElementChild?.outerHTML).toBe('<div class="teiler-wq229y twq229y"></div>')
     expect(styleSheet.dump()).toBe(' .teiler-wq229y{color:red;}')
   })
 })
@@ -141,6 +141,22 @@ describe('component', () => {
     container.querySelector('button')?.click()
 
     expect(onclick).toHaveBeenCalledTimes(1)
+  })
+
+  test('should render a void element without warnings', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
+    const StyledComponent = component.input`color: red;`
+
+    const { container } = render(StyledComponent, {
+      props: { value: 'abc' },
+      context: new Map(Object.entries({ STYLE_SHEET: createStyleSheet({}) })),
+    })
+
+    expect(container.querySelector('input')?.value).toBe('abc')
+    expect(warn).not.toHaveBeenCalled()
+
+    warn.mockRestore()
   })
 })
 

@@ -161,9 +161,55 @@ import App from './App.svelte'
 const sheet = createStyleSheet({})
 const { body } = render(App, { context: new Map([['STYLE_SHEET', sheet]]) })
 const { css, ids } = sheet.extract()
+
+const styleTag = `<style data-teiler="${ids.join(' ')}">${css}</style>`
 ```
 
 Read `body` before calling `extract()`: styles are inserted while the component tree renders.
+
+> [!WARNING]
+> Always provide a style sheet through the `STYLE_SHEET` context on the server. Without it, every request shares one module-level style sheet, so styles accumulate across requests.
+
+## Hydration
+
+On the client, pass the ids rendered by the server to `hydrate`, so styles that are already in the document are not inserted again. Provide the same style sheet to the app through context:
+
+```typescript
+import { createStyleSheet } from '@teiler/core'
+import { hydrate } from 'svelte'
+import App from './App.svelte'
+
+const sheet = createStyleSheet({})
+const element = document.querySelector<HTMLStyleElement>('style[data-teiler]')
+
+sheet.hydrate(element?.dataset.teiler?.split(' ') ?? [])
+
+hydrate(App, { target: document.body, context: new Map([['STYLE_SHEET', sheet]]) })
+```
+
+## Content Security Policy
+
+With a strict `style-src` policy, pass a `nonce` to the style sheet and provide it through the `STYLE_SHEET` context. Without an explicit `nonce` no attribute is set, and the default style sheet never has one.
+
+On the server, `extract` returns the nonce, so it can be set on the rendered `<style>` tag:
+
+```typescript
+const sheet = createStyleSheet({ nonce })
+const { body } = render(App, { context: new Map([['STYLE_SHEET', sheet]]) })
+const { css, ids } = sheet.extract()
+
+const styleTag = `<style data-teiler="${ids.join(' ')}" nonce="${nonce}">${css}</style>`
+```
+
+On the client, read the nonce from the server rendered tag before creating the style sheet:
+
+```typescript
+const element = document.querySelector<HTMLStyleElement>('style[data-teiler]')
+const sheet = createStyleSheet({ nonce: element?.nonce })
+```
+
+> [!NOTE]
+> Use the `nonce` property, not `getAttribute('nonce')`. Browsers hide the attribute when the policy is sent in a header, so `getAttribute` returns an empty string.
 
 ## Sew a Pattern
 

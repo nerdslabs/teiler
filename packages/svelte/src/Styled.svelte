@@ -24,5 +24,9 @@
 </script>
 
 {#if styleClassName && styleDefinition.tag}
-  <svelte:element this={styleDefinition.tag} class={[styleClassName, styleDefinition.id, className]} {...attributes}>{@render children?.()}</svelte:element>
+  {#if children}
+    <svelte:element this={styleDefinition.tag} class={[styleClassName, styleDefinition.id, className]} {...attributes}>{@render children()}</svelte:element>
+  {:else}
+    <svelte:element this={styleDefinition.tag} class={[styleClassName, styleDefinition.id, className]} {...attributes} />
+  {/if}
 {/if}
