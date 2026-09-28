@@ -1,145 +1,39 @@
 <script lang="ts">
-  type _Ignore = $$Generic
-  type Props = $$Generic<object>
+  import type { DefaultTheme, HTMLElements, StyleDefinition } from '@teiler/core'
+  import type { Component, Snippet } from 'svelte'
 
-  type $$Props = {
-    styleDefinition: StyleDefinition<HTMLElements, Props>
+  import { clsx } from 'clsx'
+  import { insert } from '@teiler/core'
+  import { getStyleSheet } from './sheet.js'
+  import { getTheme } from './theme.js'
+
+  type Props = {
+    styleDefinition: StyleDefinition<HTMLElements, unknown>
+    as?: Exclude<HTMLElements, null> | Component<any>
+    class?: string
+    children?: Snippet
+    [key: string]: unknown
   }
 
-  import type { DefaultTheme, HTMLElements, Sheet, StyleDefinition } from '@teiler/core'
-  import type { Writable } from 'svelte/store'
+  const { styleDefinition, as, class: className, children, ...props }: Props = $props()
 
-  import { insert } from '@teiler/core'
-  import { getStyleSheet } from './sheet'
-  import { getContext } from 'svelte'
-  import { context } from './ThemeProvider.svelte'
+  const sheet = getStyleSheet()
+  const theme = getTheme()
 
-  export let styleDefinition: StyleDefinition<HTMLElements, Props>
+  const styleClassName = $derived(insert(sheet, styleDefinition, { ...props, theme: theme?.() ?? ({} as DefaultTheme) }))
 
-  const sheet: Sheet = getStyleSheet()
+  const classes = $derived(clsx(styleClassName, styleDefinition.id, className))
 
-  const theme: Writable<DefaultTheme> = getContext(context)
-
-  $: props = $$restProps as Record<string, unknown> & Props
-
-  $: styleClassName = insert(sheet, styleDefinition, { ...props, theme: $theme })
-
-  $: filtredPropsEntries = Object.entries($$restProps).filter(([key, _value]) => key[0] !== '_' && key !== 'class')
-  $: filtredProps = Object.fromEntries(filtredPropsEntries)
-
-  $: className = $$restProps.class ? `${styleClassName} ${styleDefinition.id} ${$$restProps.class}` : `${styleClassName} ${styleDefinition.id}`
+  const attributes = $derived(Object.fromEntries(Object.entries(props).filter(([key]) => key[0] !== '_')))
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<svelte:element
-  this={styleDefinition.tag}
-  class={className}
-  {...filtredProps}
-  on:copy
-  on:cut
-  on:paste
-  on:compositionend
-  on:compositionstart
-  on:compositionupdate
-  on:focus
-  on:focusin
-  on:focusout
-  on:blur
-  on:change
-  on:beforeinput
-  on:input
-  on:reset
-  on:submit
-  on:invalid
-  on:formdata
-  on:load
-  on:error
-  on:beforetoggle
-  on:toggle
-  on:keydown
-  on:keypress
-  on:keyup
-  on:abort
-  on:canplay
-  on:canplaythrough
-  on:cuechange
-  on:durationchange
-  on:emptied
-  on:encrypted
-  on:ended
-  on:loadeddata
-  on:loadedmetadata
-  on:loadstart
-  on:pause
-  on:play
-  on:playing
-  on:progress
-  on:ratechange
-  on:seeked
-  on:seeking
-  on:stalled
-  on:suspend
-  on:timeupdate
-  on:volumechange
-  on:waiting
-  on:auxclick
-  on:click
-  on:contextmenu
-  on:dblclick
-  on:drag
-  on:dragend
-  on:dragenter
-  on:dragexit
-  on:dragleave
-  on:dragover
-  on:dragstart
-  on:drop
-  on:mousedown
-  on:mouseenter
-  on:mouseleave
-  on:mousemove
-  on:mouseout
-  on:mouseover
-  on:mouseup
-  on:select
-  on:selectionchange
-  on:selectstart
-  on:touchcancel
-  on:touchend
-  on:touchmove
-  on:touchstart
-  on:gotpointercapture
-  on:pointercancel
-  on:pointerdown
-  on:pointerenter
-  on:pointerleave
-  on:pointermove
-  on:pointerout
-  on:pointerover
-  on:pointerup
-  on:lostpointercapture
-  on:gamepadconnected
-  on:gamepaddisconnected
-  on:scroll
-  on:scrollend
-  on:resize
-  on:wheel
-  on:animationstart
-  on:animationend
-  on:animationiteration
-  on:transitionstart
-  on:transitionrun
-  on:transitionend
-  on:transitioncancel
-  on:outrostart
-  on:outroend
-  on:introstart
-  on:introend
-  on:message
-  on:messageerror
-  on:visibilitychange
-  on:cancel
-  on:close
-  on:fullscreenchange
-  on:fullscreenerror><slot /></svelte:element
->
+{#if styleClassName && styleDefinition.tag}
+  {@const Target = as ?? styleDefinition.tag}
+  {#if typeof Target === 'function'}
+    <Target class={classes} {...attributes} {children} />
+  {:else if children}
+    <svelte:element this={Target} class={classes} {...attributes}>{@render children()}</svelte:element>
+  {:else}
+    <svelte:element this={Target} class={classes} {...attributes} />
+  {/if}
+{/if}

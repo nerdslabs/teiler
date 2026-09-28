@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { DefaultTheme } from '@teiler/core'
+  import type { DefaultTheme } from '@teiler/core'
+
   import ThemeProvider from './ThemeProvider.svelte'
   import { component } from './component'
 
-  const theme: DefaultTheme = {
-    fontColor: 'green',
-  }
+  const { theme = { fontColor: 'green' } }: { theme?: DefaultTheme } = $props()
 
   const TestComponent = component`
     color: ${({ theme }) => theme.fontColor};
