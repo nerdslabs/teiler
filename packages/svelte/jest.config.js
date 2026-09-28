@@ -16,7 +16,7 @@ const project = (name, testEnvironment, customExportConditions, generate) => ({
   testEnvironmentOptions: {
     customExportConditions,
   },
-  testMatch: [`<rootDir>/packages/svelte/tests/**/*.${name}.test.ts`],
+  testMatch: [`<rootDir>/packages/svelte/src/**/*.${name}.test.ts`],
   moduleNameMapper: {
     '^@teiler/(.*)$': '<rootDir>/packages/$1/src',
     '^(\\.{1,2}/.*)\\.js$': '$1',
@@ -26,7 +26,7 @@ const project = (name, testEnvironment, customExportConditions, generate) => ({
 export default {
   projects: [project('client', 'jsdom', ['browser'], 'client'), project('server', 'node', ['node', 'node-addons'], 'server')],
   coveragePathIgnorePatterns: ['/node_module/'],
-  collectCoverageFrom: ['<rootDir>/packages/svelte/src/**/*.ts'],
+  collectCoverageFrom: ['<rootDir>/packages/svelte/src/**/*.ts', '!<rootDir>/packages/svelte/src/**/*.test.ts'],
   coverageReporters: ['text'],
   coverageDirectory: '<rootDir>/packages/svelte/coverage',
   rootDir: '../..',

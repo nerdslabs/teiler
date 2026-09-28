@@ -3,7 +3,7 @@ import type { StyleDefinition } from '@teiler/core'
 import { describe, expect, jest, test } from '@jest/globals'
 import { render } from '@testing-library/svelte'
 import { createStyleSheet } from '@teiler/core'
-import { component, createComponent, global, keyframes } from '../src/index'
+import { component, createComponent, global, keyframes } from './index'
 
 import ParentFixture from './Parent.fixture.svelte'
 import ThemeProviderFixture from './ThemeProvider.fixture.svelte'

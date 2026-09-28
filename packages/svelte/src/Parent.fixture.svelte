@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { component } from '../src/component'
+  import { component } from './component'
 
   const { color = 'yellow', attributes = {}, onclick }: { color?: string; attributes?: Record<string, string>; onclick?: (event: MouseEvent) => void } = $props()
 

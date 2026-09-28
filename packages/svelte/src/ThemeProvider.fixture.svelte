@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { DefaultTheme } from '@teiler/core'
 
-  import ThemeProvider from '../src/ThemeProvider.svelte'
-  import { component } from '../src/component'
+  import ThemeProvider from './ThemeProvider.svelte'
+  import { component } from './component'
 
   const { theme = { fontColor: 'green' } }: { theme?: DefaultTheme } = $props()
 

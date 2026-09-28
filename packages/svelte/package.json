@@ -18,7 +18,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*.fixture.*"
   ],
   "scripts": {
     "build": "svelte-package -i src -o dist",

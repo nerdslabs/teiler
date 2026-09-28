@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals'
 import { createStyleSheet } from '@teiler/core'
 import { render } from 'svelte/server'
-import { component, global, keyframes } from '../src/index'
+import { component, global, keyframes } from './index'
 
 import ParentFixture from './Parent.fixture.svelte'
 import ThemeProviderFixture from './ThemeProvider.fixture.svelte'
