@@ -138,6 +138,9 @@ When `as` is a component, it receives `class`, `children` and every other forwar
 <a href={to} class={className}>{@render children?.()}</a>
 ```
 
+> [!NOTE]
+> Props are typed from the element of the styled component, not from `as`. `svelte-check` reports attributes that exist only on the `as` target (e.g. `href` with `as="a"` on a `component.button`, or `to` with `as={Link}`), although they work at runtime. Typing props from `as` is planned.
+
 ## Theme
 
 ```svelte
