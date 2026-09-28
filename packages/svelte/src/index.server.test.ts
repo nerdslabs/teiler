@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 import { createStyleSheet } from '@teiler/core'
 import { render } from 'svelte/server'
 import { component, global, keyframes } from './index'

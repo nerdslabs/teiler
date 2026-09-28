@@ -1,16 +1,8 @@
 packages:
   - packages/*
 
-overrides:
-  # GHSA-w5hq-g745-h8pq, @storybook/test-runner (and its jest-junit, nyc) still depend on uuid 8
-  'uuid@<11.1.1': 11.1.1
-
 allowBuilds:
-  '@parcel/watcher': false
-  '@swc/core': false
   esbuild: false
-  svelte-preprocess: false
-  unrs-resolver: false
 
 linkWorkspacePackages: true
 

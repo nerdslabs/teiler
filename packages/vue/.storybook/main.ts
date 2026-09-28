@@ -3,7 +3,7 @@ import { mergeConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 const config: StorybookConfig = {
-  stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  stories: ['../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: ['@storybook/addon-links', '@chromatic-com/storybook', '@storybook/addon-vitest'],
   framework: {
     name: '@storybook/vue3-vite',
@@ -13,6 +13,6 @@ const config: StorybookConfig = {
     return mergeConfig(config, {
       plugins: [vue()],
     })
-  }
+  },
 }
 export default config

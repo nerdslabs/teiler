@@ -21,11 +21,12 @@ jobs:
         run: pnpm install
       - name: Run tests
         run: pnpm test -- --coverage
-  storybook-svelte:
+  storybook:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
         node-version: [22.x, 24.x, 26.x]
+        package: [svelte, vue]
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -40,31 +41,7 @@ jobs:
       - name: Build
         run: pnpm build
       - name: Run tests
-        run: |
-          cd packages/svelte
-          pnpm dlx concurrently -k -s first -n "STORYBOOK,TEST" -c "magenta,blue" \
-            "pnpm storybook" \
-            "pnpm dlx wait-on tcp:6006 && pnpm test-storybook --url http://localhost:6006"
-  storybook-vue:
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        node-version: [22.x, 24.x, 26.x]
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: pnpm
-      - name: Install Dependencies
-        run: |
-          pnpm install
-          pnpm playwright install --with-deps chromium
-      - name: Build
-        run: pnpm build
-      - name: Run tests
-        run: pnpm --filter @teiler/vue storybook-test
+        run: pnpm --filter @teiler/${{ matrix.package }} storybook-test
   lint:
     runs-on: ubuntu-22.04
     steps:
