@@ -2,7 +2,7 @@
 import type { CustomTheme } from './customTheme'
 
 import { Component } from './theme'
-import ThemeProvider from '../src/ThemeProvider';
+import { ThemeProvider } from '@teiler/vue'
 
 defineProps({
   theme: {

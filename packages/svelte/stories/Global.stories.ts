@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/svelte'
+
+import { expect } from 'storybook/test'
 import Global from './Global.svelte'
 
 const meta = {
@@ -17,8 +19,13 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  args: {
-    _primary: true,
-    label: 'Button',
+  play: async ({ canvasElement }) => {
+    const element = document.createElement('div')
+    element.className = 'docs-story'
+    canvasElement.appendChild(element)
+
+    await expect(getComputedStyle(element).backgroundColor).toBe('rgb(241, 136, 5)')
+
+    element.remove()
   },
 }
