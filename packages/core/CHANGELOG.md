@@ -1,5 +1,13 @@
 # @teiler/core
 
+## 0.1.1
+
+### Patch Changes
+
+- [#39](https://github.com/nerdslabs/teiler/pull/39) [`ac1f245`](https://github.com/nerdslabs/teiler/commit/ac1f245622fd90ba347005f08fcd2b3c24b9da38) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Interpolating a component or pattern whose props differ from the props of the styled component typechecks, also inside `css`
+
+- [#39](https://github.com/nerdslabs/teiler/pull/39) [`ac1f245`](https://github.com/nerdslabs/teiler/commit/ac1f245622fd90ba347005f08fcd2b3c24b9da38) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Interpolation functions may return numbers and `null`, and functions can be interpolated inside `css`, typed with the props of the component
+
 ## 0.1.0
 
 ### Minor Changes

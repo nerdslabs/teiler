@@ -1,5 +1,13 @@
 # @teiler/svelte
 
+## 0.1.1
+
+### Patch Changes
+
+- [#40](https://github.com/nerdslabs/teiler/pull/40) [`4967ae7`](https://github.com/nerdslabs/teiler/commit/4967ae737a588d3b2db053955e8aede9f91bd39d) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Export `css`, `createStyleSheet`, `sew` and the `DefaultTheme` type, so the theme can be typed with `declare module '@teiler/vue'` (or `'@teiler/svelte'`) without installing `@teiler/core`
+- Updated dependencies [[`ac1f245`](https://github.com/nerdslabs/teiler/commit/ac1f245622fd90ba347005f08fcd2b3c24b9da38), [`ac1f245`](https://github.com/nerdslabs/teiler/commit/ac1f245622fd90ba347005f08fcd2b3c24b9da38)]:
+  - @teiler/core@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
