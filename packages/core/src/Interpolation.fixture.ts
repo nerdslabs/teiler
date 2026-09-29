@@ -5,7 +5,7 @@ import { pattern } from './pattern'
 
 const spin = keyframes`from { opacity: 0; } to { opacity: 1; }`
 const button = pattern.button`color: blue;`
-declare const Link: TeilerComponent<'a', { _primary?: boolean }>
+declare const Link: TeilerComponent<'a', { _primary?: boolean }> & ((internals: object, props: { _primary?: boolean }) => object)
 const primary = pattern.button<{ _primary?: boolean }>`color: red;`
 const border = css`
   border: 1px solid;

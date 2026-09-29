@@ -94,7 +94,9 @@ function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleD
   }
 }
 
-function css<Props = {}>(strings: ReadonlyArray<string>, ...properties: Properties<Props>[]): CSS<Props> {
+type NoInference<T> = [T][T extends unknown ? 0 : never]
+
+function css<Props = {}>(strings: ReadonlyArray<string>, ...properties: Properties<NoInference<Props>>[]): CSS<Props> {
   const style: Style<Props> = [Array.from(strings), properties]
   const styles = [style]
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
