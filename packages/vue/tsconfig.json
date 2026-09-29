@@ -1,6 +1,7 @@
 {
   "include": [
     "src/**/*.ts",
+    "src/**/*.tsx",
     "src/**/*.vue"
   ],
   "exclude": [
@@ -15,6 +16,8 @@
     "module": "esNext",
     "importHelpers": true,
     "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
     "experimentalDecorators": true,
     "strict": true,
     "strictPropertyInitialization": false,

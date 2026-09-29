@@ -21,7 +21,7 @@ type PolymorphicProps<Target extends HTMLElements, Props, As> = Props & { as?: A
 
 type Exposed = { element: HTMLElement | null }
 
-type Instance<Props> = CreateComponentPublicInstanceWithMixins<Props, Exposed, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, PublicProps>
+type Instance<Props> = CreateComponentPublicInstanceWithMixins<Props, Exposed, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, PublicProps> & { $props: Props & PublicProps }
 
 type StyledOptions = { name: string; inheritAttrs: false }
 
