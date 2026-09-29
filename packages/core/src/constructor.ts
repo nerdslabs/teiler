@@ -14,9 +14,9 @@ type Arguments<Props> = {
 } & Props
 
 type CSS<Props> = { styles: Style<Props>[]; id: string; __css__: true }
-type Expression<Props> = (props: Arguments<Props>) => string | boolean | undefined | CSS<Props>
+type Expression<Props> = (props: Arguments<Props>) => Raw | boolean | null | undefined | CSS<Props>
 type Raw = string | number
-type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | Pattern<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
+type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, never> | Pattern<HTMLElements, never> | TeilerComponent<HTMLElements, never> | Raw
 type Style<Props> = [string[], Properties<Props>[]]
 
 type StyleDefinition<Target extends HTMLElements, Props> = {
@@ -94,9 +94,10 @@ function keyframes(strings: ReadonlyArray<string>, ...properties: Raw[]): StyleD
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function css(strings: ReadonlyArray<string>, ...properties: Exclude<Properties<any>, Expression<unknown>>[]): CSS<unknown> {
-  const style: Style<unknown> = [Array.from(strings), properties]
+type NoInference<T> = [T][T extends unknown ? 0 : never]
+
+function css<Props = {}>(strings: ReadonlyArray<string>, ...properties: Properties<NoInference<Props>>[]): CSS<Props> {
+  const style: Style<Props> = [Array.from(strings), properties]
   const styles = [style]
   const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
   return { styles: styles, id: 't' + hash(id), __css__: true }

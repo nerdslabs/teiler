@@ -2,7 +2,7 @@
   "include": ["src/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2022",
     "lib": ["esnext", "DOM"],
     "module": "esNext",
     "importHelpers": true,

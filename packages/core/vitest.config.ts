@@ -5,6 +5,7 @@ export default defineConfig({
     environment: 'jsdom',
     coverage: {
       include: ['src/**/*.ts'],
+      exclude: ['src/**/*.fixture.ts'],
       thresholds: {
         branches: 90,
         functions: 90,
