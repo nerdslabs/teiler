@@ -178,12 +178,12 @@ const Component = component.div`
 export { Component }
 ```
 
-To add typing for Typescript applications you need to add `extend` inside declaration file (`d.ts`)
+To type the theme in TypeScript, extend `DefaultTheme` from `@teiler/svelte` in a declaration file (`d.ts`). Do not extend `@teiler/core`: it is a dependency of `@teiler/svelte`, not of your app, so with pnpm TypeScript cannot resolve it and ignores the extension without an error.
 
 ```typescript
 import type { CustomTheme } from './theme'
 
-declare module '@teiler/core' {
+declare module '@teiler/svelte' {
   export interface DefaultTheme extends CustomTheme {}
 }
 ```
@@ -193,7 +193,7 @@ declare module '@teiler/core' {
 Styles are collected into a style sheet provided through the `STYLE_SHEET` context. Create one sheet per request, render, then put the extracted CSS into the document head.
 
 ```typescript
-import { createStyleSheet } from '@teiler/core'
+import { createStyleSheet } from '@teiler/svelte'
 import { render } from 'svelte/server'
 import App from './App.svelte'
 
@@ -214,7 +214,7 @@ Read `body` before calling `extract()`: styles are inserted while the component 
 On the client, pass the ids rendered by the server to `hydrate`, so styles that are already in the document are not inserted again. Provide the same style sheet to the app through context:
 
 ```typescript
-import { createStyleSheet } from '@teiler/core'
+import { createStyleSheet } from '@teiler/svelte'
 import { hydrate } from 'svelte'
 import App from './App.svelte'
 
@@ -273,8 +273,7 @@ export default ButtonPattern
 
 // Usage of Pattern
 import { ButtonPattern } from 'some-uikit-library'
-import { sew } from '@teiler/core'
-import { createComponent } from '@teiler/svelte'
+import { createComponent, sew } from '@teiler/svelte'
 
 const Button = sew(ButtonPattern, createComponent)
 
