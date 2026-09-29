@@ -171,11 +171,11 @@ const Component = component.div`
 export { Component }
 ```
 
-To add typing for Typescript applications you need to add `extend` inside declaration file (`d.ts`)
+To type the theme in TypeScript, extend `DefaultTheme` from `@teiler/vue` in a declaration file (`d.ts`). Do not extend `@teiler/core`: it is a dependency of `@teiler/vue`, not of your app, so with pnpm TypeScript cannot resolve it and ignores the extension without an error.
 ```typescript
 import type { CustomTheme } from "./theme.ts";
 
-declare module '@teiler/core' {
+declare module '@teiler/vue' {
   export interface DefaultTheme extends CustomTheme {}
 }
 ```
@@ -186,7 +186,7 @@ To generate all styles at Server Side Rendering, you need to provide the style s
 
 ```ts
 // provide:
-import { createStyleSheet } from "@teiler/core"
+import { createStyleSheet } from "@teiler/vue"
 const styleSheet = createStyleSheet({})
 
 provide('STYLE_SHEET', styleSheet)
@@ -200,7 +200,7 @@ styleSheet.dump()
 To use it in NuxtJS you need to create a plugin:
 
 ```ts
-import { createStyleSheet } from "@teiler/core"
+import { createStyleSheet } from "@teiler/vue"
 
 export default defineNuxtPlugin({
   name: "teiler",
@@ -228,7 +228,7 @@ export default defineNuxtPlugin({
 This method allows you to pre-fill the cache with specific style IDs, optimizing performance by avoiding redundant insertions. Here's how you can use it with **NuxtJS**:
 
 ```ts
-import { createStyleSheet } from "@teiler/core"
+import { createStyleSheet } from "@teiler/vue"
 
 export default defineNuxtPlugin({
   name: "teiler",
@@ -267,7 +267,7 @@ With a strict `style-src` policy, pass a `nonce` to the style sheet and provide 
 On the server, `extract` returns the nonce, so it can be set on the rendered `<style>` tag:
 
 ```ts
-import { createStyleSheet } from "@teiler/core"
+import { createStyleSheet } from "@teiler/vue"
 
 const styleSheet = createStyleSheet({ nonce })
 app.provide('STYLE_SHEET', styleSheet)
@@ -280,7 +280,7 @@ const styleTag = `<style data-teiler="${ids.join(' ')}" nonce="${nonce}">${css}<
 On the client, read the nonce from the server rendered tag before creating the style sheet:
 
 ```ts
-import { createStyleSheet } from "@teiler/core"
+import { createStyleSheet } from "@teiler/vue"
 
 const element = document.querySelector<HTMLStyleElement>('style[data-teiler]')
 const styleSheet = createStyleSheet({ nonce: element?.nonce })
@@ -313,8 +313,7 @@ export default ButtonPattern
 
 // Usage of Pattern
 import { ButtonPattern } from 'some-uikit-library'
-import { sew } from '@teiler/core'
-import { createComponent } from '@teiler/vue'
+import { createComponent, sew } from '@teiler/vue'
 
 const Button = sew(ButtonPattern, createComponent)
 
