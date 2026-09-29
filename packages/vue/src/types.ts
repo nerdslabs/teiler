@@ -23,6 +23,8 @@ type Exposed = { element: HTMLElement | null }
 
 type Instance<Props> = CreateComponentPublicInstanceWithMixins<Props, Exposed, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, PublicProps>
 
-type PolymorphicComponent<Target extends HTMLElements, Props> = new <As extends AsTarget = never>(props: PolymorphicProps<Target, Props, As> & PublicProps) => Instance<PolymorphicProps<Target, Props, As>>
+type StyledOptions = { name: string; inheritAttrs: false }
 
-export type { AsTarget, Exposed, PolymorphicComponent, PolymorphicProps }
+type PolymorphicComponent<Target extends HTMLElements, Props> = (new <As extends AsTarget = never>(props: PolymorphicProps<Target, Props, As> & PublicProps) => Instance<PolymorphicProps<Target, Props, As>>) & StyledOptions
+
+export type { AsTarget, Exposed, PolymorphicComponent, PolymorphicProps, StyledOptions }
