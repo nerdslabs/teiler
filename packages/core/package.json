@@ -23,6 +23,7 @@
     "build": "rolldown --config",
     "dev": "rolldown --config --watch",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "wait": "wait-on dist/teiler-core.cjs.js"
   },
   "dependencies": {

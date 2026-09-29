@@ -53,7 +53,7 @@ describe('compile', () => {
   test('without falsy values', () => {
     const style: Style<{}> = [
       ['a', 'b', 'c', 'd', 'e'],
-      ['', () => false, () => undefined, () => null as unknown as undefined],
+      ['', () => false, () => undefined, () => null],
     ]
     const compiled = compile<{}>([style], { theme: {} })
 
