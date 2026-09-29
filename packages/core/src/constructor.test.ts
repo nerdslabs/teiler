@@ -1,7 +1,7 @@
 import type { HTMLElements, StyleDefinition, TeilerComponent } from '.'
 
 import { describe, expect, test, vi } from 'vitest'
-import { component, createStyleSheet, css, global, insert, keyframes, styled } from '.'
+import { component, createStyleSheet, css, global, insert, keyframes, styled, withTarget } from '.'
 
 const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefinition<Target, Props>): TeilerComponent<Target, Props> => {
   return {
@@ -111,6 +111,63 @@ describe('styled', () => {
         type: 'component',
       },
     })
+  })
+
+  test('should keep target of extended component when tag is not specified', () => {
+    const Link = { name: 'Link' }
+    const existingComponent: TeilerComponent<'button', {}> = { styleDefinition: withTarget(component('button', [[['color: red;'], []]]), Link) as StyleDefinition<'button', {}> }
+
+    const extended = (styled(undefined, component, createComponent, existingComponent) as Callable)(['background: blue;']).styleDefinition
+    const plain = (styled(undefined, component, createComponent, { styleDefinition: component('button', [[['color: red;'], []]]) }) as Callable)(['background: blue;']).styleDefinition
+
+    expect(extended.target).toBe(Link)
+    expect(extended.tag).toBe('button')
+    expect(extended.id).not.toBe(plain.id)
+  })
+
+  test('should drop target of extended component when tag is specified', () => {
+    const existingComponent: TeilerComponent<'button', {}> = { styleDefinition: withTarget(component('button', [[['color: red;'], []]]), { name: 'Link' }) as StyleDefinition<'button', {}> }
+
+    const extended = (styled('a', component, createComponent, existingComponent) as Callable)(['']).styleDefinition
+
+    expect(extended.target).toBeUndefined()
+    expect(extended.tag).toBe('a')
+    expect(extended.id).toBe(
+      component('a', [
+        [['color: red;'], []],
+        [[''], []],
+      ]).id,
+    )
+  })
+})
+
+describe('withTarget', () => {
+  const definition = component('button', [[['color: red;'], []]])
+
+  test('should change tag and id for a tag target', () => {
+    expect(withTarget(definition, 'a')).toEqual(component('a', [[['color: red;'], []]]))
+  })
+
+  test('should keep tag and styles for a component target', () => {
+    const Link = { name: 'Link' }
+    const result = withTarget(definition, Link)
+
+    expect(result.target).toBe(Link)
+    expect(result.tag).toBe('button')
+    expect(result.styles).toBe(definition.styles)
+    expect(result.id).not.toBe(definition.id)
+  })
+
+  test('should create stable ids from component names', () => {
+    expect(withTarget(definition, { name: 'Link' }).id).toBe(withTarget(definition, { name: 'Link' }).id)
+    expect(withTarget(definition, { __name: 'Link' }).id).toBe(withTarget(definition, { name: 'Link' }).id)
+    expect(withTarget(definition, { name: 'Link' }).id).not.toBe(withTarget(definition, { name: 'RouterLink' }).id)
+    expect(withTarget(definition, function Link() {}).id).toBe(withTarget(definition, { name: 'Link' }).id)
+    expect(withTarget(definition, {}).id).toBe(withTarget(definition, { name: '' }).id)
+  })
+
+  test('should drop component target when changing to a tag', () => {
+    expect(withTarget(withTarget(definition, { name: 'Link' }), 'span').target).toBeUndefined()
   })
 })
 

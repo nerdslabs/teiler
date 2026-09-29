@@ -234,6 +234,30 @@ describe('as', () => {
   })
 })
 
+describe('withComponent', () => {
+  test('should render the target component', () => {
+    const ButtonWithLink = component.button`color: green;`.withComponent(LinkFixture)
+
+    const { container } = render(ButtonWithLink, {
+      props: { to: '/home' },
+      context: new Map(Object.entries({ STYLE_SHEET: createStyleSheet({}) })),
+    })
+
+    expect(container.innerHTML.replace(/<!--.*?-->/g, '')).toBe(`<a href="/home" class="teiler-1dc5e1n ${ButtonWithLink.styleDefinition.id}"></a>`)
+  })
+
+  test('should prefer as over the target component', () => {
+    const ButtonWithLink = component.button`color: green;`.withComponent(LinkFixture)
+
+    const { container } = render(ButtonWithLink, {
+      props: { as: 'span', to: '/home' },
+      context: new Map(Object.entries({ STYLE_SHEET: createStyleSheet({}) })),
+    })
+
+    expect(container.firstElementChild?.tagName).toBe('SPAN')
+  })
+})
+
 describe('global', () => {
   test('should create a global style', () => {
     const styleSheet = createStyleSheet({})

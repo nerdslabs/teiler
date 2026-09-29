@@ -149,6 +149,29 @@ Props are typed from `as`: `as="a"` accepts anchor attributes, `as={Link}` accep
 > [!NOTE]
 > `mount()` and `render()` called from TypeScript cannot infer `as`, so there props are typed from the element of the styled component.
 
+## `withComponent`
+
+Use `withComponent` to create a new styled component with the same styles that always renders another element or component. The original component stays unchanged:
+
+```typescript
+import { component } from '@teiler/svelte'
+import Link from './Link.svelte'
+
+const Button = component.button`
+  background: #f18805;
+`
+
+const FooterLink = Button.withComponent(Link)
+const ButtonAnchor = Button.withComponent('a')
+```
+
+```svelte
+<FooterLink to="/home">Home</FooterLink>
+<ButtonAnchor href="/docs">Docs</ButtonAnchor>
+```
+
+Props are typed from the target, so `FooterLink` requires `to`. The target component has the same requirements as a component passed to `as`: it has to apply `class` to its root element. `as` still works and takes precedence over the target. Extending with `component(FooterLink)` keeps rendering `Link`, `component.a(FooterLink)` renders `<a>`.
+
 ## Theme
 
 ```svelte
