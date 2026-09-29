@@ -1,8 +1,12 @@
+import type { TeilerComponent } from './constructor'
+
 import { css, keyframes } from './constructor'
 import { pattern } from './pattern'
 
 const spin = keyframes`from { opacity: 0; } to { opacity: 1; }`
 const button = pattern.button`color: blue;`
+declare const Link: TeilerComponent<'a', { _primary?: boolean }>
+const primary = pattern.button<{ _primary?: boolean }>`color: red;`
 const border = css`
   border: 1px solid;
 `
@@ -28,6 +32,25 @@ export const interpolations = pattern.div<{ size: number; _active?: boolean; col
     `}
   ${({ _active }) => (_active ? border : undefined)}
   animation: ${spin} 1s;
+`
+
+export const withComponents = pattern.div<{ _active?: boolean }>`
+  ${primary} {
+    margin: 0;
+  }
+  ${Link} {
+    margin: 0;
+  }
+  ${({ _active }) =>
+    _active &&
+    css`
+      ${primary} {
+        color: ${({ theme }) => String(theme.color)};
+      }
+      ${Link} {
+        width: ${({ _active }) => (_active ? 1 : 2)}px;
+      }
+    `}
 `
 
 export const objectReturn = pattern.div<{ size: number }>`

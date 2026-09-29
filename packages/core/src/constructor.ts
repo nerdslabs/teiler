@@ -16,7 +16,7 @@ type Arguments<Props> = {
 type CSS<Props> = { styles: Style<Props>[]; id: string; __css__: true }
 type Expression<Props> = (props: Arguments<Props>) => Raw | boolean | null | undefined | CSS<Props>
 type Raw = string | number
-type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, Props> | Pattern<HTMLElements, Props> | TeilerComponent<HTMLElements, Props> | Raw
+type Properties<Props> = Expression<Props> | StyleDefinition<HTMLElements, never> | Pattern<HTMLElements, never> | TeilerComponent<HTMLElements, never> | Raw
 type Style<Props> = [string[], Properties<Props>[]]
 
 type StyleDefinition<Target extends HTMLElements, Props> = {
