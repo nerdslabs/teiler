@@ -1,5 +1,11 @@
 # @teiler/vue
 
+## 0.1.2
+
+### Patch Changes
+
+- [#36](https://github.com/nerdslabs/teiler/pull/36) [`a80e665`](https://github.com/nerdslabs/teiler/commit/a80e6659d34aa577812a53967a75bc3ceb702ad4) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Styled components can be assigned to `Meta.component` in Storybook again
+
 ## 0.1.1
 
 ### Patch Changes
