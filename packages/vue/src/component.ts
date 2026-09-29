@@ -1,6 +1,6 @@
 import type { Compiler, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
 import type { DefineSetupFnComponent } from 'vue'
-import type { PolymorphicComponent } from './types'
+import type { PolymorphicComponent, StyledOptions } from './types'
 
 import Styled from './Styled'
 
@@ -8,7 +8,7 @@ import { component, global, keyframes, styled, tags } from '@teiler/core'
 
 type VueTeilerComponent<Target extends HTMLElements, Props extends object> = PolymorphicComponent<Target, Props> & TeilerComponent<Target, Props>
 
-type VueGlobalComponent<Props extends object> = DefineSetupFnComponent<Props> & TeilerComponent<null, Props>
+type VueGlobalComponent<Props extends object> = DefineSetupFnComponent<Props> & StyledOptions & TeilerComponent<null, Props>
 
 const createComponent = <Target extends HTMLElements, Props extends object>(styleDefinition: StyleDefinition<Target, Props>): VueTeilerComponent<Target, Props> => {
   return Styled(styleDefinition)
