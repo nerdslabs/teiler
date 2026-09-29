@@ -1,5 +1,15 @@
 # @teiler/vue
 
+## 0.1.3
+
+### Patch Changes
+
+- [#40](https://github.com/nerdslabs/teiler/pull/40) [`4967ae7`](https://github.com/nerdslabs/teiler/commit/4967ae737a588d3b2db053955e8aede9f91bd39d) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Export `css`, `createStyleSheet`, `sew` and the `DefaultTheme` type, so the theme can be typed with `declare module '@teiler/vue'` (or `'@teiler/svelte'`) without installing `@teiler/core`
+
+- [#38](https://github.com/nerdslabs/teiler/pull/38) [`214e254`](https://github.com/nerdslabs/teiler/commit/214e2544dacc989f18a2b98cae4e75c1025fa302) Thanks [@drozdzynski](https://github.com/drozdzynski)! - The `as` prop is inferred in TSX: `<Button as="a" href="/docs" />` and `<Button as={RouterLink} to="/home" />` typecheck without an explicit type argument
+- Updated dependencies [[`ac1f245`](https://github.com/nerdslabs/teiler/commit/ac1f245622fd90ba347005f08fcd2b3c24b9da38), [`ac1f245`](https://github.com/nerdslabs/teiler/commit/ac1f245622fd90ba347005f08fcd2b3c24b9da38)]:
+  - @teiler/core@0.1.1
+
 ## 0.1.2
 
 ### Patch Changes

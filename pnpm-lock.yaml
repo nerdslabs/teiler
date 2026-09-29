@@ -235,7 +235,7 @@ importers:
         version: 1.2.11
       rolldown-plugin-dts:
         specifier: ^0.28.6
-        version: 0.28.6(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.3.11)(oxc-resolver@11.21.2)(rolldown@1.2.11)(typescript@6.0.3)
+        version: 0.28.6(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.3.11)(oxc-resolver@11.21.2)(rolldown@1.2.11)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3))
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -246,7 +246,7 @@ importers:
   packages/svelte:
     dependencies:
       '@teiler/core':
-        specifier: 0.1.0
+        specifier: 0.1.1
         version: link:../core
       clsx:
         specifier: ^2.1.1
@@ -310,7 +310,7 @@ importers:
   packages/vue:
     dependencies:
       '@teiler/core':
-        specifier: 0.1.0
+        specifier: 0.1.1
         version: link:../core
     devDependencies:
       '@chromatic-com/storybook':
@@ -5644,22 +5644,6 @@ snapshots:
       is-core-module: 2.16.2
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
-
-  rolldown-plugin-dts@0.28.6(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.3.11)(oxc-resolver@11.21.2)(rolldown@1.2.11)(typescript@6.0.3):
-    dependencies:
-      dts-resolver: 3.0.0(oxc-resolver@11.21.2)
-      get-tsconfig: 5.0.0-beta.6
-      obug: 3.0.0
-      rolldown: 1.2.11
-      yuku-ast: 0.10.2
-      yuku-codegen: 0.10.2
-      yuku-parser: 0.10.2
-    optionalDependencies:
-      '@volar/typescript': 2.4.28(typescript@6.0.3)
-      '@vue/language-core': 3.3.11
-      typescript: 6.0.3
-    transitivePeerDependencies:
-      - oxc-resolver
 
   rolldown-plugin-dts@0.28.6(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.3.11)(oxc-resolver@11.21.2)(rolldown@1.2.11)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3)):
     dependencies:
