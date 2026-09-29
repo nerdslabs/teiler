@@ -42,6 +42,21 @@ jobs:
         run: pnpm build
       - name: Run tests
         run: pnpm --filter @teiler/${{ matrix.package }} storybook-test
+  consumer:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: pnpm
+      - name: Install Dependencies
+        run: pnpm install
+      - name: Build
+        run: pnpm build
+      - name: Typecheck packed packages in a consumer project
+        run: pnpm test:consumer
   typecheck:
     runs-on: ubuntu-22.04
     steps:

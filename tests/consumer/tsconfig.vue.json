@@ -1,0 +1,17 @@
+{
+  "include": ["vue/**/*.ts", "vue/**/*.tsx", "vue/**/*.vue"],
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["esnext", "DOM"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "vueCompilerOptions": {
+    "strictTemplates": true
+  }
+}

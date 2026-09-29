@@ -8,6 +8,7 @@
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
+    "test:consumer": "node tests/consumer/run.js",
     "typecheck": "turbo run typecheck",
     "lint": "eslint packages/*/src",
     "check-format": "prettier -c packages/**/src/*",

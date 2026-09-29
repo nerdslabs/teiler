@@ -1,0 +1,13 @@
+{
+  "include": ["svelte/**/*.ts", "svelte/**/*.svelte"],
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["esnext", "DOM"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true
+  }
+}
