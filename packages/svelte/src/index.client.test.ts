@@ -29,7 +29,7 @@ describe('createComponent', () => {
 
     expect(component.styleDefinition).toBe(styleDefinition)
     expect(container.firstElementChild?.outerHTML).toBe('<div class="teiler-wq229y twq229y"></div>')
-    expect(styleSheet.dump()).toBe(' .teiler-wq229y{color:red;}')
+    expect(styleSheet.dump()).toBe('.teiler-wq229y{color:red;}')
   })
 })
 
@@ -65,7 +65,7 @@ describe('component', () => {
     })
 
     expect(container.firstElementChild?.className).toBe('teiler-100tn2k t1fqd64x')
-    expect(styleSheet.dump()).toBe(' .teiler-100tn2k{color:yellow;}')
+    expect(styleSheet.dump()).toBe('.teiler-100tn2k{color:yellow;}')
   })
 
   test('should create a component with custom theme', () => {
@@ -78,7 +78,7 @@ describe('component', () => {
     })
 
     expect(container.firstElementChild?.className).toBe('teiler-1dc5e1n t1fqd64x')
-    expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+    expect(styleSheet.dump()).toBe('.teiler-1dc5e1n{color:green;}')
   })
 
   test('should create a component with custom class', () => {
@@ -94,7 +94,7 @@ describe('component', () => {
     })
 
     expect(container.firstElementChild?.className).toBe('teiler-1dc5e1n tsqxzcw custom-class')
-    expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+    expect(styleSheet.dump()).toBe('.teiler-1dc5e1n{color:green;}')
   })
 
   test('should use component id as selector', () => {
@@ -141,7 +141,7 @@ describe('component', () => {
     expect(container.querySelector('button')).toBe(element)
     expect(element?.className).toBe('teiler-13z0lem t1o3x0cs')
     expect(element?.textContent).toBe('blue')
-    expect(styleSheet.dump()).toBe(' .teiler-1uosih1{color:yellow;} .teiler-13z0lem{color:blue;}')
+    expect(styleSheet.dump()).toBe('.teiler-1uosih1{color:yellow;}.teiler-13z0lem{color:blue;}')
   })
 
   test('should update attributes added by spread in parent', async () => {
@@ -196,7 +196,7 @@ describe('as', () => {
     })
 
     expect(container.innerHTML.replace(/<!--.*?-->/g, '')).toBe('<a class="teiler-1uosih1 t1o3x0cs" href="/link">yellow</a>')
-    expect(styleSheet.dump()).toBe(' .teiler-1uosih1{color:yellow;}')
+    expect(styleSheet.dump()).toBe('.teiler-1uosih1{color:yellow;}')
   })
 
   test('should render component as another component', () => {
@@ -208,7 +208,7 @@ describe('as', () => {
     })
 
     expect(container.innerHTML.replace(/<!--.*?-->/g, '')).toBe('<a href="/home" class="teiler-1uosih1 t1o3x0cs">yellow</a>')
-    expect(styleSheet.dump()).toBe(' .teiler-1uosih1{color:yellow;}')
+    expect(styleSheet.dump()).toBe('.teiler-1uosih1{color:yellow;}')
   })
 
   test('should pass class as a string to a component', () => {
@@ -245,7 +245,7 @@ describe('global', () => {
     })
 
     expect(container.children).toHaveLength(0)
-    expect(styleSheet.dump()).toBe(' color:red;')
+    expect(styleSheet.dump()).toBe('color:red;')
   })
 
   test('should create a global style with theme', () => {
@@ -257,7 +257,7 @@ describe('global', () => {
       context: new Map(Object.entries({ STYLE_SHEET: styleSheet, THEME: () => ({ fontColor: 'green' }) })),
     })
 
-    expect(styleSheet.dump()).toBe(' color:green;')
+    expect(styleSheet.dump()).toBe('color:green;')
   })
 })
 
@@ -272,7 +272,7 @@ describe('keyframes', () => {
       context: new Map(Object.entries({ STYLE_SHEET: styleSheet })),
     })
 
-    expect(styleSheet.dump()).toBe(' @keyframes teiler-g1154k{from{opacity:0;}to{opacity:1;}} .teiler-jq8kuu{animation:teiler-g1154k 5s infinite;}')
+    expect(styleSheet.dump()).toBe('@keyframes teiler-g1154k{from{opacity:0;}to{opacity:1;}}.teiler-jq8kuu{animation:teiler-g1154k 5s infinite;}')
   })
 })
 
@@ -286,7 +286,7 @@ describe('ThemeProvider', () => {
 
     expect(container.querySelector('div')?.className).toBe('teiler-9hfnro thjt86x')
     expect(container.querySelector('div')?.textContent).toBe('abc')
-    expect(styleSheet.dump()).toBe(' .teiler-9hfnro{color:green;}')
+    expect(styleSheet.dump()).toBe('.teiler-9hfnro{color:green;}')
   })
 
   test('should update styles when theme changes', async () => {
@@ -299,6 +299,6 @@ describe('ThemeProvider', () => {
     await rerender({ theme: { fontColor: 'blue' } })
 
     expect(container.querySelector('div')?.className).toBe('teiler-13z0lem thjt86x')
-    expect(styleSheet.dump()).toBe(' .teiler-9hfnro{color:green;} .teiler-13z0lem{color:blue;}')
+    expect(styleSheet.dump()).toBe('.teiler-9hfnro{color:green;}.teiler-13z0lem{color:blue;}')
   })
 })

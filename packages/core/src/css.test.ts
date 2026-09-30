@@ -19,7 +19,7 @@ describe('transpile', () => {
   test('should flatten nested selectors', () => {
     const css = 'button { color: blue; &:hover { color: red; } }'
     const result = transpile(css)
-    expect(result).toEqual('button{color:blue;} button:hover{color:red;}')
+    expect(result).toEqual('button{color:blue;}button:hover{color:red;}')
   })
 })
 

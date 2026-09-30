@@ -80,7 +80,7 @@ function transpile(css: string): string {
     ]),
   )
 
-  return results.join(' ')
+  return results.join('')
 }
 
 export { transpile, compile }

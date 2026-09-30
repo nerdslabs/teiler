@@ -31,7 +31,7 @@ export function createServerTag(): Tag {
       return key in rules
     },
     getAllRules: function (): string {
-      return Object.values(rules).join(' ')
+      return Object.values(rules).join('')
     },
     getAllKeys: function (): string[] {
       return Object.keys(rules)
@@ -55,7 +55,7 @@ export function createBrowserTag(container?: HTMLElement, nonce?: string): Tag {
       return inserted.has(key)
     },
     getAllRules: function (): string {
-      return Array.from(inserted.values()).reduce((string, node) => string + ' ' + node.textContent, '')
+      return Array.from(inserted.values(), (node) => node.textContent).join('')
     },
     getAllKeys: function (): string[] {
       return Array.from(inserted.keys())

@@ -131,7 +131,7 @@ describe('keyframes', () => {
     })
 
     expect(strip(body)).toBe('<div class="teiler-jq8kuu t4yzacq"></div>')
-    expect(styleSheet.dump()).toBe('@keyframes teiler-g1154k{from{opacity:0;}to{opacity:1;}} .teiler-jq8kuu{animation:teiler-g1154k 5s infinite;}')
+    expect(styleSheet.dump()).toBe('@keyframes teiler-g1154k{from{opacity:0;}to{opacity:1;}}.teiler-jq8kuu{animation:teiler-g1154k 5s infinite;}')
   })
 })
 

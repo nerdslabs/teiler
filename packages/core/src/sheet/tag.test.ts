@@ -9,7 +9,7 @@ describe('createServerTag', () => {
     expect(tag.hasRule('key1')).toBe(true)
     expect(tag.hasRule('other')).toBe(false)
     expect(tag.getAllKeys()).toEqual(['key1', 'key2'])
-    expect(tag.getAllRules()).toBe('h1 { color: red } h2 { color: green }')
+    expect(tag.getAllRules()).toBe('h1 { color: red }h2 { color: green }')
   })
 })
 
@@ -21,6 +21,6 @@ describe('createBrowserTag', () => {
     expect(tag.hasRule('key1')).toBe(true)
     expect(tag.hasRule('other')).toBe(false)
     expect(tag.getAllKeys()).toEqual(['key1', 'key2'])
-    expect(tag.getAllRules()).toBe(' h1 { color: red } h2 { color: green }')
+    expect(tag.getAllRules()).toBe('h1 { color: red }h2 { color: green }')
   })
 })
