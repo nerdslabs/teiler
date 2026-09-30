@@ -7,15 +7,12 @@ on:
 jobs:
   unit:
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        node-version: [22.x, 24.x, 26.x]
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version-file: .node-version
           cache: pnpm
       - name: Install Dependencies
         run: pnpm install
@@ -25,14 +22,13 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [22.x, 24.x, 26.x]
         package: [svelte, vue]
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version-file: .node-version
           cache: pnpm
       - name: Install Dependencies
         run: |
@@ -49,7 +45,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
-          node-version: 24.x
+          node-version-file: .node-version
           cache: pnpm
       - name: Install Dependencies
         run: pnpm install
@@ -62,7 +58,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
-          node-version: 24.x
+          node-version-file: .node-version
           cache: pnpm
       - name: Install Dependencies
         run: pnpm install
@@ -75,7 +71,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
-          node-version: 24.x
+          node-version-file: .node-version
           cache: pnpm
       - name: Install Dependencies
         run: pnpm install
