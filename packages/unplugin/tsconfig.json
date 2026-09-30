@@ -1,0 +1,20 @@
+{
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["esnext", "DOM"],
+    "types": ["node"],
+    "module": "esNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@teiler/core": ["../core/src"],
+      "@teiler/core/*": ["../core/src/*"]
+    }
+  }
+}

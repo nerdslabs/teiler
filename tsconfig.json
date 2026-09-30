@@ -2,7 +2,8 @@
   "references": [
     { "path": "./packages/core" },
     { "path": "./packages/svelte" },
-    { "path": "./packages/vue" }
+    { "path": "./packages/vue" },
+    { "path": "./packages/unplugin" }
   ],
   "files": [],
   "include": [],

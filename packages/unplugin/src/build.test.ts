@@ -1,0 +1,46 @@
+import type { PluginOption } from 'vite'
+
+import { describe, expect, test } from 'vitest'
+import { build } from 'vite'
+import { fileURLToPath } from 'node:url'
+import { rolldown } from 'rolldown'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
+import teiler from './vite'
+import teilerRolldown from './rolldown'
+import vue from '@vitejs/plugin-vue'
+
+const fixture = (name: string) => fileURLToPath(new URL(name, import.meta.url))
+const external = [/^@teiler\//, /^vue/, /^svelte/]
+
+async function bundle(entry: string, plugins: PluginOption[]) {
+  const result = await build({
+    configFile: false,
+    logLevel: 'silent',
+    plugins: [...plugins, teiler()],
+    build: {
+      write: false,
+      minify: true,
+      lib: { entry, formats: ['es'], fileName: 'index' },
+      rolldownOptions: { external },
+    },
+  })
+  const [output] = Array.isArray(result) ? result : [result]
+  return 'output' in output ? output.output.map((chunk) => ('code' in chunk ? chunk.code : '')).join('') : ''
+}
+
+describe('build', () => {
+  test.each([
+    { name: 'vue', entry: fixture('Button.fixture.vue'), plugins: [vue()] },
+    { name: 'svelte', entry: fixture('Button.fixture.svelte'), plugins: [svelte()] },
+  ])('minifies templates in $name components with vite', async ({ entry, plugins }) => {
+    const code = await bundle(entry, plugins)
+    expect(code).toContain('.button`color:${')
+    expect(code).toContain(';&:hover{color:green;}`')
+  })
+
+  test('minifies templates with rolldown', async () => {
+    const input = fixture('Styles.fixture.ts')
+    const result = await (await rolldown({ input, external, plugins: [teilerRolldown()] })).generate({ format: 'esm' })
+    expect(result.output[0].code).toContain('`color:red;&:hover{color:green;}`')
+  })
+})
