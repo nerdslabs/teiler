@@ -39,6 +39,7 @@
     "@storybook/addon-vitest": "^10.6.0",
     "@storybook/vue3": "^10.6.0",
     "@storybook/vue3-vite": "^10.6.0",
+    "@teiler/unplugin": "workspace:*",
     "@vitejs/plugin-vue": "^6.0.9",
     "@vitest/browser-playwright": "^4.1.11",
     "@vitest/coverage-v8": "^4.1.11",

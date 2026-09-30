@@ -1,5 +1,6 @@
 import type { StorybookConfig } from '@storybook/vue3-vite'
 import { mergeConfig } from 'vite'
+import teiler from '@teiler/unplugin/vite'
 import vue from '@vitejs/plugin-vue'
 
 const config: StorybookConfig = {
@@ -11,7 +12,7 @@ const config: StorybookConfig = {
   },
   async viteFinal(config) {
     return mergeConfig(config, {
-      plugins: [vue()],
+      plugins: [vue(), process.env.TEILER_UNPLUGIN === '1' && teiler()],
     })
   },
 }
