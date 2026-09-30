@@ -46,14 +46,12 @@ function signature(css: string, removed: string[] = []): string {
   return result.replace(/[\s;]/g, '')
 }
 
-const escape = (cooked: string) => cooked.replace(/\\|`|\$\{/g, (match) => '\\' + match)
-
-function minify(quasis: Array<string | null | undefined>): string[] | null {
-  if (quasis.some((quasi) => typeof quasi !== 'string' || PLACEHOLDER.test(quasi))) {
+function minify(quasis: string[]): string[] | null {
+  if (quasis.some((quasi) => PLACEHOLDER.test(quasi))) {
     return null
   }
 
-  const source = (quasis as string[]).reduce((css, quasi, index) => css + (index > 0 ? placeholder(index - 1) : '') + quasi, '')
+  const source = quasis.reduce((css, quasi, index) => css + (index > 0 ? placeholder(index - 1) : '') + quasi, '')
   const tree = compile(source)
   const output = stringify(tree)
 
@@ -63,7 +61,7 @@ function minify(quasis: Array<string | null | undefined>): string[] | null {
 
   const parts = output.split(PLACEHOLDER)
 
-  return parts.length === quasis.length ? parts.map(escape) : null
+  return parts.length === quasis.length ? parts : null
 }
 
 export { minify }

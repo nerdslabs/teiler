@@ -1,6 +1,20 @@
 # @teiler/unplugin
 
-Build plugin for [Teiler](https://github.com/nerdslabs/teiler) that minifies CSS inside `component`, `global`, `keyframes`, `css` and `pattern` tagged templates at build time. Whitespace and comments are removed from the template strings, so they no longer ship to the browser. Interpolations are left untouched.
+Build plugin for [Teiler](https://github.com/nerdslabs/teiler) that makes the bundle smaller. Teiler works without it.
+
+For `component`, `global`, `keyframes`, `css` and `pattern` tagged templates it:
+
+- minifies the CSS: whitespace and comments are removed from the template strings, so they no longer ship to the browser. Interpolations are left untouched.
+- makes unused definitions removable: bundlers cannot drop tagged templates, so they are turned into calls marked `/*#__PURE__*/`, and definitions that are never imported are removed from the bundle.
+
+```js
+// source
+export const Button = component.button`
+  color: ${({ color }) => color};
+`
+// output
+export const Button = /*#__PURE__*/ component.button(["color:", ";"], ({ color }) => color)
+```
 
 Works with Vite, Rollup, Rolldown, webpack, Rspack and esbuild through [unplugin](https://github.com/unjs/unplugin).
 

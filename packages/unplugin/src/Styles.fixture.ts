@@ -7,3 +7,7 @@ export const Button = pattern.button`
     color: green;
   }
 `
+
+export const Unused = pattern.a`
+  color: unused;
+`

@@ -34,13 +34,13 @@ describe('build', () => {
     { name: 'svelte', entry: fixture('Button.fixture.svelte'), plugins: [svelte()] },
   ])('minifies templates in $name components with vite', async ({ entry, plugins }) => {
     const code = await bundle(entry, plugins)
-    expect(code).toContain('.button`color:${')
-    expect(code).toContain(';&:hover{color:green;}`')
+    expect(code).toMatch(/\/\*\s*[#@]__PURE__\s*\*\/\s*\w+\.button\(\["color:",\s*";&:hover\{color:green;\}"\]/)
   })
 
-  test('minifies templates with rolldown', async () => {
-    const input = fixture('Styles.fixture.ts')
+  test('minifies templates and removes unused definitions with rolldown', async () => {
+    const input = fixture('Entry.fixture.ts')
     const result = await (await rolldown({ input, external, plugins: [teilerRolldown()] })).generate({ format: 'esm' })
-    expect(result.output[0].code).toContain('`color:red;&:hover{color:green;}`')
+    expect(result.output[0].code).toContain('pattern.button(["color:red;&:hover{color:green;}"])')
+    expect(result.output[0].code).not.toContain('unused')
   })
 })

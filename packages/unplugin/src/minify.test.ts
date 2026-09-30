@@ -15,8 +15,7 @@ describe('minify', () => {
     { name: 'removes line comments', input: ['// comment\n  color: red;\n  // another'], expected: ['color:red;'] },
     { name: 'keeps double slash in url', input: ['background: url(//example.com/a.png);'], expected: ['background:url(//example.com/a.png);'] },
     { name: 'keeps strings', input: ['content: "a  /* b */  c";', "font-family: 'A  B';"], expected: ['content:"a  /* b */  c";', "font-family:'A  B';"] },
-    { name: 'escapes backslashes', input: ['content: "\\f101";'], expected: ['content:"\\\\f101";'] },
-    { name: 'escapes template syntax', input: ['content: "`${";'], expected: ['content:"\\`\\${";'] },
+    { name: 'keeps escapes', input: ['content: "\\f101";'], expected: ['content:"\\f101";'] },
     { name: 'keeps keyframes', input: ['\n  from { opacity: 0; }\n  50% { opacity: 0.5; }\n  to { opacity: 1; }\n'], expected: ['from{opacity:0;}50%{opacity:0.5;}to{opacity:1;}'] },
     { name: 'keeps global rules', input: ['\n  @font-face {\n    font-family: "A";\n  }\n  body {\n    margin: 0;\n  }\n'], expected: ['@font-face{font-family:"A";}body{margin:0;}'] },
     { name: 'adds missing semicolon', input: ['color: red'], expected: ['color:red;'] },
@@ -33,7 +32,6 @@ describe('minify', () => {
     { name: 'value fragments', input: ['1px solid'] },
     { name: 'value fragments with edges', input: ['\n  solid\n'] },
     { name: 'interpolations in comments', input: ['color: red; /* ', ' */'] },
-    { name: 'invalid escapes', input: [undefined] },
     { name: 'placeholder collisions', input: ['content: "xxx0:xxx";'] },
   ])('skips $name', ({ input }) => {
     expect(minify(input)).toBeNull()
