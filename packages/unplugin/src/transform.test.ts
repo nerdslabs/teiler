@@ -90,3 +90,51 @@ describe('transform', () => {
     expect(result?.map.mappings).not.toBe('')
   })
 })
+
+describe('warnings', () => {
+  const warnings = (code: string) => (transform(code, 'file.js')?.warnings ?? []).map(({ message, loc }) => ({ message, line: loc.line, column: loc.column, file: loc.file }))
+  const position = (code: string, search: string) => {
+    const lines = code.slice(0, code.indexOf(search)).split('\n')
+    return { line: lines.length, column: lines[lines.length - 1].length }
+  }
+
+  test.each([
+    { name: 'component', code: "import { component } from '@teiler/vue'\nconst Button = component.button`\n  color red;\n`" },
+    { name: 'global', code: "import { global } from '@teiler/vue'\nconst Global = global`\n  body { color: red;\n`" },
+    { name: 'pattern', code: "import { pattern } from '@teiler/core'\nconst Button = pattern.button`\n  color: red; }\n`" },
+  ])('reports ignored CSS in $name', ({ name, code }) => {
+    expect(warnings(code)).toEqual([
+      expect.objectContaining({ message: expect.stringContaining(`\`${name}\` template`), file: 'file.js', ...position(code, name === 'pattern' ? 'pattern.button`' : name === 'global' ? 'global`' : 'component.button`') }),
+    ])
+  })
+
+  test('does not report css value fragments', () => {
+    expect(warnings("import { component, css } from '@teiler/vue'\ncomponent.div`\n  border: 1px ${() => css`solid`};\n`")).toEqual([])
+  })
+
+  test.each([
+    { name: 'a local component', code: "import { component } from '@teiler/vue'\nconst Button = component.button`color: red;`\ncomponent.div`\n  ${({ _active }) => _active && `${Button} { color: red; }`}\n`", identifier: 'Button' },
+    { name: 'local keyframes', code: "import { component, keyframes } from '@teiler/vue'\nconst fade = keyframes`from { opacity: 0; }`\ncomponent.div`\n  ${({ _active }) => _active && `animation: ${fade} 1s;`}\n`", identifier: 'fade' },
+    { name: 'an imported component', code: "import { component } from '@teiler/vue'\nimport Button from './Button'\ncomponent.div`\n  ${function () { return `${Button} { color: red; }` }}\n`", identifier: 'Button' },
+  ])('reports $name in a plain template string inside a function', ({ code, identifier }) => {
+    const search = '${' + identifier + '}'
+    const { line, column } = position(code, search)
+    expect(warnings(code)).toEqual([expect.objectContaining({ message: expect.stringContaining(`\`\${${identifier}}\``), line, column: column + 2 })])
+  })
+
+  test.each([
+    { name: 'css', code: "import { component, css } from '@teiler/vue'\nimport Button from './Button'\ncomponent.div`\n  ${({ _active }) => _active && css`${Button} { color: red; }`}\n`" },
+    { name: 'selectors outside functions', code: "import { component } from '@teiler/vue'\nimport Button from './Button'\ncomponent.div`\n  ${Button} { color: red; }\n`" },
+    { name: 'strings', code: "import { component } from '@teiler/vue'\nimport { selector } from './selectors'\ncomponent.div`\n  ${() => `${selector} { color: red; }`}\n`" },
+    { name: 'constants', code: "import { component } from '@teiler/vue'\nimport { COLOR } from './colors'\ncomponent.div`\n  ${() => `color: ${COLOR};`}\n`" },
+    { name: 'members', code: "import { component } from '@teiler/vue'\nimport Theme from './theme'\ncomponent.div`\n  ${() => `color: ${Theme.color};`}\n`" },
+    { name: 'other tags', code: "import { component } from '@teiler/vue'\nconst Other = html`<div></div>`\ncomponent.div`\n  ${() => `${Other} { color: red; }`}\n`" },
+  ])('does not report $name', ({ code }) => {
+    expect(warnings(code)).toEqual([])
+  })
+
+  test('reports templates with invalid escapes', () => {
+    const code = "import { component } from '@teiler/vue'\nimport Button from './Button'\ncomponent.div`\n  content: '\\unicode';\n  ${() => `${Button} {}`}\n`"
+    expect(transform(code, 'file.js')).toEqual(expect.objectContaining({ code, warnings: [expect.objectContaining({ loc: expect.objectContaining({ line: 5 }) })] }))
+  })
+})

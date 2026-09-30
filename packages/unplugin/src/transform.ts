@@ -1,13 +1,16 @@
-import type { Expression, ParserOptions, TaggedTemplateExpression } from 'oxc-parser'
+import type { Expression, ParserOptions, TaggedTemplateExpression, TemplateLiteral } from 'oxc-parser'
 
 import MagicString from 'magic-string'
-import { Visitor, parseSync } from 'oxc-parser'
+import { Visitor, parseSync, visitorKeys } from 'oxc-parser'
 import { minify } from './minify'
 
-type Result = { code: string; map: ReturnType<MagicString['generateMap']> }
+type Warning = { message: string; loc: { file: string; line: number; column: number } }
+type Result = { code: string; map: ReturnType<MagicString['generateMap']>; warnings: Warning[] }
+type Node = { type: string; [key: string]: unknown }
 
 const MODULES = ['@teiler/core', '@teiler/vue', '@teiler/svelte']
 const TAGS = ['component', 'global', 'keyframes', 'css', 'pattern']
+const PASCAL_CASE = /^[A-Z](?=.*[a-z])/
 
 function lang(id: string): ParserOptions['lang'] {
   const [path, query = ''] = id.split('?')
@@ -33,6 +36,30 @@ function resolve(node: Expression): { name: string; member?: string } | null {
   return { name: current.name, member }
 }
 
+function walk(node: unknown, enter: (node: Node) => boolean): void {
+  if (typeof node !== 'object' || node === null || !('type' in node)) {
+    return
+  }
+
+  const current = node as Node
+
+  if (enter(current)) {
+    for (const key of visitorKeys[current.type] ?? []) {
+      const child = current[key]
+      if (Array.isArray(child)) {
+        child.forEach((item) => walk(item, enter))
+      } else {
+        walk(child, enter)
+      }
+    }
+  }
+}
+
+function location(code: string, file: string, offset: number): Warning['loc'] {
+  const lines = code.slice(0, offset).split('\n')
+  return { file, line: lines.length, column: lines[lines.length - 1].length }
+}
+
 function transform(code: string, id: string, modules: string[] = MODULES): Result | null {
   const { program, errors } = parseSync(id, code, { lang: lang(id), sourceType: 'module', astType: 'js' })
 
@@ -42,19 +69,27 @@ function transform(code: string, id: string, modules: string[] = MODULES): Resul
 
   const named = new Map<string, string>()
   const namespaces = new Set<string>()
+  const imported = new Set<string>()
+  const declarations = new Map<string, TaggedTemplateExpression>()
   const templates: TaggedTemplateExpression[] = []
 
   new Visitor({
     ImportDeclaration(node) {
-      if (!modules.includes(node.source.value)) {
-        return
-      }
       for (const specifier of node.specifiers) {
-        if (specifier.type === 'ImportNamespaceSpecifier') {
+        if (!modules.includes(node.source.value)) {
+          if (PASCAL_CASE.test(specifier.local.name)) {
+            imported.add(specifier.local.name)
+          }
+        } else if (specifier.type === 'ImportNamespaceSpecifier') {
           namespaces.add(specifier.local.name)
         } else if (specifier.type === 'ImportSpecifier') {
           named.set(specifier.local.name, specifier.imported.type === 'Identifier' ? specifier.imported.name : specifier.imported.value)
         }
+      }
+    },
+    VariableDeclarator(node) {
+      if (node.id.type === 'Identifier' && node.init?.type === 'TaggedTemplateExpression') {
+        declarations.set(node.id.name, node.init)
       }
     },
     TaggedTemplateExpression(node) {
@@ -62,14 +97,42 @@ function transform(code: string, id: string, modules: string[] = MODULES): Resul
     },
   }).visit(program)
 
-  const string = new MagicString(code)
-
-  for (const { start, tag, quasi } of templates) {
+  const tagName = ({ tag }: TaggedTemplateExpression) => {
     const target = resolve(tag)
     const name = target && (namespaces.has(target.name) ? target.member : named.get(target.name))
+    return name !== undefined && name !== null && TAGS.includes(name) ? name : null
+  }
 
-    if (name === undefined || name === null || !TAGS.includes(name)) {
+  const definitions = new Set([...imported, ...[...declarations].filter(([, init]) => tagName(init) !== null).map(([name]) => name)])
+  const warnings: Warning[] = []
+  const string = new MagicString(code)
+
+  for (const node of templates) {
+    const name = tagName(node)
+
+    if (name === null) {
       continue
+    }
+
+    const { start, quasi } = node
+
+    for (const expression of quasi.expressions) {
+      if (expression.type !== 'ArrowFunctionExpression' && expression.type !== 'FunctionExpression') {
+        continue
+      }
+      walk(expression.body, (child) => {
+        if (child.type === 'TemplateLiteral') {
+          for (const inner of (child as unknown as TemplateLiteral).expressions) {
+            if (inner.type === 'Identifier' && definitions.has(inner.name)) {
+              warnings.push({
+                message: `\`\${${inner.name}}\` inside a plain template string becomes "[object Object]" at runtime. Build the string with \`css\` instead: \${(props) => css\`\${${inner.name}} { ... }\`}`,
+                loc: location(code, id, inner.start),
+              })
+            }
+          }
+        }
+        return child.type !== 'TaggedTemplateExpression'
+      })
     }
 
     const cooked = quasi.quasis.map((element) => element.value.cooked)
@@ -78,7 +141,16 @@ function transform(code: string, id: string, modules: string[] = MODULES): Resul
       continue
     }
 
-    const strings = minify(cooked as string[]) ?? (cooked as string[])
+    const minified = minify(cooked as string[])
+
+    if ('skipped' in minified && minified.skipped === 'dropped' && name !== 'css') {
+      warnings.push({
+        message: `Part of the CSS in this \`${name}\` template is not a declaration or a rule, so it is ignored at runtime. Check for a missing \`:\`, an unclosed \`{\` or an extra \`}\`.`,
+        loc: location(code, id, start),
+      })
+    }
+
+    const strings = 'strings' in minified ? minified.strings : (cooked as string[])
     const bounds = [quasi.start, ...quasi.expressions.flatMap((expression) => [expression.start, expression.end]), quasi.end]
     const last = bounds.length - 2
 
@@ -90,11 +162,12 @@ function transform(code: string, id: string, modules: string[] = MODULES): Resul
     }
   }
 
-  if (!string.hasChanged()) {
+  if (!string.hasChanged() && warnings.length === 0) {
     return null
   }
 
-  return { code: string.toString(), map: string.generateMap({ hires: true, source: id, includeContent: true }) }
+  return { code: string.toString(), map: string.generateMap({ hires: true, source: id, includeContent: true }), warnings }
 }
 
+export type { Warning }
 export { MODULES, transform }

@@ -46,9 +46,11 @@ function signature(css: string, removed: string[] = []): string {
   return result.replace(/[\s;]/g, '')
 }
 
-function minify(quasis: string[]): string[] | null {
+type Minified = { strings: string[] } | { skipped: 'placeholder' | 'dropped' | 'interpolation' }
+
+function minify(quasis: string[]): Minified {
   if (quasis.some((quasi) => PLACEHOLDER.test(quasi))) {
-    return null
+    return { skipped: 'placeholder' }
   }
 
   const source = quasis.reduce((css, quasi, index) => css + (index > 0 ? placeholder(index - 1) : '') + quasi, '')
@@ -56,12 +58,13 @@ function minify(quasis: string[]): string[] | null {
   const output = stringify(tree)
 
   if (signature(output) !== signature(source, comments(tree))) {
-    return null
+    return { skipped: 'dropped' }
   }
 
-  const parts = output.split(PLACEHOLDER)
+  const strings = output.split(PLACEHOLDER)
 
-  return parts.length === quasis.length ? parts : null
+  return strings.length === quasis.length ? { strings } : { skipped: 'interpolation' }
 }
 
+export type { Minified }
 export { minify }

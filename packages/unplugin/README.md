@@ -82,6 +82,18 @@ build({
 | `exclude` | `[/node_modules/]` | Files to skip |
 | `modules` | `[]` | Additional modules re-exporting Teiler helpers, e.g. `['@acme/ui']` |
 
+## Warnings
+
+The plugin reports two mistakes as build warnings, with the file and position:
+
+- CSS that is not a declaration or a rule in a `component`, `global`, `keyframes` or `pattern` template, e.g. a missing `:`, an unclosed `{` or an extra `}`. Stylis ignores that part at runtime, so the style silently goes missing.
+- A Teiler definition (declared in the same file) or an imported PascalCase name interpolated into a plain template string inside a function. It becomes `"[object Object]"` at runtime:
+
+  ```js
+  ${({ _active }) => _active && `${Button} { color: red; }`}    // warning
+  ${({ _active }) => _active && css`${Button} { color: red; }`} // ok
+  ```
+
 ## Server-side rendering
 
 Minification changes the template strings, and component ids and class names are hashed from them. Use the plugin in both the client and the server build, otherwise hydrated styles will not match.

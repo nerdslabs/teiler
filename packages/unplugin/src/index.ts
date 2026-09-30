@@ -22,7 +22,15 @@ const factory: UnpluginFactory<Options | undefined> = (options = {}) => {
         code: modules,
       },
       handler(code, id) {
-        return transform(code, id, modules)
+        const result = transform(code, id, modules)
+
+        if (result === null) {
+          return null
+        }
+
+        result.warnings.forEach((warning) => this.warn(warning))
+
+        return { code: result.code, map: result.map }
       },
     },
   }

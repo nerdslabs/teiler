@@ -25,16 +25,19 @@ describe('minify', () => {
     { name: 'keeps strings across interpolations', input: ['content: "  ', '  ";'], expected: ['content:"  ', '  ";'] },
     { name: 'returns empty template', input: [''], expected: [''] },
   ])('$name', ({ input, expected }) => {
-    expect(minify(input)).toEqual(expected)
+    expect(minify(input)).toEqual({ strings: expected })
   })
 
   test.each([
-    { name: 'value fragments', input: ['1px solid'] },
-    { name: 'value fragments with edges', input: ['\n  solid\n'] },
-    { name: 'interpolations in comments', input: ['color: red; /* ', ' */'] },
-    { name: 'placeholder collisions', input: ['content: "xxx0:xxx";'] },
-  ])('skips $name', ({ input }) => {
-    expect(minify(input)).toBeNull()
+    { name: 'value fragments', input: ['1px solid'], reason: 'dropped' },
+    { name: 'value fragments with edges', input: ['\n  solid\n'], reason: 'dropped' },
+    { name: 'missing colons', input: ['color red; background: blue;'], reason: 'dropped' },
+    { name: 'unclosed braces', input: ['&:hover { color: red;'], reason: 'dropped' },
+    { name: 'extra braces', input: ['color: red; }'], reason: 'dropped' },
+    { name: 'interpolations in comments', input: ['color: red; /* ', ' */'], reason: 'interpolation' },
+    { name: 'placeholder collisions', input: ['content: "xxx0:xxx";'], reason: 'placeholder' },
+  ])('skips $name', ({ input, reason }) => {
+    expect(minify(input)).toEqual({ skipped: reason })
   })
 
   test.each([
@@ -42,6 +45,8 @@ describe('minify', () => {
     ['\n  width: calc(100% - 10px);\n  background: url(//example.com/a.png) no-repeat;\n  font-family: "Open Sans", sans-serif;\n  & > span + span ~ a { margin: 0 auto !important; }\n'],
     ['\n  content: "  a  ";\n  & :not(.a) .b { color: red; }\n  @supports (display: grid) { display: grid; }\n  grid-template-areas: "a  b" "c  d";\n'],
   ])('transpiles to the same CSS %#', (input) => {
-    expect(transpile(`.a{${minify([input])![0]}}`)).toBe(transpile(`.a{${input}}`))
+    const minified = minify([input])
+    expect(minified).toHaveProperty('strings')
+    expect(transpile(`.a{${'strings' in minified && minified.strings[0]}}`)).toBe(transpile(`.a{${input}}`))
   })
 })
