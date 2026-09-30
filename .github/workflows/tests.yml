@@ -18,6 +18,20 @@ jobs:
         run: pnpm install
       - name: Run tests
         run: pnpm test -- --coverage
+  unplugin-minimum-node:
+    name: unplugin (Node 22.12.0)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - name: Install Dependencies
+        run: pnpm install
+      - name: Run tests
+        run: pnpm --filter @teiler/unplugin test
   storybook:
     runs-on: ubuntu-22.04
     strategy:

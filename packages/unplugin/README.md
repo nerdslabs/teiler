@@ -24,6 +24,8 @@ Works with Vite, Rollup, Rolldown, webpack, Rspack and esbuild through [unplugin
 pnpm add -D @teiler/unplugin
 ```
 
+Requires Node.js 22.12 or later.
+
 ## Usage
 
 ### Vite
