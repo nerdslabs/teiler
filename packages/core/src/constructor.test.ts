@@ -274,4 +274,52 @@ describe('insert', () => {
     expect(second).toBe(first)
     expect(sheet.dump()).toBe(' .teiler-wq229y{color:red;}')
   })
+
+  test.each([
+    { name: 'component before global', first: 'component', second: 'global' },
+    { name: 'global before component', first: 'global', second: 'component' },
+    { name: 'keyframes before component', first: 'keyframes', second: 'component' },
+    { name: 'component before keyframes', first: 'component', second: 'keyframes' },
+  ] as const)('should insert definitions of different types with the same body: $name', ({ first, second }) => {
+    const sheet = createStyleSheet({})
+    const definitions = {
+      component: { id: 'tcomponent', styles: [[['from { color: red; }'], []]], tag: 'div', type: 'component' },
+      global: { id: 'tglobal', styles: [[['from { color: red; }'], []]], tag: null, type: 'global' },
+      keyframes: { id: 'teiler-keyframes', styles: [[['from { color: red; }'], []]], tag: null, type: 'keyframes' },
+    } satisfies Record<string, StyleDefinition<HTMLElements, {}>>
+    const rules = {
+      component: '.teiler-8l2r7j from{color:red;}',
+      global: 'from{color:red;}',
+      keyframes: '@keyframes teiler-keyframes{from{color:red;}}',
+    }
+
+    insert(sheet, definitions[first], { theme: {} })
+    insert(sheet, definitions[second], { theme: {} })
+
+    expect(sheet.dump()).toBe(` ${rules[first]} ${rules[second]}`)
+  })
+
+  test('should insert a global on the client with the same body as a hydrated component', () => {
+    const server = createStyleSheet({})
+    const client = createStyleSheet({})
+    const component: StyleDefinition<'div', {}> = { id: 'tcomponent', styles: [[['h1 { color: red; }'], []]], tag: 'div', type: 'component' }
+    const global: StyleDefinition<null, {}> = { id: 'tglobal', styles: [[['h1 { color: red; }'], []]], tag: null, type: 'global' }
+
+    insert(server, component, { theme: {} })
+    client.hydrate(server.extract().ids)
+    insert(client, component, { theme: {} })
+    insert(client, global, { theme: {} })
+
+    expect(client.dump()).toBe(' h1{color:red;}')
+  })
+
+  test('should insert keyframes once per name', () => {
+    const sheet = createStyleSheet({})
+    const definition: StyleDefinition<null, {}> = { id: 'teiler-keyframes', styles: [[['from { opacity: 0; }'], []]], tag: null, type: 'keyframes' }
+
+    insert(sheet, definition, { theme: {} })
+    insert(sheet, { ...definition }, { theme: {} })
+
+    expect(sheet.extract().ids).toEqual(['k-teiler-keyframes'])
+  })
 })

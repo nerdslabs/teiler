@@ -107,16 +107,17 @@ function insert<Props = {}>(sheet: Sheet, definition: StyleDefinition<HTMLElemen
   const { styles, type } = definition
   const { css, definitions } = compile(styles, props)
   const compiledId = hash(css)
+  const key = type === 'component' ? compiledId : type === 'keyframes' ? `k-${definition.id}` : `g-${compiledId}`
 
   definitions.forEach((definition) => insert(sheet, definition, props))
 
-  if (sheet.has(compiledId) === false) {
+  if (sheet.has(key) === false) {
     if (type === 'component') {
-      sheet.insert(compiledId, transpile(`.teiler-${compiledId} { ${css} }`))
+      sheet.insert(key, transpile(`.teiler-${compiledId} { ${css} }`))
     } else if (type === 'keyframes') {
-      sheet.insert(compiledId, transpile(`@keyframes ${definition.id} { ${css} }`))
+      sheet.insert(key, transpile(`@keyframes ${definition.id} { ${css} }`))
     } else {
-      sheet.insert(compiledId, transpile(css))
+      sheet.insert(key, transpile(css))
     }
   }
 
