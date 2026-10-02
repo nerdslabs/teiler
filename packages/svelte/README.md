@@ -134,7 +134,7 @@ const Button = component.button<{ _active: boolean; _color: string }>`
 `
 ```
 
-`css` is evaluated with the props of the component, so it can also hold shared styles: `${() => shared}`, where `shared` is a `css` template.
+A `css` template can also be interpolated directly, e.g. styles shared by several components: `${shared}`. Functions inside it get the props of the component.
 
 ## Extending
 
