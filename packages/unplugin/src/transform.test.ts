@@ -106,7 +106,7 @@ describe('transform', () => {
 })
 
 describe('componentId', () => {
-  const ids = (code: string, options?: Options) => [...(transform(code, 'src/file.js', options)?.code ?? '').matchAll(/(\w+(?:\.\w+)*(?:\(\w+\))?)\.withConfig\("([\w-]{9,})"\)/g)].map(([, tag, id]) => ({ tag, id }))
+  const ids = (code: string, options?: Options) => [...(transform(code, 'src/file.js', options)?.code ?? '').matchAll(/(\w+(?:\.\w+)*(?:\(\w+\))?)\.withConfig\("([\w-]{9,})"(?:, "\w+")?\)/g)].map(([, tag, id]) => ({ tag, id }))
 
   test('adds component ids to components, globals and patterns', () => {
     const code =
@@ -135,7 +135,7 @@ describe('componentId', () => {
 
   test.each([{}, { pure: false }, { minify: false, pure: false }])('keeps type arguments and works with %o', (options) => {
     const code = "import { component } from '@teiler/vue'\nconst Button = component.button<{ a: number }>`\n  color: red;\n`"
-    expect(transform(code, 'file.ts', options)?.code).toMatch(/component\.button\.withConfig\("[\w-]{9,}"\)<\{ a: number \}>[(`]/)
+    expect(transform(code, 'file.ts', options)?.code).toMatch(/component\.button\.withConfig\("[\w-]{9,}"(?:, "\w+")?\)<\{ a: number \}>[(`]/)
   })
 
   test.each([
@@ -148,7 +148,7 @@ describe('componentId', () => {
     { name: 'a config variable', tag: 'component.button.withConfig(config)', expected: 1 },
   ])('keeps templates configured with $name', ({ tag, expected }) => {
     const code = transform(`import { component } from '@teiler/vue'\nconst Button = ${tag}\`color: red;\``, 'file.js')?.code
-    expect(code?.match(/withConfig\("[\w-]{9,}"\)/g) ?? []).toHaveLength(expected)
+    expect(code?.match(/withConfig\("[\w-]{9,}"(?:, "\w+")?\)/g) ?? []).toHaveLength(expected)
   })
 
   test('keeps ids unique in large files', () => {
@@ -167,6 +167,31 @@ describe('componentId', () => {
   test('produces the same styles at runtime', () => {
     const code = "import { css, pattern } from '@teiler/core'\nexport const Button = pattern.button`\n  color: ${({ color }) => color};\n`"
     expect(render(transform(code, 'file.js')!.code)).toBe(render(code))
+  })
+})
+
+describe('displayName', () => {
+  const configs = (code: string, options?: Options) => [...(transform(code, 'file.js', options)?.code ?? '').matchAll(/\.withConfig\(([^)]*)\)/g)].map(([, config]) => config)
+
+  test('adds variable names', () => {
+    const code = "import { component, global } from '@teiler/vue'\nconst Button = component.button`color: red;`\nexport const Global = global`body { margin: 0; }`\nexport default component.div`color: red;`"
+    expect(configs(code, { componentId: false })).toEqual(['{ displayName: "Button" }', '{ displayName: "Global" }'])
+  })
+
+  test.each([
+    { name: 'a name set by hand', tag: "component.button.withConfig({ displayName: 'Primary' })", expected: [/^"[\w-]{9,}"$/] },
+    { name: 'a component id set by hand', tag: "component.button.withConfig({ componentId: 'button' })", expected: [/^\{ displayName: "Button" \}$/] },
+    { name: 'both set by hand', tag: "component.button.withConfig({ componentId: 'button', displayName: 'Primary' })", expected: [] },
+    { name: 'a component id string set by hand', tag: "component.button.withConfig('button')", expected: [/^\{ displayName: "Button" \}$/] },
+    { name: 'both strings set by hand', tag: "component.button.withConfig('button', 'Primary')", expected: [] },
+  ])('keeps $name', ({ tag, expected }) => {
+    const added = configs(`import { component } from '@teiler/vue'\nconst Button = ${tag}\`color: red;\``).slice(1)
+    expect(added).toHaveLength(expected.length)
+    added.forEach((config, index) => expect(config).toMatch(expected[index]))
+  })
+
+  test('can be turned off', () => {
+    expect(configs("import { component } from '@teiler/vue'\nconst Button = component.button`color: red;`", { displayName: false })).toEqual([expect.stringMatching(/^"[\w-]{9,}"$/)])
   })
 })
 

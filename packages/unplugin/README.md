@@ -6,7 +6,8 @@ For `component`, `global`, `keyframes`, `css` and `pattern` tagged templates it:
 
 - minifies the CSS (`minify`): whitespace and comments are removed from the template strings, so they no longer ship to the browser. Interpolations are left untouched.
 - makes unused definitions removable (`pure`): bundlers cannot drop tagged templates, so they are turned into calls marked `/*#__PURE__*/`, and definitions that are never imported are removed from the bundle.
-- gives components, globals and patterns stable ids (`componentId`): ids are hashed from the template strings, so two components with the same strings and different interpolations share an id, and `${A}` selects `B` too. The plugin adds `.withConfig("<id>")`: 6 characters hashed from the package name and the file path in the package, shared by the file and compressed well, plus 3 characters hashed from the variable name, so adding a component does not change the ids of the others. Templates with a `componentId` set by hand are left as they are.
+- gives components, globals and patterns stable ids (`componentId`): ids are hashed from the template strings, so two components with the same strings and different interpolations share an id, and `${A}` selects `B` too. The plugin adds `.withConfig("<id>")`: 6 characters hashed from the package name and the file path in the package, shared by the file and compressed well, plus 3 characters hashed from the variable name, so adding a component does not change the ids of the others. Templates with a `componentId` or `displayName` set by hand keep it.
+- names components after their variables (`displayName`), so the element of `const Button = component.button` has the class `Button-t1x2y3z` instead of `t1x2y3z`, and Vue devtools show `Button`.
 - reports [mistakes](#warnings) as build warnings.
 
 ```js
@@ -88,10 +89,11 @@ build({
 | `minify` | production only | Minify the CSS in the templates |
 | `pure` | production only | Turn the templates into `/*#__PURE__*/` calls |
 | `componentId` | `true` | Add stable ids to components, globals and patterns |
+| `displayName` | `true` | Add variable names to component ids |
 
 ## Development
 
-Like the bundlers do with JavaScript, the plugin minifies and adds `/*#__PURE__*/` only in production builds: `vite build`, webpack and Rspack with `mode: 'production'` (or no `mode`). The Vite dev server and other webpack modes keep the CSS as written. Component ids are added and warnings are reported in every mode. Rollup, Rolldown and esbuild have no mode, so both options default to `true` there. Set `minify` and `pure` to override the default.
+Like the bundlers do with JavaScript, the plugin minifies and adds `/*#__PURE__*/` only in production builds: `vite build`, webpack and Rspack with `mode: 'production'` (or no `mode`). The Vite dev server and other webpack modes keep the CSS as written. Component ids and names are added and warnings are reported in every mode. Rollup, Rolldown and esbuild have no mode, so both options default to `true` there. Set `minify` and `pure` to override the default.
 
 ## Warnings
 

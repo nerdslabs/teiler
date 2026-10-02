@@ -1,7 +1,7 @@
 import type { HTMLElements, StyleDefinition, TeilerComponent } from '.'
 
 import { describe, expect, test, vi } from 'vitest'
-import { component, configure, createStyleSheet, css, global, insert, keyframes, styled, withTarget } from '.'
+import { component, configure, createStyleSheet, css, global, insert, keyframes, styled, toConfig, withTarget } from '.'
 
 const createComponent = <Target extends HTMLElements, Props>(styles: StyleDefinition<Target, Props>): TeilerComponent<Target, Props> => {
   return {
@@ -184,17 +184,17 @@ describe('componentId', () => {
   const styles = [[['color: red;'], []]] as StyleDefinition<'div', {}>['styles']
 
   test('should create ids from the component id instead of the styles', () => {
-    expect(component('div', styles, undefined, 'a')).toEqual({ type: 'component', id: expect.any(String), styles, tag: 'div', componentId: 'a' })
-    expect(component('div', styles, undefined, 'a').id).toBe(component('div', [[['color: blue;'], []]], undefined, 'a').id)
-    expect(component('div', styles, undefined, 'a').id).not.toBe(component('div', styles, undefined, 'b').id)
-    expect(component('div', styles, undefined, 'a').id).not.toBe(component('div', styles).id)
-    expect(component('div', styles, undefined, 'a').id).not.toBe(component('span', styles, undefined, 'a').id)
-    expect(global(null, styles, undefined, 'a')).toEqual({ type: 'global', id: expect.any(String), styles, tag: null, componentId: 'a' })
+    expect(component('div', styles, undefined, { componentId: 'a' })).toEqual({ type: 'component', id: expect.any(String), styles, tag: 'div', componentId: 'a' })
+    expect(component('div', styles, undefined, { componentId: 'a' }).id).toBe(component('div', [[['color: blue;'], []]], undefined, { componentId: 'a' }).id)
+    expect(component('div', styles, undefined, { componentId: 'a' }).id).not.toBe(component('div', styles, undefined, { componentId: 'b' }).id)
+    expect(component('div', styles, undefined, { componentId: 'a' }).id).not.toBe(component('div', styles).id)
+    expect(component('div', styles, undefined, { componentId: 'a' }).id).not.toBe(component('span', styles, undefined, { componentId: 'a' }).id)
+    expect(global(null, styles, undefined, { componentId: 'a' })).toEqual({ type: 'global', id: expect.any(String), styles, tag: null, componentId: 'a' })
   })
 
   test('should configure a compiler, the last component id wins', () => {
-    expect(configure(component, { componentId: 'a' })('div', styles)).toEqual(component('div', styles, undefined, 'a'))
-    expect(configure(configure(component, { componentId: 'a' }), { componentId: 'b' })('div', styles)).toEqual(component('div', styles, undefined, 'b'))
+    expect(configure(component, { componentId: 'a' })('div', styles)).toEqual(component('div', styles, undefined, { componentId: 'a' }))
+    expect(configure(configure(component, { componentId: 'a' }), { componentId: 'b' })('div', styles)).toEqual(component('div', styles, undefined, { componentId: 'b' }))
     expect(configure(component, {})('div', styles)).toEqual(component('div', styles))
   })
 
@@ -203,17 +203,47 @@ describe('componentId', () => {
     const extend = styled(undefined, component, createComponent, Button) as Callable & { withConfig: (config: { componentId: string }) => Callable }
 
     expect(extend(['']).styleDefinition.id).toBe(Button.styleDefinition.id)
-    expect(extend.withConfig({ componentId: 'a' })(['']).styleDefinition).toEqual(component('button', [...Button.styleDefinition.styles, [[''], []]], undefined, 'a'))
+    expect(extend.withConfig({ componentId: 'a' })(['']).styleDefinition).toEqual(component('button', [...Button.styleDefinition.styles, [[''], []]], undefined, { componentId: 'a' }))
     expect((extend.withConfig as unknown as (id: string) => Callable)('a')(['']).styleDefinition).toEqual(extend.withConfig({ componentId: 'a' })(['']).styleDefinition)
   })
 
   test('should keep the component id when changing the target', () => {
     const Link = { name: 'Link' }
-    const definition = component('button', styles, undefined, 'a')
+    const definition = component('button', styles, undefined, { componentId: 'a' })
 
-    expect(withTarget(definition, 'a')).toEqual(component('a', styles, undefined, 'a'))
-    expect(withTarget(definition, Link)).toEqual(component('button', styles, Link, 'a'))
+    expect(withTarget(definition, 'a')).toEqual(component('a', styles, undefined, { componentId: 'a' }))
+    expect(withTarget(definition, Link)).toEqual(component('button', styles, Link, { componentId: 'a' }))
     expect(withTarget(definition, Link).id).not.toBe(withTarget(component('button', styles), Link).id)
+  })
+})
+
+describe('displayName', () => {
+  const styles = [[['color: red;'], []]] as StyleDefinition<'div', {}>['styles']
+
+  test.each([
+    { displayName: 'Button', prefix: 'Button-' },
+    { displayName: 'My Button$', prefix: 'MyButton-' },
+    { displayName: 'styled.div', prefix: 'styleddiv-' },
+    { displayName: '1st', prefix: '_1st-' },
+    { displayName: '-a', prefix: '_-a-' },
+    { displayName: '$', prefix: '' },
+  ])('should prefix the id with $displayName', ({ displayName, prefix }) => {
+    const { id } = component('div', styles, undefined, { displayName })
+    expect(id).toBe(prefix + component('div', styles).id)
+  })
+
+  test('should read the component id and the name from strings', () => {
+    expect(toConfig('a', 'Button')).toEqual({ componentId: 'a', displayName: 'Button' })
+    expect(toConfig('a')).toEqual({ componentId: 'a' })
+    expect(toConfig({ displayName: 'Button' })).toEqual({ displayName: 'Button' })
+  })
+
+  test('should merge configs and keep them when changing the target', () => {
+    const configured = configure(configure(component, { componentId: 'a' }), { displayName: 'Button' })('div', styles)
+
+    expect(configured).toEqual(component('div', styles, undefined, { componentId: 'a', displayName: 'Button' }))
+    expect(configured.id).toMatch(/^Button-t\w+$/)
+    expect(withTarget(configured, 'a')).toEqual(component('a', styles, undefined, { componentId: 'a', displayName: 'Button' }))
   })
 })
 

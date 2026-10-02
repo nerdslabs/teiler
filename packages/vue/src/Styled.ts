@@ -51,7 +51,7 @@ export default function Styled<Target extends HTMLElements, Props extends object
         }
       }
     },
-    { name: displayName(styleDefinition), inheritAttrs: false },
+    { name: styleDefinition.displayName ?? displayName(styleDefinition), inheritAttrs: false },
   )
 
   const withComponent = (target: AsTarget) => Styled(withTarget(styleDefinition, target))

@@ -135,3 +135,15 @@ describe('pattern componentId', () => {
     expect(sew(base, create).styleDefinition).toEqual({ type: 'component', id: base.id, styles: base.styles, tag: 'div', componentId: 'a' })
   })
 })
+
+describe('pattern displayName', () => {
+  test('should prefix the id and pass it to sewn components', () => {
+    const create = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): TeilerComponent<Target, Props> => ({ styleDefinition })
+    const base = pattern.withConfig({ displayName: 'Base' }).withConfig({ componentId: 'a' })`color: red;`
+    const extended = pattern(base).withConfig({ displayName: 'Extended', componentId: 'b' })``
+
+    expect(base).toEqual(expect.objectContaining({ componentId: 'a', displayName: 'Base', id: expect.stringMatching(/^Base-t\w+$/) }))
+    expect(extended).toEqual(expect.objectContaining({ componentId: 'b', displayName: 'Extended', id: expect.stringMatching(/^Extended-t\w+$/) }))
+    expect(sew(base, create).styleDefinition).toEqual(expect.objectContaining({ id: base.id, displayName: 'Base' }))
+  })
+})

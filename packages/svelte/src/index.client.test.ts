@@ -352,6 +352,12 @@ describe('withConfig', () => {
     expect(Extended.withComponent('a').styleDefinition).toEqual(expect.objectContaining({ tag: 'a', componentId: 'a', id: Link.styleDefinition.id }))
   })
 
+  test('should prefix ids with the display name', () => {
+    const Button = component.button.withConfig({ displayName: 'Button' })`color: red;`
+
+    expect(Button.styleDefinition.id).toBe('Button-' + component.button`color: red;`.styleDefinition.id)
+  })
+
   test('should configure globals', () => {
     expect(global.withConfig({ componentId: 'a' })`body { color: red; }`.styleDefinition.componentId).toBe('a')
   })

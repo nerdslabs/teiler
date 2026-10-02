@@ -75,4 +75,12 @@ describe('plugin', () => {
     expect(setup('rollup', { componentId: true }).transform(code, file)).toBe(expected)
     expect(setup('rollup', { componentId: true }).transform(code, `${file}?vue&type=script&lang.ts`)).toBe(expected)
   })
+
+  test.each([
+    { options: {}, expected: /withConfig\("[\w-]{9,}", "Button"\)/ },
+    { options: { displayName: false }, expected: /withConfig\("[\w-]{9,}"\)/ },
+  ])('adds names with $options', ({ options, expected }) => {
+    const { transform } = setup('rollup', { componentId: undefined, ...options })
+    expect(transform("import { component } from '@teiler/vue'\nconst Button = component.button`color: red;`")).toMatch(expected)
+  })
 })

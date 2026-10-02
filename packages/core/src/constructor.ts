@@ -27,13 +27,15 @@ type StyleDefinition<Target extends HTMLElements, Props> = {
   tag: Target
   target?: object
   componentId?: string
+  displayName?: string
 }
 
 type Config = {
   componentId?: string
+  displayName?: string
 }
 
-type ConfigArguments = [config: Config | string]
+type ConfigArguments = [config: Config] | [componentId: string, displayName?: string]
 
 type TeilerComponent<Target extends HTMLElements, Props> = {
   styleDefinition: StyleDefinition<Target, Props>
@@ -71,14 +73,14 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   }
 }
 
-type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object, componentId?: string) => StyleDefinition<Target, Props>
+type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object, config?: Config) => StyleDefinition<Target, Props>
 
-function toConfig(...[config]: ConfigArguments): Config {
-  return typeof config === 'string' ? { componentId: config } : config
+function toConfig(...[config, displayName]: ConfigArguments): Config {
+  return typeof config === 'string' ? identify({ componentId: config, displayName }) : config
 }
 
-function configure(compiler: Compiler, { componentId }: Config): Compiler {
-  return (tag, styles, target, id) => compiler(tag, styles, target, id ?? componentId)
+function configure(compiler: Compiler, config: Config): Compiler {
+  return (tag, styles, target, inner) => compiler(tag, styles, target, { ...config, ...inner })
 }
 
 function targetName(target: object): string {
@@ -86,10 +88,11 @@ function targetName(target: object): string {
   return typeof name === 'string' && name ? name : typeof __name === 'string' && __name ? __name : 'anonymous'
 }
 
-function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>, target?: object, componentId?: string): string {
+function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>, target?: object, { componentId, displayName }: Config = {}): string {
   const id = componentId === undefined ? styles.reduce((acc, [strings]) => acc + strings.join(''), '') : '#' + componentId
   const prefix = target === undefined ? '' : targetName(target) + '|'
-  const result = 't' + hash(tag === null ? id : tag + '|' + prefix + id)
+  const name = displayName?.replace(/[^\w-]/g, '').replace(/^(?=[\d-])/, '_')
+  const result = (name ? name + '-' : '') + 't' + hash(tag === null ? id : tag + '|' + prefix + id)
 
   if (componentId === undefined) {
     register(result, styles)
@@ -98,34 +101,35 @@ function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>, target?
   return result
 }
 
-const identify = (componentId?: string) => (componentId === undefined ? {} : { componentId })
+const identify = ({ componentId, displayName }: Config = {}): Config => ({ ...(componentId === undefined ? {} : { componentId }), ...(displayName === undefined ? {} : { displayName }) })
 
-const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object, componentId?: string): StyleDefinition<Target, Props> => {
+const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object, config?: Config): StyleDefinition<Target, Props> => {
   const definition: StyleDefinition<Target, Props> = {
     type: 'component',
-    id: createId(tag, styles, target, componentId),
+    id: createId(tag, styles, target, config),
     styles,
     tag,
-    ...identify(componentId),
+    ...identify(config),
   }
   return target === undefined ? definition : { ...definition, target }
 }
 
 function withTarget<Props>(definition: StyleDefinition<HTMLElements, Props>, target: Exclude<HTMLElements, null> | object): StyleDefinition<HTMLElements, Props> {
-  const { type, styles, tag, componentId } = definition
+  const { type, styles, tag } = definition
+  const config = identify(definition)
   if (typeof target === 'string') {
-    return { type, id: createId(target, styles, undefined, componentId), styles, tag: target, ...identify(componentId) }
+    return { type, id: createId(target, styles, undefined, config), styles, tag: target, ...config }
   }
-  return { type, id: createId(tag, styles, target, componentId), styles, tag, target, ...identify(componentId) }
+  return { type, id: createId(tag, styles, target, config), styles, tag, target, ...config }
 }
 
-const global: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, _target?: object, componentId?: string): StyleDefinition<Target, Props> => {
+const global: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, _target?: object, config?: Config): StyleDefinition<Target, Props> => {
   return {
     type: 'global',
-    id: createId(tag, styles, undefined, componentId),
+    id: createId(tag, styles, undefined, config),
     styles,
     tag,
-    ...identify(componentId),
+    ...identify(config),
   }
 }
 
@@ -172,4 +176,4 @@ function insert<Props = {}>(sheet: Sheet, definition: StyleDefinition<HTMLElemen
 }
 
 export type { Arguments, Compiler, Config, ConfigArguments, CreateCallback, CSS, DefaultTheme, Properties, Raw, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
-export { component, configure, createId, css, global, insert, keyframes, styled, targetName, toConfig, withTarget }
+export { component, configure, createId, css, global, identify, insert, keyframes, styled, targetName, toConfig, withTarget }
