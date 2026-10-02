@@ -1,8 +1,8 @@
-import type { Config, Properties, Style, StyleDefinition, TeilerComponent } from './constructor'
+import type { Config, ConfigArguments, Properties, Style, StyleDefinition, TeilerComponent } from './constructor'
 import type { HTMLElements } from './tags'
 
 import tags from './tags'
-import { createId } from './constructor'
+import { createId, toConfig } from './constructor'
 
 type Pattern<Target extends HTMLElements, Props> = {
   styles: Array<Style<Props>>
@@ -13,12 +13,12 @@ type Pattern<Target extends HTMLElements, Props> = {
 }
 
 type Extend<Target extends HTMLElements, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => Pattern<Target, Infer<Component, Props>>
-type ExtendCallback<Target extends HTMLElements, Props> = Extend<Target, Props> & { withConfig(config: Config): Extend<Target, Props> }
+type ExtendCallback<Target extends HTMLElements, Props> = Extend<Target, Props> & { withConfig(...args: ConfigArguments): Extend<Target, Props> }
 
 type Constructor<Target extends HTMLElements, Tag extends HTMLElements | undefined = Target> = {
   <Props = {}, Source extends HTMLElements = HTMLElements>(pattern: Pattern<Source, Props>): ExtendCallback<Tag extends HTMLElements ? Tag : Source, Props>
   <Props = {}>(string: ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<Target, Props>
-  withConfig(config: Config): Constructor<Target, Tag>
+  withConfig(...args: ConfigArguments): Constructor<Target, Tag>
 }
 
 type Infer<Component, Props> = Component extends Pattern<HTMLElements, infer P> ? P & Props : Props
@@ -39,7 +39,7 @@ const construct = (tag: HTMLElements | undefined, config: Config = {}) => {
           return create(target, [...stringOrPattern.styles, style], config)
         }
 
-      return Object.assign(extend(config), { withConfig: extend })
+      return Object.assign(extend(config), { withConfig: (...args: ConfigArguments) => extend(toConfig(...args)) })
     } else {
       const strings = stringOrPattern as ReadonlyArray<string>
       const style: Style<Props> = [Array.from(strings), properties]
@@ -47,7 +47,7 @@ const construct = (tag: HTMLElements | undefined, config: Config = {}) => {
     }
   }
 
-  return Object.assign(constructor, { withConfig: (config: Config) => construct(tag, config) })
+  return Object.assign(constructor, { withConfig: (...args: ConfigArguments) => construct(tag, toConfig(...args)) })
 }
 
 type HTMLElementsWithoutNull = Exclude<HTMLElements, null>

@@ -115,6 +115,8 @@ describe('pattern componentId', () => {
     expect(base.id).not.toBe(pattern`color: red;`.id)
     expect(button.id).not.toBe(base.id)
     expect(pattern.global.withConfig({ componentId: 'a' })`body { color: red; }`.tag).toBeNull()
+    expect(pattern.withConfig('a')`color: red;`).toEqual(base)
+    expect(pattern(base).withConfig('b')``.componentId).toBe('b')
   })
 
   test('should give extensions their own id', () => {

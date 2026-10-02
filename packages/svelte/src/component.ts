@@ -1,8 +1,8 @@
-import type { Compiler, Config, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
+import type { Compiler, ConfigArguments, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
 import type { ComponentConstructorOptions, ComponentInternals, ComponentProps, Snippet, Component as SvelteComponent, SvelteComponent as SvelteComponentInstance } from 'svelte'
 import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
 
-import { component, configure, global, keyframes, styled, tags, withTarget } from '@teiler/core'
+import { component, configure, global, keyframes, styled, tags, toConfig, withTarget } from '@teiler/core'
 import Styled from './Styled.svelte'
 
 type Tag = Exclude<HTMLElements, null>
@@ -51,13 +51,13 @@ type Extend<Component, Extended> = <Props extends object = {}>(string: TemplateS
 
 type Component<Target extends HTMLElements, Extended extends HTMLElements | undefined = Target> = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): SvelteTeilerComponent<Target, Props>
-  <Component>(binded: Component): Extend<Component, Extended> & { withConfig(config: Config): Extend<Component, Extended> }
-  withConfig(config: Config): Component<Target, Extended>
+  <Component>(binded: Component): Extend<Component, Extended> & { withConfig(...args: ConfigArguments): Extend<Component, Extended> }
+  withConfig(...args: ConfigArguments): Component<Target, Extended>
 }
 
 type Global = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): SvelteGlobalComponent<Props>
-  withConfig(config: Config): Global
+  withConfig(...args: ConfigArguments): Global
 }
 
 type ComponentWithTags = Component<'div', undefined> & { [K in Exclude<HTMLElements, null>]: Component<K> }
@@ -67,7 +67,7 @@ const construct = (tag: HTMLElements | undefined, compiler: Compiler): unknown =
     return styled<Props, SvelteTeilerComponent<HTMLElements, Props>>(tag, compiler, createComponent, stringOrBinded, ...properties)
   }
 
-  return Object.assign(create, { withConfig: (config: Config) => construct(tag, configure(compiler, config)) })
+  return Object.assign(create, { withConfig: (...args: ConfigArguments) => construct(tag, configure(compiler, toConfig(...args))) })
 }
 
 const svelteComponent = construct(undefined, component) as ComponentWithTags

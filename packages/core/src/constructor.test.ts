@@ -204,6 +204,7 @@ describe('componentId', () => {
 
     expect(extend(['']).styleDefinition.id).toBe(Button.styleDefinition.id)
     expect(extend.withConfig({ componentId: 'a' })(['']).styleDefinition).toEqual(component('button', [...Button.styleDefinition.styles, [[''], []]], undefined, 'a'))
+    expect((extend.withConfig as unknown as (id: string) => Callable)('a')(['']).styleDefinition).toEqual(extend.withConfig({ componentId: 'a' })(['']).styleDefinition)
   })
 
   test('should keep the component id when changing the target', () => {

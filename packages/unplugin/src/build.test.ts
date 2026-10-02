@@ -36,14 +36,14 @@ describe('build', () => {
     { name: 'svelte', entry: fixture('Button.fixture.svelte'), plugins: [svelte()] },
   ])('minifies templates in $name components with vite', async ({ entry, plugins }) => {
     const code = await bundle(entry, plugins)
-    expect(code).toMatch(/\/\*\s*[#@]__PURE__\s*\*\/\s*\w+\.button\.withConfig\(\{\s*componentId:\s*"[\w-]{8}"\s*\}\)\(\["color:",\s*";&:hover\{color:green;\}"\]/)
+    expect(code).toMatch(/\/\*\s*[#@]__PURE__\s*\*\/\s*\w+\.button\.withConfig\(\s*["`][\w-]{9,}["`]\s*\)\(\["color:",\s*";&:hover\{color:green;\}"\]/)
   })
 
   test.each([
     { name: 'vue', entry: fixture('Button.fixture.vue'), plugins: () => [vue()] },
     { name: 'svelte', entry: fixture('Button.fixture.svelte'), plugins: () => [svelte()] },
   ])('creates the same component ids for the client and the server in $name components', async ({ entry, plugins }) => {
-    const ids = async (ssr: boolean) => [...(await bundle(entry, plugins(), ssr)).matchAll(/componentId:\s*"([\w-]{8})"/g)].map(([, id]) => id)
+    const ids = async (ssr: boolean) => [...(await bundle(entry, plugins(), ssr)).matchAll(/withConfig\(\s*["`]([\w-]{9,})["`]/g)].map(([, id]) => id)
     const client = await ids(false)
     expect(client).toHaveLength(1)
     expect(await ids(true)).toEqual(client)
@@ -52,7 +52,7 @@ describe('build', () => {
   test('minifies templates and removes unused definitions with rolldown', async () => {
     const input = fixture('Entry.fixture.ts')
     const result = await (await rolldown({ input, external, plugins: [teilerRolldown()] })).generate({ format: 'esm' })
-    expect(result.output[0].code).toMatch(/pattern\.button\.withConfig\(\{ componentId: "[\w-]{8}" \}\)\(\["color:red;&:hover\{color:green;\}"\]\)/)
+    expect(result.output[0].code).toMatch(/pattern\.button\.withConfig\("[\w-]{9,}"\)\(\["color:red;&:hover\{color:green;\}"\]\)/)
     expect(result.output[0].code).not.toContain('unused')
   })
 
@@ -78,7 +78,7 @@ describe('build', () => {
     })
     const result = await server.transformRequest('/Warnings.fixture.ts')
     await server.close()
-    expect(result?.code).toMatch(/pattern\.button\.withConfig\(\{ componentId: "[\w-]{8}" \}\)`\n {2}color red;\n`/)
+    expect(result?.code).toMatch(/pattern\.button\.withConfig\("[\w-]{9,}"\)`\n {2}color red;\n`/)
     expect(warnings).toEqual([expect.stringMatching(/Warnings\.fixture\.ts:7:22\n[\s\S]*pattern\.button`\n\s+\|\s+\^/)])
   })
 })

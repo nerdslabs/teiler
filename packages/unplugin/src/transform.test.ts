@@ -106,7 +106,7 @@ describe('transform', () => {
 })
 
 describe('componentId', () => {
-  const ids = (code: string, options?: Options) => [...(transform(code, 'src/file.js', options)?.code ?? '').matchAll(/(\w+(?:\.\w+)*(?:\(\w+\))?)\.withConfig\(\{ componentId: "([\w-]{8})" \}\)/g)].map(([, tag, id]) => ({ tag, id }))
+  const ids = (code: string, options?: Options) => [...(transform(code, 'src/file.js', options)?.code ?? '').matchAll(/(\w+(?:\.\w+)*(?:\(\w+\))?)\.withConfig\("([\w-]{9,})"\)/g)].map(([, tag, id]) => ({ tag, id }))
 
   test('adds component ids to components, globals and patterns', () => {
     const code =
@@ -135,19 +135,29 @@ describe('componentId', () => {
 
   test.each([{}, { pure: false }, { minify: false, pure: false }])('keeps type arguments and works with %o', (options) => {
     const code = "import { component } from '@teiler/vue'\nconst Button = component.button<{ a: number }>`\n  color: red;\n`"
-    expect(transform(code, 'file.ts', options)?.code).toMatch(/component\.button\.withConfig\(\{ componentId: "[\w-]{8}" \}\)<\{ a: number \}>[(`]/)
+    expect(transform(code, 'file.ts', options)?.code).toMatch(/component\.button\.withConfig\("[\w-]{9,}"\)<\{ a: number \}>[(`]/)
   })
 
   test.each([
     { name: 'a component id', tag: "component.button.withConfig({ componentId: 'button' })", expected: 0 },
     { name: 'a quoted component id', tag: "component.button.withConfig({ 'componentId': 'button' })", expected: 0 },
+    { name: 'a component id string', tag: "component.button.withConfig('button')", expected: 0 },
     { name: 'an extension with a component id', tag: "component(Base).withConfig({ componentId: 'button' })", expected: 0 },
     { name: 'a component id before the extension', tag: "component.withConfig({ componentId: 'button' })(Base)", expected: 0 },
     { name: 'other options', tag: 'component.button.withConfig({ other: true })', expected: 1 },
     { name: 'a config variable', tag: 'component.button.withConfig(config)', expected: 1 },
   ])('keeps templates configured with $name', ({ tag, expected }) => {
     const code = transform(`import { component } from '@teiler/vue'\nconst Button = ${tag}\`color: red;\``, 'file.js')?.code
-    expect(code?.match(/componentId: "[\w-]{8}"/g) ?? []).toHaveLength(expected)
+    expect(code?.match(/withConfig\("[\w-]{9,}"\)/g) ?? []).toHaveLength(expected)
+  })
+
+  test('keeps ids unique in large files', () => {
+    const code = "import { component } from '@teiler/vue'\n" + Array.from({ length: 500 }, (_, index) => `const C${index} = component.div\`a: b;\``).join('\n')
+    const found = ids(code).map(({ id }) => id)
+    expect(found).toHaveLength(500)
+    expect(new Set(found).size).toBe(500)
+    expect(new Set(found.map((id) => id.slice(0, 6))).size).toBe(1)
+    expect(found.some((id) => id.length > 9)).toBe(true)
   })
 
   test('adds component ids to templates with invalid escapes', () => {

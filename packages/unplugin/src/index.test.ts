@@ -65,7 +65,7 @@ describe('plugin', () => {
   test.each(['build', 'serve'])('adds component ids with the vite %s command', (command) => {
     const { plugin, transform } = setup('vite', { componentId: undefined })
     ;(plugin.vite?.configResolved as (config: unknown) => void)({ command })
-    expect(transform()).toMatch(/component\.div\.withConfig\(\{ componentId: "[\w-]{8}" \}\)/)
+    expect(transform()).toMatch(/component\.div\.withConfig\("[\w-]{9,}"\)/)
   })
 
   test('creates component ids from the package name and the path in the package', () => {

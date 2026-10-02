@@ -502,6 +502,7 @@ describe('withConfig', () => {
     expect(A.styleDefinition.componentId).toBe('a')
     expect(A.styleDefinition.id).not.toBe(B.styleDefinition.id)
     expect(A.styleDefinition.id).toBe(C.styleDefinition.id)
+    expect(component.div.withConfig('a')`color: ${'red'};`.styleDefinition).toEqual(A.styleDefinition)
     expect(component.div`color: ${'red'};`.styleDefinition.id).toBe(component.div`color: ${'blue'};`.styleDefinition.id)
   })
 

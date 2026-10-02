@@ -46,6 +46,9 @@ function configured(node: Expression): boolean {
     if (current.type === 'CallExpression') {
       const [config] = current.arguments
       const withConfig = current.callee.type === 'MemberExpression' && !current.callee.computed && current.callee.property.type === 'Identifier' && current.callee.property.name === 'withConfig'
+      if (withConfig && ((config?.type === 'Literal' && typeof config.value === 'string') || config?.type === 'TemplateLiteral')) {
+        return true
+      }
       if (
         withConfig &&
         config?.type === 'ObjectExpression' &&
@@ -88,7 +91,7 @@ function location(code: string, file: string, offset: number): Pick<Warning, 'po
 
 const escape = (cooked: string) => cooked.replace(/\\|`|\$\{/g, (match) => '\\' + match)
 
-const identify = (scope: string, name: string, index: number) => createHash('sha256').update(`${scope}|${name}|${index}`).digest('base64url').slice(0, 8)
+const hash = (value: string) => createHash('sha256').update(value).digest('base64url')
 
 function transform(code: string, id: string, { modules = MODULES, minify: compress = true, pure = true, componentId = true, scope = id.split('?')[0] }: Options = {}): Result | null {
   const { program, errors } = parseSync(id, code, { lang: lang(id), sourceType: 'module', astType: 'js' })
@@ -136,6 +139,26 @@ function transform(code: string, id: string, { modules = MODULES, minify: compre
   const definitions = new Set([...imported, ...[...declarations].filter(([, init]) => tagName(init) !== null).map(([name]) => name)])
   const names = new Map([...declarations].map(([name, init]) => [init, name]))
   const counts = new Map<string, number>()
+  const hashes = componentId
+    ? templates
+        .filter((node) => IDENTIFIED.includes(tagName(node) ?? '') && !configured(node.tag))
+        .map((node) => {
+          const variable = names.get(node) ?? ''
+          const index = counts.get(variable) ?? 0
+          counts.set(variable, index + 1)
+          return [node, hash(`${variable}|${index}`)] as const
+        })
+    : []
+  const file = hash(scope).slice(0, 6)
+  const identifiers = new Map(
+    hashes.map(([node, value]) => {
+      let length = 3
+      while (hashes.some(([other, otherValue]) => other !== node && otherValue.startsWith(value.slice(0, length)))) {
+        length++
+      }
+      return [node, file + value.slice(0, length)]
+    }),
+  )
   const warnings: Warning[] = []
   const string = new MagicString(code)
 
@@ -148,11 +171,10 @@ function transform(code: string, id: string, { modules = MODULES, minify: compre
 
     const { start, quasi } = node
 
-    if (componentId && IDENTIFIED.includes(name) && !configured(node.tag)) {
-      const variable = names.get(node) ?? ''
-      const index = counts.get(variable) ?? 0
-      counts.set(variable, index + 1)
-      string.appendLeft(node.tag.end, `.withConfig({ componentId: ${JSON.stringify(identify(scope, variable, index))} })`)
+    const identifier = identifiers.get(node)
+
+    if (identifier !== undefined) {
+      string.appendLeft(node.tag.end, `.withConfig(${JSON.stringify(identifier)})`)
     }
 
     for (const expression of quasi.expressions) {

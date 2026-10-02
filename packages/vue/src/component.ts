@@ -1,10 +1,10 @@
-import type { Compiler, Config, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
+import type { Compiler, ConfigArguments, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
 import type { DefineSetupFnComponent } from 'vue'
 import type { AsTarget, PolymorphicComponent, StyledOptions, Tag } from './types'
 
 import Styled from './Styled'
 
-import { component, configure, global, keyframes, styled, tags } from '@teiler/core'
+import { component, configure, global, keyframes, styled, tags, toConfig } from '@teiler/core'
 
 type VueTeilerComponent<Target extends HTMLElements, Props extends object, Default = Target> = PolymorphicComponent<Target, Props, Default> &
   TeilerComponent<Target, Props> & {
@@ -31,13 +31,13 @@ type Extend<Component, Extended> = <Props extends object = {}>(string: TemplateS
 
 type Component<Target extends HTMLElements, Extended extends HTMLElements | undefined = Target> = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueTeilerComponent<Target, Props>
-  <Component>(binded: Component): Extend<Component, Extended> & { withConfig(config: Config): Extend<Component, Extended> }
-  withConfig(config: Config): Component<Target, Extended>
+  <Component>(binded: Component): Extend<Component, Extended> & { withConfig(...args: ConfigArguments): Extend<Component, Extended> }
+  withConfig(...args: ConfigArguments): Component<Target, Extended>
 }
 
 type Global = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueGlobalComponent<Props>
-  withConfig(config: Config): Global
+  withConfig(...args: ConfigArguments): Global
 }
 
 type ComponentWithTags = Component<'div', undefined> & { [K in Exclude<HTMLElements, null>]: Component<K> }
@@ -47,7 +47,7 @@ const construct = (tag: HTMLElements | undefined, compiler: Compiler): unknown =
     return styled<Props, VueTeilerComponent<HTMLElements, Props>>(tag, compiler, createComponent, stringOrBinded, ...properties)
   }
 
-  return Object.assign(create, { withConfig: (config: Config) => construct(tag, configure(compiler, config)) })
+  return Object.assign(create, { withConfig: (...args: ConfigArguments) => construct(tag, configure(compiler, toConfig(...args))) })
 }
 
 const vueComponent = construct(undefined, component) as ComponentWithTags

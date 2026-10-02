@@ -6,7 +6,7 @@ For `component`, `global`, `keyframes`, `css` and `pattern` tagged templates it:
 
 - minifies the CSS (`minify`): whitespace and comments are removed from the template strings, so they no longer ship to the browser. Interpolations are left untouched.
 - makes unused definitions removable (`pure`): bundlers cannot drop tagged templates, so they are turned into calls marked `/*#__PURE__*/`, and definitions that are never imported are removed from the bundle.
-- gives components, globals and patterns stable ids (`componentId`): ids are hashed from the template strings, so two components with the same strings and different interpolations share an id, and `${A}` selects `B` too. The plugin adds `.withConfig({ componentId })` with a hash of the package name, the file path in the package and the variable name. Templates with a `componentId` set by hand are left as they are.
+- gives components, globals and patterns stable ids (`componentId`): ids are hashed from the template strings, so two components with the same strings and different interpolations share an id, and `${A}` selects `B` too. The plugin adds `.withConfig("<id>")`: 6 characters hashed from the package name and the file path in the package, shared by the file and compressed well, plus 3 characters hashed from the variable name, so adding a component does not change the ids of the others. Templates with a `componentId` set by hand are left as they are.
 - reports [mistakes](#warnings) as build warnings.
 
 ```js
@@ -15,7 +15,7 @@ export const Button = component.button`
   color: ${({ color }) => color};
 `
 // output
-export const Button = /*#__PURE__*/ component.button.withConfig({ componentId: "Xw3f9kQa" })(["color:", ";"], ({ color }) => color)
+export const Button = /*#__PURE__*/ component.button.withConfig("Xw3f9kq7Z")(["color:", ";"], ({ color }) => color)
 ```
 
 Works with Vite, Rollup, Rolldown, webpack, Rspack and esbuild through [unplugin](https://github.com/unjs/unplugin).

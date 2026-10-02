@@ -33,13 +33,15 @@ type Config = {
   componentId?: string
 }
 
+type ConfigArguments = [config: Config | string]
+
 type TeilerComponent<Target extends HTMLElements, Props> = {
   styleDefinition: StyleDefinition<Target, Props>
 }
 
 type CreateCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (styles: StyleDefinition<HTMLElements, Props>) => Type
 type Extend<Type extends TeilerComponent<HTMLElements, Props>, Props> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
-type ExtendCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = Extend<Type, Props> & { withConfig(config: Config): Extend<Type, Props> }
+type ExtendCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = Extend<Type, Props> & { withConfig(...args: ConfigArguments): Extend<Type, Props> }
 
 function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   tag: HTMLElements | undefined,
@@ -65,11 +67,15 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
         return createComponent(styleDefinition)
       }
 
-    return Object.assign(extend(compiler), { withConfig: (config: Config) => extend(configure(compiler, config)) })
+    return Object.assign(extend(compiler), { withConfig: (...args: ConfigArguments) => extend(configure(compiler, toConfig(...args))) })
   }
 }
 
 type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object, componentId?: string) => StyleDefinition<Target, Props>
+
+function toConfig(...[config]: ConfigArguments): Config {
+  return typeof config === 'string' ? { componentId: config } : config
+}
 
 function configure(compiler: Compiler, { componentId }: Config): Compiler {
   return (tag, styles, target, id) => compiler(tag, styles, target, id ?? componentId)
@@ -165,5 +171,5 @@ function insert<Props = {}>(sheet: Sheet, definition: StyleDefinition<HTMLElemen
   return type === 'component' ? `teiler-${compiledId}` : null
 }
 
-export type { Arguments, Compiler, Config, CreateCallback, CSS, DefaultTheme, Properties, Raw, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
-export { component, configure, createId, css, global, insert, keyframes, styled, targetName, withTarget }
+export type { Arguments, Compiler, Config, ConfigArguments, CreateCallback, CSS, DefaultTheme, Properties, Raw, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
+export { component, configure, createId, css, global, insert, keyframes, styled, targetName, toConfig, withTarget }
