@@ -17,13 +17,6 @@ export default [
         globals,
       },
       {
-        file: 'dist/teiler-vue.cjs.js',
-        format: 'cjs',
-        sourcemap: true,
-        minify: true,
-        globals,
-      },
-      {
         file: 'dist/teiler-vue.esm.js',
         format: 'esm',
         sourcemap: true,

@@ -8,23 +8,24 @@
   },
   "homepage": "https://github.com/nerdslabs/teiler/tree/master/packages/core#readme",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "./dist/teiler-core.esm.js",
   "module": "./dist/teiler-core.esm.js",
   "types": "./dist/teiler-core.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/teiler-core.esm.js",
-      "require": "./dist/teiler-core.cjs.ts",
-      "types": "./dist/teiler-core.d.ts"
+      "types": "./dist/teiler-core.d.ts",
+      "default": "./dist/teiler-core.esm.js"
     },
     "./package.json": "./package.json"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rolldown --config",
     "dev": "rolldown --config --watch",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit",
-    "wait": "wait-on dist/teiler-core.cjs.js"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "stylis": "^4.4.0"

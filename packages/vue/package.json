@@ -8,16 +8,19 @@
   },
   "homepage": "https://github.com/nerdslabs/teiler/tree/master/packages/vue#readme",
   "type": "module",
-  "main": "dist/teiler-vue.cjs.js",
+  "main": "./dist/teiler-vue.esm.js",
   "module": "./dist/teiler-vue.esm.js",
   "types": "./dist/teiler-vue.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/teiler-vue.esm.js",
-      "require": "./dist/teiler-vue.cjs.ts",
-      "types": "./dist/teiler-vue.d.ts"
-    }
+      "types": "./dist/teiler-vue.d.ts",
+      "default": "./dist/teiler-vue.esm.js"
+    },
+    "./package.json": "./package.json"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rolldown --config",
     "dev": "rolldown --config --watch",

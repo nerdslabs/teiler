@@ -12,12 +12,6 @@ export default [
         minify: true,
       },
       {
-        file: 'dist/teiler-core.cjs.js',
-        format: 'cjs',
-        sourcemap: true,
-        minify: true,
-      },
-      {
         file: 'dist/teiler-core.esm.js',
         format: 'esm',
         sourcemap: true,
