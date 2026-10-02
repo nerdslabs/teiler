@@ -46,6 +46,7 @@
     "@storybook/svelte-vite": "^10.6.0",
     "@sveltejs/package": "^2.5.8",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@teiler/unplugin": "workspace:*",
     "@testing-library/svelte": "^5.4.2",
     "@vitest/browser-playwright": "^4.1.11",
     "@vitest/coverage-v8": "^4.1.11",

@@ -23,6 +23,7 @@ jobs:
     strategy:
       matrix:
         package: [svelte, vue]
+        unplugin: ['off', 'on']
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -38,6 +39,8 @@ jobs:
         run: pnpm build
       - name: Run tests
         run: pnpm --filter @teiler/${{ matrix.package }} storybook-test
+        env:
+          TEILER_UNPLUGIN: ${{ matrix.unplugin == 'on' && '1' || '' }}
   typecheck:
     runs-on: ubuntu-22.04
     steps:
