@@ -8,7 +8,7 @@ import { minify } from './minify'
 type Warning = { message: string; pos: number; loc: { file: string; line: number; column: number } }
 type Result = { code: string; map: ReturnType<MagicString['generateMap']>; warnings: Warning[] }
 type Node = { type: string; [key: string]: unknown }
-type Options = { modules?: string[]; minify?: boolean; pure?: boolean; componentId?: boolean; scope?: string }
+type Options = { modules?: string[]; minify?: boolean; pure?: boolean; componentId?: boolean; displayName?: boolean; scope?: string }
 
 const MODULES = ['@teiler/core', '@teiler/vue', '@teiler/svelte']
 const TAGS = ['component', 'global', 'keyframes', 'css', 'pattern']
@@ -39,20 +39,20 @@ function resolve(node: Expression): { name: string; member?: string } | null {
   return { name: current.name, member }
 }
 
-function configured(node: Expression): boolean {
+function configured(node: Expression, key: string): boolean {
   let current = node
 
   while (current.type === 'CallExpression' || current.type === 'MemberExpression') {
     if (current.type === 'CallExpression') {
-      const [config] = current.arguments
+      const [config, name] = current.arguments
       const withConfig = current.callee.type === 'MemberExpression' && !current.callee.computed && current.callee.property.type === 'Identifier' && current.callee.property.name === 'withConfig'
-      if (withConfig && ((config?.type === 'Literal' && typeof config.value === 'string') || config?.type === 'TemplateLiteral')) {
+      if (withConfig && ((config?.type === 'Literal' && typeof config.value === 'string') || config?.type === 'TemplateLiteral') && (key === 'componentId' || name !== undefined)) {
         return true
       }
       if (
         withConfig &&
         config?.type === 'ObjectExpression' &&
-        config.properties.some((property) => property.type === 'Property' && !property.computed && (property.key.type === 'Identifier' ? property.key.name : property.key.type === 'Literal' ? property.key.value : null) === 'componentId')
+        config.properties.some((property) => property.type === 'Property' && !property.computed && (property.key.type === 'Identifier' ? property.key.name : property.key.type === 'Literal' ? property.key.value : null) === key)
       ) {
         return true
       }
@@ -93,7 +93,7 @@ const escape = (cooked: string) => cooked.replace(/\\|`|\$\{/g, (match) => '\\' 
 
 const hash = (value: string) => createHash('sha256').update(value).digest('base64url')
 
-function transform(code: string, id: string, { modules = MODULES, minify: compress = true, pure = true, componentId = true, scope = id.split('?')[0] }: Options = {}): Result | null {
+function transform(code: string, id: string, { modules = MODULES, minify: compress = true, pure = true, componentId = true, displayName = true, scope = id.split('?')[0] }: Options = {}): Result | null {
   const { program, errors } = parseSync(id, code, { lang: lang(id), sourceType: 'module', astType: 'js' })
 
   if (errors.length > 0) {
@@ -141,7 +141,7 @@ function transform(code: string, id: string, { modules = MODULES, minify: compre
   const counts = new Map<string, number>()
   const hashes = componentId
     ? templates
-        .filter((node) => IDENTIFIED.includes(tagName(node) ?? '') && !configured(node.tag))
+        .filter((node) => IDENTIFIED.includes(tagName(node) ?? '') && !configured(node.tag, 'componentId'))
         .map((node) => {
           const variable = names.get(node) ?? ''
           const index = counts.get(variable) ?? 0
@@ -172,9 +172,13 @@ function transform(code: string, id: string, { modules = MODULES, minify: compre
     const { start, quasi } = node
 
     const identifier = identifiers.get(node)
+    const variable = names.get(node) ?? ''
+    const named = displayName && variable !== '' && IDENTIFIED.includes(name) && !configured(node.tag, 'displayName')
 
     if (identifier !== undefined) {
-      string.appendLeft(node.tag.end, `.withConfig(${JSON.stringify(identifier)})`)
+      string.appendLeft(node.tag.end, `.withConfig(${[identifier, ...(named ? [variable] : [])].map((value) => JSON.stringify(value)).join(', ')})`)
+    } else if (named) {
+      string.appendLeft(node.tag.end, `.withConfig({ displayName: ${JSON.stringify(variable)} })`)
     }
 
     for (const expression of quasi.expressions) {

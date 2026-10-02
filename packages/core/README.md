@@ -1,1 +1,133 @@
-../../README.md
+# Teiler 🪡 (ˈteɪlər - tailor)
+
+![Discord](https://img.shields.io/discord/1125416414069661698?logo=discord&link=https%3A%2F%2Fdiscord.gg%2FJ6Sv9sQ64t)
+
+**Teiler** is an open source library that simplifies the creation of stylish components for various frameworks.
+
+Currently in the **alpha phase**, the library is actively being developed and improved.
+
+Join our community on our [Discord Server](https://discord.gg/J6Sv9sQ64t) to stay informed about the latest developments, exchange ideas, and connect with fellow developers. We are continuously working on expanding our support to include more frameworks, allowing developers to effortlessly create components across various environments. 
+
+## Features
+
+- 🧰 **Multiple** frameworks support
+- 🪡 **Patterns system** for UI libraries
+- 🚉 **Server-Side Rendering** (SSR)*
+- ⚡ **Babel** not required
+- 📦 Optional [**build plugin**](#build-plugin) for smaller bundles
+
+\* Not all frameworks, more details [here](#frameworks)
+
+### Example
+
+```typescript
+import { component } from '@teiler/framework'
+
+const Button = component.button<{
+  _primary: boolean
+}>`
+  display: inline-block;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  line-height: 1.5rem;
+  background: transparent;
+  box-shadow: 0 0 0 3px #CBCBCB inset;
+
+  ${({ _primary }) =>
+    _primary && `
+      color: #fff;
+      box-shadow: none;
+      background: #CBCBCB;
+    `
+  }
+`
+```
+
+## Frameworks
+
+These are the frameworks we are currently working on and planning to support in the future.
+
+| Framework     | CSR   | SSR  | More details |
+| :---          | :---- | :--- | :----------- |
+| Svelte v5     | ✓     | ✓    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/svelte/README.md) |
+| VueJS v3      | ✓     | ✓    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/vue/README.md) |
+| SolidJS       | ✕     | ✕    | ---          |
+| React         | ✕     | ✕    | ---          |
+
+> [!NOTE]
+> CSR - Client Side Rendering*\
+> SSR - Server Side Rendering*
+
+## Sew a Pattern
+
+This tool simplifies the creation of consistent and reusable visual styles for components across various web frameworks. It provides a pattern-based approach, where patterns serve as blueprints for defining the visual style of components.
+
+### Example
+
+```typescript
+// Pattern file in ui kit library
+import { pattern } from '@teiler/core'
+
+const ButtonPattern = pattern.button`
+  display: inline-block;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  line-height: 1.5rem;
+  background: transparent;
+  box-shadow: 0 0 0 3px #CBCBCB inset;
+`
+
+export default ButtonPattern
+
+// Usage of Pattern
+import { ButtonPattern } from 'some-uikit-library'
+import { sew } from '@teiler/core'
+import { createComponent } from '@teiler/framework'
+
+const Button = sew(ButtonPattern, createComponent)
+
+export default Button
+```
+
+Patterns can be extended. `pattern(ButtonPattern)` keeps the element of the extended pattern, `pattern.<tag>(ButtonPattern)` changes it:
+
+```typescript
+import { pattern } from '@teiler/core'
+
+const PrimaryButtonPattern = pattern(ButtonPattern)`
+  background: #CBCBCB;
+`
+
+const ButtonLinkPattern = pattern.a(ButtonPattern)`
+  text-decoration: none;
+`
+```
+
+## Build plugin
+
+Teiler works without a build step. [`@teiler/unplugin`](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) is an optional plugin for Vite, Rollup, Rolldown, webpack, Rspack and esbuild:
+
+- in production builds it minifies the CSS in templates and lets the bundler remove unused styled components and patterns,
+- in every mode it warns about mistakes, such as CSS that is ignored at runtime.
+
+Add it after the framework plugin:
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import teiler from '@teiler/unplugin/vite'
+
+export default defineConfig({
+  plugins: [vue(), teiler()],
+})
+```
+
+## Packages
+
+| Package       | Download | Size
+| :---          | :------ | :---- |
+| Core          | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fcore) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fcore) |
+| Svelte        | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fsvelte) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fsvelte) |
+| Vue           | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fvue) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fvue) |
+| Unplugin      | ![npm](https://img.shields.io/npm/dm/%40teiler%2Funplugin) | --- |

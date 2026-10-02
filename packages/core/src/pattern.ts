@@ -2,13 +2,14 @@ import type { Config, ConfigArguments, Properties, Style, StyleDefinition, Teile
 import type { HTMLElements } from './tags'
 
 import tags from './tags'
-import { createId, toConfig } from './constructor'
+import { createId, identify, toConfig } from './constructor'
 
 type Pattern<Target extends HTMLElements, Props> = {
   styles: Array<Style<Props>>
   tag: Target
   id: string
   componentId?: string
+  displayName?: string
   __pattern__: true
 }
 
@@ -23,9 +24,8 @@ type Constructor<Target extends HTMLElements, Tag extends HTMLElements | undefin
 
 type Infer<Component, Props> = Component extends Pattern<HTMLElements, infer P> ? P & Props : Props
 
-const create = <Props>(tag: HTMLElements, styles: Array<Style<Props>>, { componentId }: Config): Pattern<HTMLElements, Props> => {
-  const pattern: Pattern<HTMLElements, Props> = { styles: styles, id: createId(tag, styles, undefined, componentId), tag: tag, __pattern__: true }
-  return componentId === undefined ? pattern : { ...pattern, componentId }
+const create = <Props>(tag: HTMLElements, styles: Array<Style<Props>>, config: Config): Pattern<HTMLElements, Props> => {
+  return { styles: styles, id: createId(tag, styles, undefined, config), tag: tag, __pattern__: true, ...identify(config) }
 }
 
 const construct = (tag: HTMLElements | undefined, config: Config = {}) => {
@@ -39,7 +39,7 @@ const construct = (tag: HTMLElements | undefined, config: Config = {}) => {
           return create(target, [...stringOrPattern.styles, style], config)
         }
 
-      return Object.assign(extend(config), { withConfig: (...args: ConfigArguments) => extend(toConfig(...args)) })
+      return Object.assign(extend(config), { withConfig: (...args: ConfigArguments) => extend({ ...config, ...toConfig(...args) }) })
     } else {
       const strings = stringOrPattern as ReadonlyArray<string>
       const style: Style<Props> = [Array.from(strings), properties]
@@ -47,7 +47,7 @@ const construct = (tag: HTMLElements | undefined, config: Config = {}) => {
     }
   }
 
-  return Object.assign(constructor, { withConfig: (...args: ConfigArguments) => construct(tag, toConfig(...args)) })
+  return Object.assign(constructor, { withConfig: (...args: ConfigArguments) => construct(tag, { ...config, ...toConfig(...args) }) })
 }
 
 type HTMLElementsWithoutNull = Exclude<HTMLElements, null>
@@ -71,7 +71,7 @@ function sew<Target extends HTMLElements, Props, Type extends TeilerComponent<Ta
     id: pattern.id,
     styles: pattern.styles,
     tag: pattern.tag,
-    ...(pattern.componentId === undefined ? {} : { componentId: pattern.componentId }),
+    ...identify(pattern),
   })
 }
 

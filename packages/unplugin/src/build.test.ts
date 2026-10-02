@@ -78,7 +78,7 @@ describe('build', () => {
     })
     const result = await server.transformRequest('/Warnings.fixture.ts')
     await server.close()
-    expect(result?.code).toMatch(/pattern\.button\.withConfig\("[\w-]{9,}"\)`\n {2}color red;\n`/)
+    expect(result?.code).toMatch(/pattern\.button\.withConfig\("[\w-]{9,}", "Broken"\)`\n {2}color red;\n`/)
     expect(warnings).toEqual([expect.stringMatching(/Warnings\.fixture\.ts:7:22\n[\s\S]*pattern\.button`\n\s+\|\s+\^/)])
   })
 })

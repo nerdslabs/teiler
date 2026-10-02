@@ -55,6 +55,14 @@ describe('id collisions', () => {
         return A
       },
     },
+    {
+      name: 'components with different names',
+      setup: () => {
+        const A = styled('div', configure(component, { displayName: 'A' }), create, ['i-color: ', ';'], 'red') as TeilerComponent<'div', {}>
+        styled('div', configure(component, { displayName: 'B' }), create, ['i-color: ', ';'], 'blue')
+        return A
+      },
+    },
   ])('does not report $name', ({ setup }) => {
     select(setup())
 
