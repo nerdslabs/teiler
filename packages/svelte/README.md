@@ -273,6 +273,23 @@ const sheet = createStyleSheet({ nonce: element?.nonce })
 > [!NOTE]
 > Use the `nonce` property, not `getAttribute('nonce')`. Browsers hide the attribute when the policy is sent in a header, so `getAttribute` returns an empty string.
 
+## Build plugin
+
+Teiler works without a build step. For smaller bundles, add [`@teiler/unplugin`](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) to Vite, Rollup, Rolldown, webpack, Rspack or esbuild. It minifies the CSS in templates, lets the bundler remove unused styled components and warns about CSS that is ignored at runtime.
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
+import teiler from '@teiler/unplugin/vite'
+
+export default defineConfig({
+  plugins: [svelte(), teiler()],
+})
+```
+
+With SSR, use it in both the server and the client build. See the [plugin README](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) for other bundlers and options.
+
 ## Sew a Pattern
 
 This tool simplifies the creation of consistent and reusable visual styles for components across various web frameworks. It provides a pattern-based approach, where patterns serve as blueprints for defining the visual style of components.
