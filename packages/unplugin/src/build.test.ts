@@ -43,4 +43,11 @@ describe('build', () => {
     expect(result.output[0].code).toContain('pattern.button(["color:red;&:hover{color:green;}"])')
     expect(result.output[0].code).not.toContain('unused')
   })
+
+  test('reports warnings to the bundler', async () => {
+    const logs: Array<{ level: string; plugin?: string; message: string; loc?: { line: number; column: number } }> = []
+    const bundle = await rolldown({ input: fixture('Warnings.fixture.ts'), external, plugins: [teilerRolldown()], onLog: (level, log) => void logs.push({ level, ...log }) })
+    await bundle.generate({ format: 'esm' })
+    expect(logs).toEqual([expect.objectContaining({ level: 'warn', plugin: 'teiler', message: expect.stringContaining('`pattern` template'), loc: expect.objectContaining({ line: 3, column: 22 }) })])
+  })
 })
