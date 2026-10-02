@@ -27,4 +27,6 @@ const Link = defineComponent({
   },
 })
 
-export { Button, ButtonLink, Link }
+const ButtonWithLink = Button.withComponent(Link)
+
+export { Button, ButtonLink, ButtonWithLink, Link }

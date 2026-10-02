@@ -28,7 +28,7 @@
 </script>
 
 {#if styleClassName && styleDefinition.tag}
-  {@const Target = as ?? styleDefinition.tag}
+  {@const Target = as ?? (styleDefinition.target as Component<any> | undefined) ?? styleDefinition.tag}
   {#if typeof Target === 'function'}
     <Target class={classes} {...attributes} {children} />
   {:else if children}

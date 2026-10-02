@@ -1,12 +1,15 @@
 import type { Compiler, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
 import type { DefineSetupFnComponent } from 'vue'
-import type { PolymorphicComponent, StyledOptions } from './types'
+import type { AsTarget, PolymorphicComponent, StyledOptions, Tag } from './types'
 
 import Styled from './Styled'
 
 import { component, global, keyframes, styled, tags } from '@teiler/core'
 
-type VueTeilerComponent<Target extends HTMLElements, Props extends object> = PolymorphicComponent<Target, Props> & TeilerComponent<Target, Props>
+type VueTeilerComponent<Target extends HTMLElements, Props extends object, Default = Target> = PolymorphicComponent<Target, Props, Default> &
+  TeilerComponent<Target, Props> & {
+    withComponent<As extends AsTarget>(target: As): As extends Tag ? VueTeilerComponent<As, Props> : VueTeilerComponent<Target, Props, As>
+  }
 
 type VueGlobalComponent<Props extends object> = DefineSetupFnComponent<Props> & StyledOptions & TeilerComponent<null, Props>
 
@@ -16,7 +19,13 @@ const createComponent = <Target extends HTMLElements, Props extends object>(styl
 
 type InferProps<Component, Props> = Component extends TeilerComponent<HTMLElements, infer P> ? P & Props : Props
 type InferComponent<Component, Props extends object, Extended> =
-  Component extends TeilerComponent<infer E, infer P extends object> ? VueTeilerComponent<Extended extends HTMLElements ? Extended : E, Props & P> : VueTeilerComponent<HTMLElements, Props>
+  Component extends VueTeilerComponent<infer E, infer P extends object, infer D>
+    ? Extended extends HTMLElements
+      ? VueTeilerComponent<Extended, Props & P>
+      : VueTeilerComponent<E, Props & P, D>
+    : Component extends TeilerComponent<infer E, infer P extends object>
+      ? VueTeilerComponent<Extended extends HTMLElements ? Extended : E, Props & P>
+      : VueTeilerComponent<HTMLElements, Props>
 
 type Component<Target extends HTMLElements, Extended extends HTMLElements | undefined = Target> = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueTeilerComponent<Target, Props>

@@ -1,4 +1,5 @@
 import { component } from '@teiler/svelte'
+import Link from './Link.svelte'
 
 const Button = component.button`
   display: inline-block;
@@ -17,4 +18,6 @@ const ButtonLink = component.a(Button)`
   text-decoration: underline;
 `
 
-export { Button, ButtonLink }
+const ButtonWithLink = Button.withComponent(Link)
+
+export { Button, ButtonLink, ButtonWithLink }

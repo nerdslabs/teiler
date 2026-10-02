@@ -134,6 +134,35 @@ The rendered DOM element is exposed as `element`, use a template ref to access i
 </template>
 ```
 
+## `withComponent`
+
+Use `withComponent` to create a new styled component with the same styles that always renders another element or component. The original component stays unchanged:
+
+```typescript
+import { RouterLink } from 'vue-router'
+import { component } from '@teiler/vue'
+
+const Button = component.button`
+  background: #f18805;
+
+  &.router-link-active {
+    text-decoration: underline;
+  }
+`
+
+const FooterLink = Button.withComponent(RouterLink)
+const ButtonAnchor = Button.withComponent('a')
+```
+
+```vue
+<template>
+  <FooterLink to="/home">Home</FooterLink>
+  <ButtonAnchor href="/docs">Docs</ButtonAnchor>
+</template>
+```
+
+Props are typed from the target, so `FooterLink` requires `to`. The target component has the same requirements as a component passed to `as`. `as` still works and takes precedence over the target. Extending with `component(FooterLink)` keeps rendering `RouterLink`, `component.a(FooterLink)` renders `<a>`.
+
 ## Theme
 
 Example how to use themes.

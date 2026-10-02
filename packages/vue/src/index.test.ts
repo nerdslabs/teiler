@@ -312,6 +312,42 @@ describe('as', () => {
   })
 })
 
+describe('withComponent', () => {
+  const Link = defineComponent({
+    name: 'Link',
+    props: { to: { type: String, required: true } },
+    setup(props, { slots }) {
+      return () => h('a', { href: props.to }, slots.default?.())
+    },
+  })
+
+  test('should render the target component', () => {
+    const Button = component.button`color: green;`
+    const ButtonWithLink = Button.withComponent(Link)
+
+    const wrapper = mount(ButtonWithLink, {
+      attrs: { to: '/home' },
+      slots: { default: 'Home' },
+      global: { provide: { STYLE_SHEET: createStyleSheet({}) } },
+    })
+
+    expect(wrapper.html()).toBe(`<a href="/home" class="teiler-1dc5e1n ${ButtonWithLink.styleDefinition.id}">Home</a>`)
+    expect(wrapper.vm.element).toBeInstanceOf(HTMLAnchorElement)
+    expect(ButtonWithLink.name).toBe('StyledLink')
+  })
+
+  test('should prefer as over the target component', () => {
+    const ButtonWithLink = component.button`color: green;`.withComponent(Link)
+
+    const wrapper = mount(ButtonWithLink, {
+      attrs: { as: 'span', to: '/home' },
+      global: { provide: { STYLE_SHEET: createStyleSheet({}) } },
+    })
+
+    expect(wrapper.element.tagName).toBe('SPAN')
+  })
+})
+
 describe('global', () => {
   test('should create a global style', () => {
     const styleSheet = createStyleSheet({})

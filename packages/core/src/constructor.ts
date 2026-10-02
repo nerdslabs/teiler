@@ -24,6 +24,7 @@ type StyleDefinition<Target extends HTMLElements, Props> = {
   id: string
   styles: Array<Style<Props>>
   tag: Target
+  target?: object
 }
 
 type TeilerComponent<Target extends HTMLElements, Props> = {
@@ -48,29 +49,45 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   } else {
     const binded = stringOrBinded as TeilerComponent<HTMLElements, Props>
     const target = tag === undefined ? binded.styleDefinition.tag : tag
+    const inherited = tag === undefined ? binded.styleDefinition.target : undefined
 
     return (strings: ReadonlyArray<string>, ...properties: Properties<Props>[]) => {
       const style: Style<Props> = [Array.from(strings), properties]
-      const styleDefinition = compiler(target, [...binded.styleDefinition.styles, style])
+      const styleDefinition = compiler(target, [...binded.styleDefinition.styles, style], inherited)
       return createComponent(styleDefinition)
     }
   }
 }
 
-type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>) => StyleDefinition<Target, Props>
+type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object) => StyleDefinition<Target, Props>
 
-function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>): string {
-  const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
-  return 't' + hash(tag === null ? id : tag + '|' + id)
+function targetName(target: object): string {
+  const { name, __name } = target as { name?: unknown; __name?: unknown }
+  return typeof name === 'string' && name ? name : typeof __name === 'string' && __name ? __name : 'anonymous'
 }
 
-const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
-  return {
+function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>, target?: object): string {
+  const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
+  const prefix = target === undefined ? '' : targetName(target) + '|'
+  return 't' + hash(tag === null ? id : tag + '|' + prefix + id)
+}
+
+const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object): StyleDefinition<Target, Props> => {
+  const definition: StyleDefinition<Target, Props> = {
     type: 'component',
-    id: createId(tag, styles),
+    id: createId(tag, styles, target),
     styles,
     tag,
   }
+  return target === undefined ? definition : { ...definition, target }
+}
+
+function withTarget<Props>(definition: StyleDefinition<HTMLElements, Props>, target: Exclude<HTMLElements, null> | object): StyleDefinition<HTMLElements, Props> {
+  const { type, styles, tag } = definition
+  if (typeof target === 'string') {
+    return { type, id: createId(target, styles), styles, tag: target }
+  }
+  return { type, id: createId(tag, styles, target), styles, tag, target }
 }
 
 const global: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
@@ -125,4 +142,4 @@ function insert<Props = {}>(sheet: Sheet, definition: StyleDefinition<HTMLElemen
 }
 
 export type { Arguments, Compiler, CreateCallback, CSS, DefaultTheme, Properties, Raw, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
-export { component, createId, css, global, insert, keyframes, styled }
+export { component, createId, css, global, insert, keyframes, styled, targetName, withTarget }

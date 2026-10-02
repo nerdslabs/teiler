@@ -17,7 +17,7 @@ type AsTarget = Tag | (abstract new (...args: never[]) => unknown) | ((props: ne
 
 type TargetProps<As> = As extends Tag ? ElementProps<As> : ComponentProps<As>
 
-type PolymorphicProps<Target extends HTMLElements, Props, As> = Props & { as?: As } & ([As] extends [never] ? ElementProps<Target> : [AsTarget] extends [As] ? ElementProps<Target> : TargetProps<As>)
+type PolymorphicProps<Target extends HTMLElements, Props, As, Default = Target> = Props & { as?: As } & ([As] extends [never] ? TargetProps<Default> : [AsTarget] extends [As] ? TargetProps<Default> : TargetProps<As>)
 
 type Exposed = { element: HTMLElement | null }
 
@@ -25,6 +25,7 @@ type Instance<Props> = CreateComponentPublicInstanceWithMixins<Props, Exposed, {
 
 type StyledOptions = { name: string; inheritAttrs: false }
 
-type PolymorphicComponent<Target extends HTMLElements, Props> = (new <As extends AsTarget = never>(props: PolymorphicProps<Target, Props, As> & PublicProps) => Instance<PolymorphicProps<Target, Props, As>>) & StyledOptions
+type PolymorphicComponent<Target extends HTMLElements, Props, Default = Target> = (new <As extends AsTarget = never>(props: PolymorphicProps<Target, Props, As, Default> & PublicProps) => Instance<PolymorphicProps<Target, Props, As, Default>>) &
+  StyledOptions
 
-export type { AsTarget, Exposed, PolymorphicComponent, PolymorphicProps, StyledOptions }
+export type { AsTarget, Exposed, PolymorphicComponent, PolymorphicProps, StyledOptions, Tag }

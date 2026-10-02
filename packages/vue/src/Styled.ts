@@ -1,15 +1,19 @@
 import type { HTMLElements, StyleDefinition } from '@teiler/core'
-import type { AsTarget, PolymorphicComponent, PolymorphicProps } from './types'
+import type { AsTarget, PolymorphicProps } from './types'
 import type { Component, ComponentPublicInstance, Ref, SetupContext } from 'vue'
+import type { VueTeilerComponent } from './component'
 
-import { DefaultTheme, insert } from '@teiler/core'
+import { DefaultTheme, insert, targetName, withTarget } from '@teiler/core'
 import { defineComponent, h, inject, ref, toRaw, unref } from 'vue'
 import { context } from './ThemeProvider'
 import { getStyleSheet } from './sheet'
 
-const displayName = (tag: HTMLElements) => (tag ? 'Styled' + tag[0].toUpperCase() + tag.slice(1) : 'StyledGlobal')
+const displayName = ({ tag, target }: { tag: HTMLElements; target?: object }) => {
+  const name = target ? targetName(target) : tag
+  return name ? 'Styled' + name[0].toUpperCase() + name.slice(1) : 'StyledGlobal'
+}
 
-export default function <Target extends HTMLElements, Props extends object>(styleDefinition: StyleDefinition<Target, Props>) {
+export default function Styled<Target extends HTMLElements, Props extends object>(styleDefinition: StyleDefinition<Target, Props>): VueTeilerComponent<Target, Props> {
   const component = defineComponent(
     <As extends AsTarget = never>(_props: PolymorphicProps<Target, Props, As>, { attrs, slots, expose }: SetupContext) => {
       const styleSheet = getStyleSheet()
@@ -34,7 +38,7 @@ export default function <Target extends HTMLElements, Props extends object>(styl
         const className = `${styleClassName} ${styleDefinition.id}${attrsClass}`
 
         if (styleDefinition.tag) {
-          const target = toRaw(props.as as string | Component | undefined) || styleDefinition.tag
+          const target = toRaw(props.as as string | Component | undefined) || (styleDefinition.target as Component | undefined) || styleDefinition.tag
           const elementProps = { ...filtredProps, class: className, ref: setElement }
 
           if (typeof target === 'string') {
@@ -47,8 +51,10 @@ export default function <Target extends HTMLElements, Props extends object>(styl
         }
       }
     },
-    { name: displayName(styleDefinition.tag), inheritAttrs: false },
+    { name: displayName(styleDefinition), inheritAttrs: false },
   )
 
-  return Object.assign(component as PolymorphicComponent<Target, Props>, { styleDefinition })
+  const withComponent = (target: AsTarget) => Styled(withTarget(styleDefinition, target))
+
+  return Object.assign(component, { styleDefinition, withComponent }) as unknown as VueTeilerComponent<Target, Props>
 }

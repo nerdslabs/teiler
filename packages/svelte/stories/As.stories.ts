@@ -19,6 +19,7 @@ export const Primary: Story = {
     const anchor = canvas.getByText('Button as anchor')
     const component = canvas.getByText('Button as component')
     const extended = canvas.getByText('Extended as anchor')
+    const withComponent = canvas.getByText('With component')
 
     await expect(button.tagName).toBe('BUTTON')
     await expect(anchor.tagName).toBe('A')
@@ -26,6 +27,8 @@ export const Primary: Story = {
     await expect(component.tagName).toBe('A')
     await expect(component.getAttribute('href')).toBe('#')
     await expect(extended.tagName).toBe('A')
+    await expect(withComponent.tagName).toBe('A')
+    await expect(withComponent.getAttribute('href')).toBe('#')
 
     const background = getComputedStyle(button).backgroundColor
 
@@ -33,6 +36,7 @@ export const Primary: Story = {
     await expect(getComputedStyle(anchor).backgroundColor).toBe(background)
     await expect(getComputedStyle(component).backgroundColor).toBe(background)
     await expect(getComputedStyle(extended).backgroundColor).toBe(background)
+    await expect(getComputedStyle(withComponent).backgroundColor).toBe(background)
     await expect(getComputedStyle(extended).textDecorationLine).toBe('underline')
   },
 }
