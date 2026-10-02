@@ -2,8 +2,11 @@ import type { Options } from '.'
 import type { UnpluginOptions } from 'unplugin'
 
 import { describe, expect, test } from 'vitest'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { transform as transformCode, unplugin } from '.'
 import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
+import { tmpdir } from 'node:os'
 
 const code = "import { component } from '@teiler/vue'\ncomponent.div`\n  color: red;\n`"
 
@@ -89,5 +92,22 @@ describe('plugin', () => {
     }
     const result = transform("import { component } from '@teiler/vue'\nconst Button = component.button`color: red;`")
     expect(result).toMatch(named ? /withConfig\("[\w-]{9,}", "Button"\)/ : /withConfig\("[\w-]{9,}"\)/)
+  })
+
+  test.each([
+    { version: '0.1.3', supported: false },
+    { version: '0.2.0', supported: true },
+  ])('checks the installed @teiler/vue $version', ({ version, supported }) => {
+    const root = mkdtempSync(join(tmpdir(), 'teiler-'))
+    mkdirSync(join(root, 'node_modules/@teiler/vue'), { recursive: true })
+    writeFileSync(join(root, 'node_modules/@teiler/vue/package.json'), JSON.stringify({ name: '@teiler/vue', version }))
+    mkdirSync(join(root, 'src'))
+    const { plugin, transform, warnings } = setup('vite', { componentId: undefined })
+    ;(plugin.vite?.configResolved as (config: unknown) => void)({ command: 'serve' })
+    const source = "import { component } from '@teiler/vue'\nconst Button = component.button`color: red;`"
+
+    expect(transform(source, join(root, 'src/A.ts'))).toEqual(supported ? expect.stringContaining('withConfig') : null)
+    expect(transform(source, join(root, 'src/B.ts'))).toEqual(supported ? expect.stringContaining('withConfig') : null)
+    expect(warnings).toEqual(supported ? [] : [`@teiler/vue ${version} does not support \`withConfig\`, so component ids and names are not added. Update it to 0.2 or later.`])
   })
 })

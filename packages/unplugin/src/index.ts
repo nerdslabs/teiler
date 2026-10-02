@@ -2,7 +2,7 @@ import type { FilterPattern, UnpluginFactory } from 'unplugin'
 
 import { MODULES, transform } from './transform'
 import { dirname, isAbsolute, join, relative, sep } from 'node:path'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { createUnplugin } from 'unplugin'
 import { minify } from './minify'
 
@@ -28,6 +28,31 @@ function manifest(directory: string): { name: string; root: string } | null {
   return packages.get(directory) ?? null
 }
 
+const versions = new Map<string, string | null>()
+
+function installed(directory: string, module: string): string | null {
+  const key = `${directory}|${module}`
+  if (!versions.has(key)) {
+    const file = join(directory, 'node_modules', module, 'package.json')
+    const parent = dirname(directory)
+    const found = existsSync(file) ? (realpathSync(file).split(sep).includes('node_modules') ? String(JSON.parse(readFileSync(file, 'utf8')).version ?? '') : null) : parent === directory ? null : installed(parent, module)
+    versions.set(key, found)
+  }
+  return versions.get(key) ?? null
+}
+
+function outdated(id: string, code: string): Array<[module: string, version: string]> {
+  const file = id.split('?')[0]
+  if (!isAbsolute(file)) {
+    return []
+  }
+  return MODULES.filter((module) => code.includes(module)).flatMap((module): Array<[string, string]> => {
+    const version = installed(dirname(file), module)
+    const [major, minor] = (version ?? '').split('.').map(Number)
+    return version !== null && major === 0 && minor < 2 ? [[module, version]] : []
+  })
+}
+
 function scope(id: string): string {
   const file = id.split('?')[0]
   const found = isAbsolute(file) ? manifest(dirname(file)) : null
@@ -37,6 +62,7 @@ function scope(id: string): string {
 const factory: UnpluginFactory<Options | undefined> = (options = {}) => {
   const modules = [...MODULES, ...(options.modules ?? [])]
   let production = true
+  const reported = new Set<string>()
 
   return {
     name: 'teiler',
@@ -58,7 +84,19 @@ const factory: UnpluginFactory<Options | undefined> = (options = {}) => {
         code: modules,
       },
       handler(code, id) {
-        const result = transform(code, id, { modules, minify: options.minify ?? production, pure: options.pure ?? production, componentId: options.componentId ?? true, displayName: options.displayName ?? !production, scope: scope(id) })
+        const componentId = options.componentId ?? true
+        const displayName = options.displayName ?? !production
+        const old = componentId || displayName ? outdated(id, code) : []
+
+        for (const [module, version] of old) {
+          if (!reported.has(`${module}@${version}`)) {
+            reported.add(`${module}@${version}`)
+            this.warn(`${module} ${version} does not support \`withConfig\`, so component ids and names are not added. Update it to 0.2 or later.`)
+          }
+        }
+
+        const supported = old.length === 0
+        const result = transform(code, id, { modules, minify: options.minify ?? production, pure: options.pure ?? production, componentId: componentId && supported, displayName: displayName && supported, scope: scope(id) })
 
         if (result === null) {
           return null
