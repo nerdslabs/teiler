@@ -196,7 +196,12 @@ Props are typed from `as`: `as="a"` accepts anchor attributes, `as={Link}` accep
 ```
 
 > [!NOTE]
-> `mount()` and `render()` called from TypeScript cannot infer `as`, so there props are typed from the element of the styled component.
+> `mount()` and `render()` called from TypeScript cannot infer `as`, so there props are typed from the element of the styled component. Pass the target as a type argument instead:
+>
+> ```ts
+> mount(Button<'a'>, { target, props: { as: 'a', href: '/docs' } })
+> mount(Button<typeof Link>, { target, props: { as: Link, to: '/home' } })
+> ```
 
 ## `withComponent`
 

@@ -13,7 +13,7 @@ export default defineConfig({
   test: {
     coverage: {
       include: ['src/**/*.{ts,svelte}'],
-      exclude: ['src/**/*.fixture.svelte'],
+      exclude: ['src/**/*.fixture.{ts,svelte}'],
       reporter: ['text'],
       thresholds: {
         branches: 90,
