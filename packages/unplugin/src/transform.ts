@@ -7,6 +7,7 @@ import { minify } from './minify'
 type Warning = { message: string; pos: number; loc: { file: string; line: number; column: number } }
 type Result = { code: string; map: ReturnType<MagicString['generateMap']>; warnings: Warning[] }
 type Node = { type: string; [key: string]: unknown }
+type Options = { modules?: string[]; minify?: boolean; pure?: boolean }
 
 const MODULES = ['@teiler/core', '@teiler/vue', '@teiler/svelte']
 const TAGS = ['component', 'global', 'keyframes', 'css', 'pattern']
@@ -60,7 +61,9 @@ function location(code: string, file: string, offset: number): Pick<Warning, 'po
   return { pos: offset, loc: { file, line: lines.length, column: lines[lines.length - 1].length } }
 }
 
-function transform(code: string, id: string, modules: string[] = MODULES): Result | null {
+const escape = (cooked: string) => cooked.replace(/\\|`|\$\{/g, (match) => '\\' + match)
+
+function transform(code: string, id: string, { modules = MODULES, minify: compress = true, pure = true }: Options = {}): Result | null {
   const { program, errors } = parseSync(id, code, { lang: lang(id), sourceType: 'module', astType: 'js' })
 
   if (errors.length > 0) {
@@ -141,24 +144,30 @@ function transform(code: string, id: string, modules: string[] = MODULES): Resul
       continue
     }
 
-    const minified = minify(cooked as string[])
+    const result = minify(cooked as string[])
 
-    if ('skipped' in minified && minified.skipped === 'dropped' && name !== 'css') {
+    if ('skipped' in result && result.skipped === 'dropped' && name !== 'css') {
       warnings.push({
         message: `Part of the CSS in this \`${name}\` template is not a declaration or a rule, so it is ignored at runtime. Check for a missing \`:\`, an unclosed \`{\` or an extra \`}\`.`,
         ...location(code, id, start),
       })
     }
 
-    const strings = 'strings' in minified ? minified.strings : (cooked as string[])
+    if (!pure && !(compress && 'strings' in result)) {
+      continue
+    }
+
+    const strings = compress && 'strings' in result ? result.strings : (cooked as string[])
     const bounds = [quasi.start, ...quasi.expressions.flatMap((expression) => [expression.start, expression.end]), quasi.end]
     const last = bounds.length - 2
 
-    string.prependRight(start, '/*#__PURE__*/ ')
+    if (pure) {
+      string.prependRight(start, '/*#__PURE__*/ ')
+    }
 
     for (let index = 0; index < bounds.length; index += 2) {
-      const array = index === 0 ? `([${strings.map((value) => JSON.stringify(value)).join(', ')}]` : ''
-      string.update(bounds[index], bounds[index + 1], array + (index === last ? ')' : ', '))
+      const replacement = pure ? (index === 0 ? `([${strings.map((value) => JSON.stringify(value)).join(', ')}]` : '') + (index === last ? ')' : ', ') : (index === 0 ? '`' : '}') + escape(strings[index / 2]) + (index === last ? '`' : '${')
+      string.update(bounds[index], bounds[index + 1], replacement)
     }
   }
 
@@ -169,5 +178,5 @@ function transform(code: string, id: string, modules: string[] = MODULES): Resul
   return { code: string.toString(), map: string.generateMap({ hires: true, source: id, includeContent: true }), warnings }
 }
 
-export type { Warning }
+export type { Options, Warning }
 export { MODULES, transform }

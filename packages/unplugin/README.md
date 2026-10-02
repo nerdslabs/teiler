@@ -4,8 +4,9 @@ Build plugin for [Teiler](https://github.com/nerdslabs/teiler) that makes the bu
 
 For `component`, `global`, `keyframes`, `css` and `pattern` tagged templates it:
 
-- minifies the CSS: whitespace and comments are removed from the template strings, so they no longer ship to the browser. Interpolations are left untouched.
-- makes unused definitions removable: bundlers cannot drop tagged templates, so they are turned into calls marked `/*#__PURE__*/`, and definitions that are never imported are removed from the bundle.
+- minifies the CSS (`minify`): whitespace and comments are removed from the template strings, so they no longer ship to the browser. Interpolations are left untouched.
+- makes unused definitions removable (`pure`): bundlers cannot drop tagged templates, so they are turned into calls marked `/*#__PURE__*/`, and definitions that are never imported are removed from the bundle.
+- reports [mistakes](#warnings) as build warnings.
 
 ```js
 // source
@@ -83,6 +84,12 @@ build({
 | `include` | all files | Files to transform (string, RegExp or an array of them) |
 | `exclude` | `[/node_modules/]` | Files to skip |
 | `modules` | `[]` | Additional modules re-exporting Teiler helpers, e.g. `['@acme/ui']` |
+| `minify` | production only | Minify the CSS in the templates |
+| `pure` | production only | Turn the templates into `/*#__PURE__*/` calls |
+
+## Development
+
+Like the bundlers do with JavaScript, the plugin changes the code only in production builds: `vite build`, webpack and Rspack with `mode: 'production'` (or no `mode`). The Vite dev server and other webpack modes keep the templates as written, and warnings are reported in every mode. Rollup, Rolldown and esbuild have no mode, so both options default to `true` there. Set `minify` and `pure` to override the default.
 
 ## Warnings
 
@@ -98,7 +105,7 @@ The plugin reports two mistakes as build warnings, with the file and position:
 
 ## Server-side rendering
 
-Minification changes the template strings, and component ids and class names are hashed from them. Use the plugin in both the client and the server build, otherwise hydrated styles will not match.
+Minification changes the template strings, and component ids and class names are hashed from them. Use the plugin with the same `minify` setting in both the client and the server build, otherwise hydrated styles will not match. The default depends on the command or mode, not on the bundler's `minify` option (Vite does not minify SSR builds), so the client and the server built together match.
 
 ## Libraries
 

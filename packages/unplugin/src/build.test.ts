@@ -52,7 +52,7 @@ describe('build', () => {
     expect(logs).toEqual([expect.objectContaining({ level: 'warn', plugin: 'teiler', message: expect.stringContaining('`pattern` template'), loc: expect.objectContaining({ line: 7, column: 22 }) })])
   })
 
-  test('reports warnings with a code frame in the vite dev server', async () => {
+  test('keeps code and reports warnings with a code frame in the vite dev server', async () => {
     const warnings: string[] = []
     const customLogger = createLogger()
     customLogger.warn = (message) => void warnings.push(stripVTControlCharacters(message))
@@ -65,8 +65,9 @@ describe('build', () => {
       server: { middlewareMode: true, ws: false },
       optimizeDeps: { noDiscovery: true },
     })
-    await server.transformRequest('/Warnings.fixture.ts')
+    const result = await server.transformRequest('/Warnings.fixture.ts')
     await server.close()
+    expect(result?.code).toContain('pattern.button`\n  color red;\n`')
     expect(warnings).toEqual([expect.stringMatching(/Warnings\.fixture\.ts:7:22\n[\s\S]*pattern\.button`\n\s+\|\s+\^/)])
   })
 })
