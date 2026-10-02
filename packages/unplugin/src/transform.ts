@@ -64,7 +64,7 @@ function transform(code: string, id: string, modules: string[] = MODULES): Resul
 
   const string = new MagicString(code)
 
-  for (const { tag, quasi } of templates) {
+  for (const { start, tag, quasi } of templates) {
     const target = resolve(tag)
     const name = target && (namespaces.has(target.name) ? target.member : named.get(target.name))
 
@@ -72,22 +72,22 @@ function transform(code: string, id: string, modules: string[] = MODULES): Resul
       continue
     }
 
-    const minified = minify(quasi.quasis.map((element) => element.value.cooked))
+    const cooked = quasi.quasis.map((element) => element.value.cooked)
 
-    if (minified === null) {
+    if (cooked.some((value) => typeof value !== 'string')) {
       continue
     }
 
-    quasi.quasis.forEach((element, index) => {
-      if (minified[index] === element.value.raw) {
-        return
-      }
-      if (minified[index] === '') {
-        string.remove(element.start, element.end)
-      } else {
-        string.update(element.start, element.end, minified[index])
-      }
-    })
+    const strings = minify(cooked as string[]) ?? (cooked as string[])
+    const bounds = [quasi.start, ...quasi.expressions.flatMap((expression) => [expression.start, expression.end]), quasi.end]
+    const last = bounds.length - 2
+
+    string.prependRight(start, '/*#__PURE__*/ ')
+
+    for (let index = 0; index < bounds.length; index += 2) {
+      const array = index === 0 ? `([${strings.map((value) => JSON.stringify(value)).join(', ')}]` : ''
+      string.update(bounds[index], bounds[index + 1], array + (index === last ? ')' : ', '))
+    }
   }
 
   if (!string.hasChanged()) {
