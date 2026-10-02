@@ -67,6 +67,57 @@ const Button = component.button<{}>`
 `
 ```
 
+## Global styles
+
+`global` creates a component that renders nothing and adds its styles to the document. Props and the theme are interpolated the same way as in components:
+
+```typescript
+import { global } from '@teiler/vue'
+
+const GlobalStyles = global<{ _background: string }>`
+  body {
+    margin: 0;
+    background: ${({ _background }) => _background};
+  }
+`
+```
+
+```vue
+<template>
+  <GlobalStyles _background="#fafafa" />
+</template>
+```
+
+Styles are added when the component renders and stay in the document after it unmounts.
+
+## `css`
+
+Interpolated functions can return a plain string, as in the examples above. Return `css` instead when the styles interpolate a component, keyframes or another function: a plain template string turns `${Icon}` into `[object Object]` (`@teiler/unplugin` reports it as a warning).
+
+```typescript
+import { component, css } from '@teiler/vue'
+
+const Icon = component.span`
+  color: gray;
+`
+
+const Button = component.button<{ _active: boolean; _color: string }>`
+  color: black;
+
+  ${({ _active, _color }) =>
+    _active &&
+    css`
+      color: ${_color};
+
+      ${Icon} {
+        color: ${_color};
+      }
+    `}
+`
+```
+
+`css` is evaluated with the props of the component, so it can also hold shared styles: `${() => shared}`, where `shared` is a `css` template.
+
 ## Extending
 
 Pass an existing component to `component` to add styles to it. The new component keeps the element of the extended one, unless you pick another element with `component.<tag>`:
@@ -165,23 +216,23 @@ Props are typed from the target, so `FooterLink` requires `to`. The target compo
 
 ## Theme
 
-Example how to use themes.
-
 ```typescript
-// Custom theme declaration (`theme.ts`)
+// theme.ts
 export type CustomTheme = {
-  fontColor: string;
-};
+  fontColor: string
+}
+```
 
-// Main component inside application (`App.vue`)
+```vue
+<!-- App.vue -->
 <script setup lang="ts">
-  import { ThemeProvider } from '@teiler/vue'
-  import { CustomTheme } from './theme.ts'
-  import { Component } from './theme'
+  import type { CustomTheme } from './theme'
 
-  export let theme: CustomTheme = {
-    fontColor: 'red',
-  }
+  import { ref } from 'vue'
+  import { ThemeProvider } from '@teiler/vue'
+  import { Component } from './components'
+
+  const theme = ref<CustomTheme>({ fontColor: 'red' })
 </script>
 
 <template>
@@ -189,8 +240,10 @@ export type CustomTheme = {
     <Component>Some test text</Component>
   </ThemeProvider>
 </template>
+```
 
-// Component with theme usage
+```typescript
+// components.ts
 import { component } from '@teiler/vue'
 
 const Component = component.div`
@@ -201,8 +254,9 @@ export { Component }
 ```
 
 To type the theme in TypeScript, extend `DefaultTheme` from `@teiler/vue` in a declaration file (`d.ts`). Do not extend `@teiler/core`: it is a dependency of `@teiler/vue`, not of your app, so with pnpm TypeScript cannot resolve it and ignores the extension without an error.
+
 ```typescript
-import type { CustomTheme } from "./theme.ts";
+import type { CustomTheme } from './theme'
 
 declare module '@teiler/vue' {
   export interface DefaultTheme extends CustomTheme {}
@@ -321,7 +375,7 @@ app.provide('STYLE_SHEET', styleSheet)
 
 ## Build plugin
 
-Teiler works without a build step. For smaller bundles, add [`@teiler/unplugin`](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) to Vite, Rollup, Rolldown, webpack, Rspack or esbuild. It minifies the CSS in templates, lets the bundler remove unused styled components and warns about CSS that is ignored at runtime.
+Teiler works without a build step. For smaller bundles, add [`@teiler/unplugin`](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) to Vite, Rollup, Rolldown, webpack, Rspack or esbuild. In production builds it minifies the CSS in templates and lets the bundler remove unused styled components. In development it leaves the code as written and only warns about mistakes, such as CSS that is ignored at runtime.
 
 ```js
 // vite.config.js
@@ -334,7 +388,7 @@ export default defineConfig({
 })
 ```
 
-With SSR, use it in both the server and the client build. See the [plugin README](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) for other bundlers and options.
+With SSR, use it in both the server and the client build. See the [plugin README](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) for other bundlers, options and [development mode](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#development).
 
 ## Sew a Pattern
 
