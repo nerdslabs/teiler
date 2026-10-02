@@ -24,6 +24,11 @@ describe('minify', () => {
     { name: 'keeps interpolated declarations', input: ['\n  ', '\n  color: red;\n'], expected: ['', ' color:red;'] },
     { name: 'keeps strings across interpolations', input: ['content: "  ', '  ";'], expected: ['content:"  ', '  ";'] },
     { name: 'returns empty template', input: [''], expected: [''] },
+    { name: 'keeps nested rules', input: ['\n  &:hover {\n    img {\n      color: red;\n    }\n  }\n'], expected: ['&:hover{img{color:red;}}'] },
+    { name: 'keeps order of declarations and nested rules', input: ['\n  a {\n    b { color: red; }\n    ', ';\n    c { color: blue; }\n  }\n'], expected: ['a{b{color:red;}', ';c{color:blue;}}'] },
+    { name: 'keeps at-rules in nested rules', input: ['\n  a {\n    @media print {\n      color: red;\n      b { color: blue; }\n    }\n    color: green;\n  }\n'], expected: ['a{@media print{color:red;b{color:blue;}}color:green;}'] },
+    { name: 'removes comments in nested rules', input: ['\n  a {\n    b { /* one */ color: red; }\n    /* two */\n  }\n'], expected: ['a{b{color:red;}}'] },
+    { name: 'keeps statement at-rules', input: ['\n  @import url(a.css);\n  @layer a, b;\n  body { margin: 0; }\n'], expected: ['@import url(a.css);@layer a,b;body{margin:0;}'] },
   ])('$name', ({ input, expected }) => {
     expect(minify(input)).toEqual({ strings: expected })
   })
@@ -44,6 +49,7 @@ describe('minify', () => {
     ['\n  color: red;\n  // comment\n  &:hover, &:focus {\n    color: blue; /* comment */\n  }\n  @media (min-width: 100px) and (max-width: 200px) {\n    padding: 1px 2px;\n  }\n'],
     ['\n  width: calc(100% - 10px);\n  background: url(//example.com/a.png) no-repeat;\n  font-family: "Open Sans", sans-serif;\n  & > span + span ~ a { margin: 0 auto !important; }\n'],
     ['\n  content: "  a  ";\n  & :not(.a) .b { color: red; }\n  @supports (display: grid) { display: grid; }\n  grid-template-areas: "a  b" "c  d";\n'],
+    ['\n  span {\n    position: absolute;\n    &:before { content: ""; }\n    @media (min-width: 100px) { color: red; b { color: blue; } }\n    margin: 0;\n  }\n  &:hover { img { filter: drop-shadow(0 0 8px red); } }\n'],
   ])('transpiles to the same CSS %#', (input) => {
     const minified = minify([input])
     expect(minified).toHaveProperty('strings')

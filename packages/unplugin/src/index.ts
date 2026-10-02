@@ -8,21 +8,35 @@ type Options = {
   include?: FilterPattern
   exclude?: FilterPattern
   modules?: string[]
+  minify?: boolean
+  pure?: boolean
 }
 
 const factory: UnpluginFactory<Options | undefined> = (options = {}) => {
   const modules = [...MODULES, ...(options.modules ?? [])]
+  let production = true
 
   return {
     name: 'teiler',
     enforce: 'post',
+    vite: {
+      configResolved(config) {
+        production = config.command === 'build'
+      },
+    },
+    webpack(compiler) {
+      production = compiler.options.mode === undefined || compiler.options.mode === 'production'
+    },
+    rspack(compiler) {
+      production = compiler.options.mode === undefined || compiler.options.mode === 'production'
+    },
     transform: {
       filter: {
         id: { include: options.include, exclude: options.exclude ?? [/node_modules/] },
         code: modules,
       },
       handler(code, id) {
-        const result = transform(code, id, modules)
+        const result = transform(code, id, { modules, minify: options.minify ?? production, pure: options.pure ?? production })
 
         if (result === null) {
           return null
@@ -30,7 +44,7 @@ const factory: UnpluginFactory<Options | undefined> = (options = {}) => {
 
         result.warnings.forEach((warning) => this.warn(warning))
 
-        return { code: result.code, map: result.map }
+        return result.code === code ? null : { code: result.code, map: result.map }
       },
     },
   }

@@ -1,5 +1,9 @@
 import { pattern } from '@teiler/core'
 
-export const Broken = pattern.button`
+interface Props {
+  color: string
+}
+
+export const Broken = pattern.button<Props>`
   color red;
 `

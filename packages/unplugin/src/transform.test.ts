@@ -1,10 +1,11 @@
+import type { Options } from './transform'
 import type { Pattern } from '@teiler/core'
 
 import { createStyleSheet, css, insert, pattern } from '@teiler/core'
 import { describe, expect, test } from 'vitest'
 import { transform } from './transform'
 
-const run = (code: string, id = 'file.js', modules?: string[]) => transform(code, id, modules)?.code
+const run = (code: string, id = 'file.js', options?: Options) => transform(code, id, options)?.code
 
 const render = (code: string) => {
   const definition: Pattern<'button', { color: string; active: boolean }> = new Function('pattern', 'css', code.replace(/^import .*\n/, '').replace('export const Button =', 'return'))(pattern, css)
@@ -60,7 +61,7 @@ describe('transform', () => {
   test('supports custom modules', () => {
     const code = "import { component } from '@acme/ui'\ncomponent.button`\n  color: red;\n`"
     expect(run(code)).toBeUndefined()
-    expect(run(code, 'file.js', ['@acme/ui'])).toContain('/*#__PURE__*/ component.button(["color:red;"])')
+    expect(run(code, 'file.js', { modules: ['@acme/ui'] })).toContain('/*#__PURE__*/ component.button(["color:red;"])')
   })
 
   test.each([
@@ -77,11 +78,24 @@ describe('transform', () => {
     expect(run(code)).toBe("import { component } from '@teiler/vue'\nconst label = 'żółć 🎨'\n/*#__PURE__*/ component.button([\"color:red;\"])")
   })
 
-  test('produces the same styles at runtime', () => {
-    const code = 'import { css, pattern } from \'@teiler/core\'\nexport const Button = pattern.button`\n  content: "\\\\f101 \\`";\n  color: ${({ color }) => color};\n  ${({ active }) => active && css`\n    &:hover { color: red; }\n  `}\n`'
-    const transformed = run(code)!
-    expect(transformed).toContain('/*#__PURE__*/ pattern.button([')
-    expect(render(transformed)).toBe(render(code))
+  test.each([
+    { name: 'only minifies', options: { pure: false }, expected: 'component.div`color:${({ color }) => color};content:"\\\\f101 \\` \\${a}";`' },
+    { name: 'only adds pure calls', options: { minify: false }, expected: '/*#__PURE__*/ component.div(["\\n  color: ", ";\\n  content: \\"\\\\f101 ` ${a}\\";\\n"], ({ color }) => color)' },
+  ])('$name', ({ options, expected }) => {
+    const code = 'import { component } from \'@teiler/vue\'\ncomponent.div`\n  color: ${({ color }) => color};\n  content: "\\\\f101 \\` \\${a}";\n`'
+    expect(run(code, 'file.js', options)).toBe(`import { component } from '@teiler/vue'\n${expected}`)
+  })
+
+  test('keeps templates with nothing to do', () => {
+    expect(transform("import { component } from '@teiler/vue'\ncomponent.div`\n  color: red;\n`", 'file.js', { minify: false, pure: false })).toBeNull()
+    expect(transform("import { component, css } from '@teiler/vue'\ncomponent.div`\n  border: 1px ${() => css`solid`};\n`", 'file.js', { pure: false })?.code).toBe(
+      "import { component, css } from '@teiler/vue'\ncomponent.div`border:1px ${() => css`solid`};`",
+    )
+  })
+
+  test.each([{}, { pure: false }, { minify: false }])('produces the same styles at runtime with %o', (options) => {
+    const code = 'import { css, pattern } from \'@teiler/core\'\nexport const Button = pattern.button`\n  content: "\\\\f101 \\` \\${a}";\n  color: ${({ color }) => color};\n  ${({ active }) => active && css`\n    &:hover { color: red; }\n  `}\n`'
+    expect(render(run(code, 'file.js', options)!)).toBe(render(code))
   })
 
   test('generates source map', () => {

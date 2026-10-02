@@ -12,7 +12,7 @@ const config: StorybookConfig = {
   },
   async viteFinal(config) {
     return mergeConfig(config, {
-      plugins: [vue(), process.env.TEILER_UNPLUGIN === '1' && teiler()],
+      plugins: [vue(), process.env.TEILER_UNPLUGIN === '1' && teiler({ minify: true, pure: true })],
     })
   },
 }

@@ -1,32 +1,43 @@
 import type { Element } from 'stylis'
 
-import { COMMENT, compile } from 'stylis'
+import { COMMENT, RULESET, compile } from 'stylis'
 
 const PLACEHOLDER = /xxx\d+:xxx/
 
 const placeholder = (index: number) => `xxx${index}:xxx`
 
-function stringify(elements: Element[]): string {
-  return elements
+function flatten(elements: Element[]): Element[] {
+  return elements.flatMap((element) => [element, ...(Array.isArray(element.children) ? flatten(element.children) : [])])
+}
+
+function nest(elements: Element[]): Map<Element | null, Element[]> {
+  const blocks = new Map<Element | null, Element[]>()
+
+  for (const element of elements) {
+    if (element.type !== RULESET || element.parent?.line !== element.line || element.parent.column !== element.column) {
+      blocks.set(element.parent, [...(blocks.get(element.parent) ?? []), element])
+    }
+  }
+
+  return blocks
+}
+
+function stringify(blocks: Map<Element | null, Element[]>, parent: Element | null = null): string {
+  return (blocks.get(parent) ?? [])
     .map((element) => {
       if (element.type === COMMENT) {
         return ''
       }
-      if (!Array.isArray(element.children)) {
+      if (!Array.isArray(element.children) || element.value.endsWith(';')) {
         return element.value
       }
-      return `${element.value.replace(/&\f/g, '&')}{${stringify(element.children)}}`
+      return `${element.value.replace(/&\f/g, '&')}{${stringify(blocks, element)}}`
     })
     .join('')
 }
 
 function comments(elements: Element[]): string[] {
-  return elements.flatMap((element) => {
-    if (element.type === COMMENT) {
-      return [element.props === '/' ? element.value : '//' + element.value.slice(2, -2)]
-    }
-    return Array.isArray(element.children) ? comments(element.children) : []
-  })
+  return elements.filter((element) => element.type === COMMENT).map((element) => (element.props === '/' ? element.value : '//' + element.value.slice(2, -2)))
 }
 
 function signature(css: string, removed: string[] = []): string {
@@ -54,10 +65,10 @@ function minify(quasis: string[]): Minified {
   }
 
   const source = quasis.reduce((css, quasi, index) => css + (index > 0 ? placeholder(index - 1) : '') + quasi, '')
-  const tree = compile(source)
-  const output = stringify(tree)
+  const elements = flatten(compile(source)).sort((a, b) => a.line - b.line || a.column - b.column)
+  const output = stringify(nest(elements))
 
-  if (signature(output) !== signature(source, comments(tree))) {
+  if (signature(output) !== signature(source, comments(elements))) {
     return { skipped: 'dropped' }
   }
 

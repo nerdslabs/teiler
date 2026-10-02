@@ -1,9 +1,10 @@
 import type { PluginOption } from 'vite'
 
 import { describe, expect, test } from 'vitest'
-import { build } from 'vite'
+import { build, createLogger, createServer } from 'vite'
 import { fileURLToPath } from 'node:url'
 import { rolldown } from 'rolldown'
+import { stripVTControlCharacters } from 'node:util'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import teiler from './vite'
 import teilerRolldown from './rolldown'
@@ -48,6 +49,25 @@ describe('build', () => {
     const logs: Array<{ level: string; plugin?: string; message: string; loc?: { line: number; column: number } }> = []
     const bundle = await rolldown({ input: fixture('Warnings.fixture.ts'), external, plugins: [teilerRolldown()], onLog: (level, log) => void logs.push({ level, ...log }) })
     await bundle.generate({ format: 'esm' })
-    expect(logs).toEqual([expect.objectContaining({ level: 'warn', plugin: 'teiler', message: expect.stringContaining('`pattern` template'), loc: expect.objectContaining({ line: 3, column: 22 }) })])
+    expect(logs).toEqual([expect.objectContaining({ level: 'warn', plugin: 'teiler', message: expect.stringContaining('`pattern` template'), loc: expect.objectContaining({ line: 7, column: 22 }) })])
+  })
+
+  test('keeps code and reports warnings with a code frame in the vite dev server', async () => {
+    const warnings: string[] = []
+    const customLogger = createLogger()
+    customLogger.warn = (message) => void warnings.push(stripVTControlCharacters(message))
+    const server = await createServer({
+      configFile: false,
+      root: fixture('.'),
+      customLogger,
+      plugins: [teiler()],
+      resolve: { alias: { '@teiler/core': fixture('../../core/src/index.ts') } },
+      server: { middlewareMode: true, ws: false },
+      optimizeDeps: { noDiscovery: true },
+    })
+    const result = await server.transformRequest('/Warnings.fixture.ts')
+    await server.close()
+    expect(result?.code).toContain('pattern.button`\n  color red;\n`')
+    expect(warnings).toEqual([expect.stringMatching(/Warnings\.fixture\.ts:7:22\n[\s\S]*pattern\.button`\n\s+\|\s+\^/)])
   })
 })
