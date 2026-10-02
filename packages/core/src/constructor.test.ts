@@ -271,7 +271,7 @@ describe('insert', () => {
     const result = insert(sheet, definition, { theme: {} })
 
     expect(result).toBe('teiler-wq229y')
-    expect(sheet.dump()).toBe(' .teiler-wq229y{color:red;}')
+    expect(sheet.dump()).toBe('.teiler-wq229y{color:red;}')
   })
 
   test('should insert keyframes styles into the sheet', () => {
@@ -287,7 +287,7 @@ describe('insert', () => {
     const result = insert(sheet, definition, { theme: {} })
 
     expect(result).toBeNull()
-    expect(sheet.dump()).toBe(' @keyframes teiler-1ep7axc{from{background-color:red;}to{background-color:green;}}')
+    expect(sheet.dump()).toBe('@keyframes teiler-1ep7axc{from{background-color:red;}to{background-color:green;}}')
   })
 
   test('should insert global styles into the sheet', () => {
@@ -303,7 +303,7 @@ describe('insert', () => {
     const result = insert(sheet, definition, { theme: {} })
 
     expect(result).toBeNull()
-    expect(sheet.dump()).toBe(' body{color:red;}')
+    expect(sheet.dump()).toBe('body{color:red;}')
   })
 
   test('should transpile the same styles only once', async () => {
@@ -329,7 +329,7 @@ describe('insert', () => {
 
     expect(stylisCompile).toHaveBeenCalledTimes(1)
     expect(second).toBe(first)
-    expect(sheet.dump()).toBe(' .teiler-wq229y{color:red;}')
+    expect(sheet.dump()).toBe('.teiler-wq229y{color:red;}')
   })
 
   test.each([
@@ -353,7 +353,7 @@ describe('insert', () => {
     insert(sheet, definitions[first], { theme: {} })
     insert(sheet, definitions[second], { theme: {} })
 
-    expect(sheet.dump()).toBe(` ${rules[first]} ${rules[second]}`)
+    expect(sheet.dump()).toBe(`${rules[first]}${rules[second]}`)
   })
 
   test('should insert a global on the client with the same body as a hydrated component', () => {
@@ -367,7 +367,7 @@ describe('insert', () => {
     insert(client, component, { theme: {} })
     insert(client, global, { theme: {} })
 
-    expect(client.dump()).toBe(' h1{color:red;}')
+    expect(client.dump()).toBe('h1{color:red;}')
   })
 
   test('should insert keyframes once per name', () => {

@@ -37,7 +37,7 @@ describe('createComponent', () => {
     expect(component.styleDefinition).toBe(styleDefinition)
 
     expect(wrapper.html()).toBe('<div class="teiler-wq229y twq229y">Hello</div>')
-    expect(styleSheet.dump()).toBe(' .teiler-wq229y{color:red;}')
+    expect(styleSheet.dump()).toBe('.teiler-wq229y{color:red;}')
   })
 })
 
@@ -90,7 +90,7 @@ describe('component', () => {
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-100tn2k t1fqd64x"></div>')
-    expect(styleSheet.dump()).toBe(' .teiler-100tn2k{color:yellow;}')
+    expect(styleSheet.dump()).toBe('.teiler-100tn2k{color:yellow;}')
   })
 
   test('should create a component with custom theme', () => {
@@ -117,7 +117,7 @@ describe('component', () => {
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t1fqd64x"></div>')
-    expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+    expect(styleSheet.dump()).toBe('.teiler-1dc5e1n{color:green;}')
   })
 
   test('should create a component with custom class', () => {
@@ -145,7 +145,7 @@ describe('component', () => {
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n tsqxzcw custom-class"></div>')
-    expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+    expect(styleSheet.dump()).toBe('.teiler-1dc5e1n{color:green;}')
   })
 
   test('should forward attributes and skip underscore props', () => {
@@ -233,7 +233,7 @@ describe('as', () => {
 
     expect(wrapper.html()).toBe('<a href="/link" class="teiler-1dc5e1n t1alcjr5">Link</a>')
     expect(wrapper.vm.element).toBeInstanceOf(HTMLAnchorElement)
-    expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+    expect(styleSheet.dump()).toBe('.teiler-1dc5e1n{color:green;}')
   })
 
   test('should render component as another component', () => {
@@ -267,7 +267,7 @@ describe('as', () => {
 
     expect(wrapper.html()).toBe('<a href="/home" class="teiler-wq229y t1m1b485">Home</a>')
     expect(wrapper.vm.element).toBeInstanceOf(HTMLAnchorElement)
-    expect(styleSheet.dump()).toBe(' .teiler-wq229y{color:red;}')
+    expect(styleSheet.dump()).toBe('.teiler-wq229y{color:red;}')
   })
 
   test('should extend component with different element', () => {
@@ -371,7 +371,7 @@ describe('global', () => {
     })
 
     expect(wrapper.html()).toBe('')
-    expect(styleSheet.dump()).toBe(' color:red;')
+    expect(styleSheet.dump()).toBe('color:red;')
   })
 
   test('should create a global style with theme', () => {
@@ -398,7 +398,7 @@ describe('global', () => {
     })
 
     expect(wrapper.html()).toBe('')
-    expect(styleSheet.dump()).toBe(' color:green;')
+    expect(styleSheet.dump()).toBe('color:green;')
   })
 
   describe('keyframes', () => {
@@ -417,7 +417,7 @@ describe('global', () => {
         },
       })
 
-      expect(styleSheet.dump()).toBe(' @keyframes teiler-g1154k{from{opacity:0;}to{opacity:1;}} .teiler-jq8kuu{animation:teiler-g1154k 5s infinite;}')
+      expect(styleSheet.dump()).toBe('@keyframes teiler-g1154k{from{opacity:0;}to{opacity:1;}}.teiler-jq8kuu{animation:teiler-g1154k 5s infinite;}')
     })
   })
 })
@@ -446,7 +446,7 @@ describe('ThemeProvider', () => {
     })
 
     expect(wrapper.html()).toBe('<div class="teiler-1dc5e1n t1fqd64x"></div>')
-    expect(styleSheet.dump()).toBe(' .teiler-1dc5e1n{color:green;}')
+    expect(styleSheet.dump()).toBe('.teiler-1dc5e1n{color:green;}')
   })
 
   test('should update styles when theme changes', async () => {
