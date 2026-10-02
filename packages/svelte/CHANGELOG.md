@@ -1,5 +1,24 @@
 # @teiler/svelte
 
+## 0.2.0
+
+### Minor Changes
+
+- [#59](https://github.com/nerdslabs/teiler/pull/59) [`a025b28`](https://github.com/nerdslabs/teiler/commit/a025b2889a592a3f171febd627760a5a104986d7) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Give components stable ids. Component ids are hashed from the tag and the template strings, so components with the same strings and different interpolations, or an empty extension and its base, shared an id, and a `${A}` selector matched `B` too.
+
+  - `withConfig({ componentId })` (or `withConfig(componentId)`) on `component`, `component.<tag>`, extensions (`component(Button)`), `global` and `pattern` hashes the id from the given `componentId` instead.
+  - `@teiler/unplugin` adds a `componentId` to every component, global and pattern, from the package name, the file path in the package and the variable name, in every mode (`componentId` option). Templates with a `componentId` set by hand are left as they are.
+  - Without the plugin, a component used as a selector while another component shares its id logs a warning.
+
+- [#60](https://github.com/nerdslabs/teiler/pull/60) [`c8c79ca`](https://github.com/nerdslabs/teiler/commit/c8c79ca936cd932e973383cab39a4508de524e34) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Name components. `withConfig({ displayName })` (or `withConfig(componentId, displayName)`) prefixes the component id, so the element of `Button` has the class `Button-t1x2y3z` instead of `t1x2y3z`, and sets the Vue component name shown in devtools. Components with different names no longer share an id. `@teiler/unplugin` adds the variable name in development (`displayName` option, same detection as `minify` and `pure`), names set by hand are kept.
+
+- [#44](https://github.com/nerdslabs/teiler/pull/44) [`2354bc8`](https://github.com/nerdslabs/teiler/commit/2354bc84590a0cb23ae677ad2242fe26027d4e82) Thanks [@drozdzynski](https://github.com/drozdzynski)! - Add `withComponent` to styled components: `Button.withComponent(RouterLink)` creates a component with the same styles that renders `RouterLink` (or another element with `Button.withComponent('a')`), with props typed from the target
+
+### Patch Changes
+
+- Updated dependencies [[`a025b28`](https://github.com/nerdslabs/teiler/commit/a025b2889a592a3f171febd627760a5a104986d7), [`c8c79ca`](https://github.com/nerdslabs/teiler/commit/c8c79ca936cd932e973383cab39a4508de524e34), [`eb23afc`](https://github.com/nerdslabs/teiler/commit/eb23afce3dbf7b057ad3be3ab26f82c661a80979), [`67335ba`](https://github.com/nerdslabs/teiler/commit/67335ba0890bed695016e77de566ef336a329636), [`c8c79ca`](https://github.com/nerdslabs/teiler/commit/c8c79ca936cd932e973383cab39a4508de524e34), [`fa351ee`](https://github.com/nerdslabs/teiler/commit/fa351ee0b1b4392d0dd0ab5bfa1e364d59bc02e5), [`5f6d8ce`](https://github.com/nerdslabs/teiler/commit/5f6d8ced7865b9cfc8c295f8bd5cfb82611b5ebb), [`2354bc8`](https://github.com/nerdslabs/teiler/commit/2354bc84590a0cb23ae677ad2242fe26027d4e82)]:
+  - @teiler/core@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes
