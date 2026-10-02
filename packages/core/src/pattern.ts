@@ -1,4 +1,4 @@
-import type { Properties, Style, StyleDefinition, TeilerComponent } from './constructor'
+import type { Config, Properties, Style, StyleDefinition, TeilerComponent } from './constructor'
 import type { HTMLElements } from './tags'
 
 import tags from './tags'
@@ -8,38 +8,46 @@ type Pattern<Target extends HTMLElements, Props> = {
   styles: Array<Style<Props>>
   tag: Target
   id: string
+  componentId?: string
   __pattern__: true
 }
 
-type ExtendCallback<Target extends HTMLElements, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => Pattern<Target, Infer<Component, Props>>
+type Extend<Target extends HTMLElements, Props> = <Component>(string: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => Pattern<Target, Infer<Component, Props>>
+type ExtendCallback<Target extends HTMLElements, Props> = Extend<Target, Props> & { withConfig(config: Config): Extend<Target, Props> }
 
 type Constructor<Target extends HTMLElements, Tag extends HTMLElements | undefined = Target> = {
   <Props = {}, Source extends HTMLElements = HTMLElements>(pattern: Pattern<Source, Props>): ExtendCallback<Tag extends HTMLElements ? Tag : Source, Props>
   <Props = {}>(string: ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<Target, Props>
+  withConfig(config: Config): Constructor<Target, Tag>
 }
 
 type Infer<Component, Props> = Component extends Pattern<HTMLElements, infer P> ? P & Props : Props
 
-const construct = (tag: HTMLElements | undefined) => {
-  function create<Props>(stringOrPattern: Pattern<HTMLElements, Props> | ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<HTMLElements, Props> | ExtendCallback<HTMLElements, Props> {
+const create = <Props>(tag: HTMLElements, styles: Array<Style<Props>>, { componentId }: Config): Pattern<HTMLElements, Props> => {
+  const pattern: Pattern<HTMLElements, Props> = { styles: styles, id: createId(tag, styles, undefined, componentId), tag: tag, __pattern__: true }
+  return componentId === undefined ? pattern : { ...pattern, componentId }
+}
+
+const construct = (tag: HTMLElements | undefined, config: Config = {}) => {
+  function constructor<Props>(stringOrPattern: Pattern<HTMLElements, Props> | ReadonlyArray<string>, ...properties: Properties<Props>[]): Pattern<HTMLElements, Props> | ExtendCallback<HTMLElements, Props> {
     if ('__pattern__' in stringOrPattern) {
       const target = tag === undefined ? stringOrPattern.tag : tag
+      const extend =
+        (config: Config) =>
+        <Component>(strings: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => {
+          const style: Style<Infer<Component, Props>> = [Array.from(strings), properties]
+          return create(target, [...stringOrPattern.styles, style], config)
+        }
 
-      return <Component>(strings: ReadonlyArray<string>, ...properties: Properties<Infer<Component, Props>>[]) => {
-        const style: Style<Infer<Component, Props>> = [Array.from(strings), properties]
-        const styles = [...stringOrPattern.styles, style]
-        return { styles: styles, id: createId(target, styles), tag: target, __pattern__: true }
-      }
+      return Object.assign(extend(config), { withConfig: extend })
     } else {
       const strings = stringOrPattern as ReadonlyArray<string>
       const style: Style<Props> = [Array.from(strings), properties]
-      const styles = [style]
-      const target = tag === undefined ? 'div' : tag
-      return { styles: styles, id: createId(target, styles), tag: target, __pattern__: true }
+      return create(tag === undefined ? 'div' : tag, [style], config)
     }
   }
 
-  return create
+  return Object.assign(constructor, { withConfig: (config: Config) => construct(tag, config) })
 }
 
 type HTMLElementsWithoutNull = Exclude<HTMLElements, null>
@@ -63,6 +71,7 @@ function sew<Target extends HTMLElements, Props, Type extends TeilerComponent<Ta
     id: pattern.id,
     styles: pattern.styles,
     tag: pattern.tag,
+    ...(pattern.componentId === undefined ? {} : { componentId: pattern.componentId }),
   })
 }
 

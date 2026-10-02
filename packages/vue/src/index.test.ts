@@ -492,3 +492,32 @@ describe('ThemeProvider', () => {
     expect(styleSheet.dump()).toBe('')
   })
 })
+
+describe('withConfig', () => {
+  test('should create ids from the component id', () => {
+    const A = component.div.withConfig({ componentId: 'a' })`color: ${'red'};`
+    const B = component.div.withConfig({ componentId: 'b' })`color: ${'blue'};`
+    const C = component.withConfig({ componentId: 'a' })`color: ${'red'};`
+
+    expect(A.styleDefinition.componentId).toBe('a')
+    expect(A.styleDefinition.id).not.toBe(B.styleDefinition.id)
+    expect(A.styleDefinition.id).toBe(C.styleDefinition.id)
+    expect(component.div`color: ${'red'};`.styleDefinition.id).toBe(component.div`color: ${'blue'};`.styleDefinition.id)
+  })
+
+  test('should give extensions and targets their own ids', () => {
+    const Button = component.button`color: red;`
+    const Extended = component(Button).withConfig({ componentId: 'a' })``
+    const Link = component.a.withConfig({ componentId: 'a' })(Button)``
+
+    expect(component(Button)``.styleDefinition.id).toBe(Button.styleDefinition.id)
+    expect(Extended.styleDefinition.id).not.toBe(Button.styleDefinition.id)
+    expect(Extended.styleDefinition.tag).toBe('button')
+    expect(Link.styleDefinition.tag).toBe('a')
+    expect(Extended.withComponent('a').styleDefinition).toEqual(expect.objectContaining({ tag: 'a', componentId: 'a', id: Link.styleDefinition.id }))
+  })
+
+  test('should configure globals', () => {
+    expect(global.withConfig({ componentId: 'a' })`body { color: red; }`.styleDefinition.componentId).toBe('a')
+  })
+})

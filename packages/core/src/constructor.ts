@@ -4,6 +4,7 @@ import type { Pattern } from './pattern'
 
 import hash from './hash'
 import { compile, transpile } from './css'
+import { register } from './ids'
 
 interface DefaultTheme {
   [key: string]: unknown
@@ -25,6 +26,11 @@ type StyleDefinition<Target extends HTMLElements, Props> = {
   styles: Array<Style<Props>>
   tag: Target
   target?: object
+  componentId?: string
+}
+
+type Config = {
+  componentId?: string
 }
 
 type TeilerComponent<Target extends HTMLElements, Props> = {
@@ -32,7 +38,8 @@ type TeilerComponent<Target extends HTMLElements, Props> = {
 }
 
 type CreateCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (styles: StyleDefinition<HTMLElements, Props>) => Type
-type ExtendCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
+type Extend<Type extends TeilerComponent<HTMLElements, Props>, Props> = (string: ReadonlyArray<string>, ...properties: Properties<Props>[]) => Type
+type ExtendCallback<Type extends TeilerComponent<HTMLElements, Props>, Props> = Extend<Type, Props> & { withConfig(config: Config): Extend<Type, Props> }
 
 function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
   tag: HTMLElements | undefined,
@@ -50,52 +57,69 @@ function styled<Props, Type extends TeilerComponent<HTMLElements, Props>>(
     const binded = stringOrBinded as TeilerComponent<HTMLElements, Props>
     const target = tag === undefined ? binded.styleDefinition.tag : tag
     const inherited = tag === undefined ? binded.styleDefinition.target : undefined
+    const extend =
+      (compiler: Compiler): Extend<Type, Props> =>
+      (strings: ReadonlyArray<string>, ...properties: Properties<Props>[]) => {
+        const style: Style<Props> = [Array.from(strings), properties]
+        const styleDefinition = compiler(target, [...binded.styleDefinition.styles, style], inherited)
+        return createComponent(styleDefinition)
+      }
 
-    return (strings: ReadonlyArray<string>, ...properties: Properties<Props>[]) => {
-      const style: Style<Props> = [Array.from(strings), properties]
-      const styleDefinition = compiler(target, [...binded.styleDefinition.styles, style], inherited)
-      return createComponent(styleDefinition)
-    }
+    return Object.assign(extend(compiler), { withConfig: (config: Config) => extend(configure(compiler, config)) })
   }
 }
 
-type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object) => StyleDefinition<Target, Props>
+type Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object, componentId?: string) => StyleDefinition<Target, Props>
+
+function configure(compiler: Compiler, { componentId }: Config): Compiler {
+  return (tag, styles, target, id) => compiler(tag, styles, target, id ?? componentId)
+}
 
 function targetName(target: object): string {
   const { name, __name } = target as { name?: unknown; __name?: unknown }
   return typeof name === 'string' && name ? name : typeof __name === 'string' && __name ? __name : 'anonymous'
 }
 
-function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>, target?: object): string {
-  const id = styles.reduce((acc, [strings]) => acc + strings.join(''), '')
+function createId<Props>(tag: HTMLElements, styles: Array<Style<Props>>, target?: object, componentId?: string): string {
+  const id = componentId === undefined ? styles.reduce((acc, [strings]) => acc + strings.join(''), '') : '#' + componentId
   const prefix = target === undefined ? '' : targetName(target) + '|'
-  return 't' + hash(tag === null ? id : tag + '|' + prefix + id)
+  const result = 't' + hash(tag === null ? id : tag + '|' + prefix + id)
+
+  if (componentId === undefined) {
+    register(result, styles)
+  }
+
+  return result
 }
 
-const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object): StyleDefinition<Target, Props> => {
+const identify = (componentId?: string) => (componentId === undefined ? {} : { componentId })
+
+const component: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, target?: object, componentId?: string): StyleDefinition<Target, Props> => {
   const definition: StyleDefinition<Target, Props> = {
     type: 'component',
-    id: createId(tag, styles, target),
+    id: createId(tag, styles, target, componentId),
     styles,
     tag,
+    ...identify(componentId),
   }
   return target === undefined ? definition : { ...definition, target }
 }
 
 function withTarget<Props>(definition: StyleDefinition<HTMLElements, Props>, target: Exclude<HTMLElements, null> | object): StyleDefinition<HTMLElements, Props> {
-  const { type, styles, tag } = definition
+  const { type, styles, tag, componentId } = definition
   if (typeof target === 'string') {
-    return { type, id: createId(target, styles), styles, tag: target }
+    return { type, id: createId(target, styles, undefined, componentId), styles, tag: target, ...identify(componentId) }
   }
-  return { type, id: createId(tag, styles, target), styles, tag, target }
+  return { type, id: createId(tag, styles, target, componentId), styles, tag, target, ...identify(componentId) }
 }
 
-const global: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>): StyleDefinition<Target, Props> => {
+const global: Compiler = <Target extends HTMLElements, Props>(tag: Target, styles: Array<Style<Props>>, _target?: object, componentId?: string): StyleDefinition<Target, Props> => {
   return {
     type: 'global',
-    id: createId(tag, styles),
+    id: createId(tag, styles, undefined, componentId),
     styles,
     tag,
+    ...identify(componentId),
   }
 }
 
@@ -141,5 +165,5 @@ function insert<Props = {}>(sheet: Sheet, definition: StyleDefinition<HTMLElemen
   return type === 'component' ? `teiler-${compiledId}` : null
 }
 
-export type { Arguments, Compiler, CreateCallback, CSS, DefaultTheme, Properties, Raw, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
-export { component, createId, css, global, insert, keyframes, styled, targetName, withTarget }
+export type { Arguments, Compiler, Config, CreateCallback, CSS, DefaultTheme, Properties, Raw, Sheet, Style, StyleDefinition, TeilerComponent, HTMLElements }
+export { component, configure, createId, css, global, insert, keyframes, styled, targetName, withTarget }

@@ -104,3 +104,32 @@ describe('sew', () => {
     expect(component.render()).toEqual('')
   })
 })
+
+describe('pattern componentId', () => {
+  test('should create ids from the component id', () => {
+    const base = pattern.withConfig({ componentId: 'a' })`color: red;`
+    const button = pattern.button.withConfig({ componentId: 'a' })`color: red;`
+
+    expect(base).toEqual({ styles: [[['color: red;'], []]], tag: 'div', __pattern__: true, id: expect.any(String), componentId: 'a' })
+    expect(base.id).toBe(pattern.withConfig({ componentId: 'a' })`color: blue;`.id)
+    expect(base.id).not.toBe(pattern`color: red;`.id)
+    expect(button.id).not.toBe(base.id)
+    expect(pattern.global.withConfig({ componentId: 'a' })`body { color: red; }`.tag).toBeNull()
+  })
+
+  test('should give extensions their own id', () => {
+    const base = pattern`color: red;`
+
+    expect(pattern(base)``.id).toBe(base.id)
+    expect(pattern(base).withConfig({ componentId: 'a' })``.componentId).toBe('a')
+    expect(pattern.withConfig({ componentId: 'a' })(base)``.id).toBe(pattern(base).withConfig({ componentId: 'a' })``.id)
+    expect(pattern.a.withConfig({ componentId: 'a' })(base)``.tag).toBe('a')
+  })
+
+  test('should pass the component id to sewn components', () => {
+    const create = <Target extends HTMLElements, Props>(styleDefinition: StyleDefinition<Target, Props>): TeilerComponent<Target, Props> => ({ styleDefinition })
+    const base = pattern.withConfig({ componentId: 'a' })`color: red;`
+
+    expect(sew(base, create).styleDefinition).toEqual({ type: 'component', id: base.id, styles: base.styles, tag: 'div', componentId: 'a' })
+  })
+})

@@ -1,6 +1,7 @@
 import type { Arguments, CSS, HTMLElements, Raw } from './constructor'
 import type { Pattern, Style, StyleDefinition } from '.'
 
+import { report } from './ids'
 import { middleware, prefixer, rulesheet, serialize, stringify, compile as stylisCompile } from 'stylis'
 
 const isFalsish = (chunk: unknown): chunk is undefined | null | false | '' => chunk === undefined || chunk === null || chunk === false || chunk === ''
@@ -30,6 +31,7 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
             if ((typeof property === 'object' || typeof property === 'function') && 'styleDefinition' in property) {
               const styleDefinition = property.styleDefinition as StyleDefinition<HTMLElements, Props>
               result.definitions = [...result.definitions, styleDefinition]
+              report(styleDefinition.id)
               value = '.' + styleDefinition.id
             } else if (typeof property === 'object' && '__css__' in property) {
               value = nested(property)
@@ -46,6 +48,7 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
               }
             } else if (typeof property === 'object' && '__pattern__' in property) {
               const pattern = property as Pattern<HTMLElements, Props>
+              report(pattern.id)
               value = '.' + pattern.id
             } else if (typeof property === 'object') {
               const styleDefinition = property as StyleDefinition<HTMLElements, Props>
