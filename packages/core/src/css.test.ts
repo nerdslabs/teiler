@@ -161,4 +161,38 @@ describe('compile', () => {
       definitions: [],
     })
   })
+
+  test('with css interpolated directly', () => {
+    type Props = { color: string }
+
+    const component: TeilerComponent<'div', {}> = { styleDefinition: { id: 'twq229y', styles: [[['color: red;'], []]], tag: 'div', type: 'component' } }
+    const css: CSS<Props> = {
+      id: 't1vxhd59',
+      styles: [
+        [
+          ['background: ', '; & ', ' { color: blue; }'],
+          [({ color }) => color, component],
+        ],
+      ],
+      __css__: true,
+    }
+
+    const style: Style<Props> = [['color: #fff; '], [css]]
+    const compiled = compile<Props>([style], { color: 'red', theme: {} })
+
+    expect(compiled).toEqual({
+      css: 'color: #fff; background: red; & .twq229y { color: blue; }',
+      definitions: [component.styleDefinition],
+    })
+  })
+
+  test('with css nested in css', () => {
+    const inner: CSS<{}> = { id: 'tinner', styles: [[['color: red;'], []]], __css__: true }
+    const outer: CSS<{}> = { id: 'touter', styles: [[['&:hover { ', ' }'], [inner]]], __css__: true }
+
+    const style: Style<{}> = [['margin: 0; '], [outer]]
+    const compiled = compile<{}>([style], { theme: {} })
+
+    expect(compiled).toEqual({ css: 'margin: 0; &:hover { color: red; }', definitions: [] })
+  })
 })

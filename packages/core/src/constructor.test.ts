@@ -370,6 +370,18 @@ describe('insert', () => {
     expect(client.dump()).toBe('h1{color:red;}')
   })
 
+  test('should insert css interpolated directly', () => {
+    const sheet = createStyleSheet({})
+    const shared = css<{ color: string }>`
+      color: ${({ color }) => color};
+    `
+    const result = styled('div', component, createComponent, ['margin: 0;', ''], shared) as TeilerComponent<'div', { color: string }>
+
+    insert(sheet, result.styleDefinition, { theme: {}, color: 'red' })
+
+    expect(sheet.dump()).toMatch(/^\.teiler-\w+\{margin:0;color:red;\}$/)
+  })
+
   test('should insert keyframes once per name', () => {
     const sheet = createStyleSheet({})
     const definition: StyleDefinition<null, {}> = { id: 'teiler-keyframes', styles: [[['from { opacity: 0; }'], []]], tag: null, type: 'keyframes' }

@@ -1,4 +1,4 @@
-import type { Arguments, HTMLElements, Raw } from './constructor'
+import type { Arguments, CSS, HTMLElements, Raw } from './constructor'
 import type { Pattern, Style, StyleDefinition } from '.'
 
 import { middleware, prefixer, rulesheet, serialize, stringify, compile as stylisCompile } from 'stylis'
@@ -13,6 +13,12 @@ type CompileResult<Props> = {
 function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): CompileResult<Props> {
   return styles.reduce<CompileResult<Props>>(
     (result, [strings, properties]) => {
+      const nested = (style: CSS<Props>) => {
+        const { css, definitions } = compile<Props>(style.styles, props)
+        result.definitions = [...result.definitions, ...definitions]
+        return css
+      }
+
       const compiled = strings
         .reduce<(Raw | true)[]>((acc, strings, index) => {
           acc = [...acc, strings]
@@ -25,12 +31,12 @@ function compile<Props>(styles: Array<Style<Props>>, props: Arguments<Props>): C
               const styleDefinition = property.styleDefinition as StyleDefinition<HTMLElements, Props>
               result.definitions = [...result.definitions, styleDefinition]
               value = '.' + styleDefinition.id
+            } else if (typeof property === 'object' && '__css__' in property) {
+              value = nested(property)
             } else if (typeof property === 'function') {
               const exec = property(props)
               if (typeof exec === 'object' && exec !== null && '__css__' in exec) {
-                const { css: style, definitions: definitions } = compile<Props>(exec.styles, props)
-                result.definitions = [...result.definitions, ...definitions]
-                value = style
+                value = nested(exec)
               } else {
                 if (typeof exec === 'string' && exec.includes('[object Object]')) {
                   console.error('[teiler]', `If you trying to use nested component/pattern selector inside function use function \`css\`, sample: \n\${({ someProperty }) => css\`\${NastedComponent} {...}\`}`)
