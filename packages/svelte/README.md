@@ -87,6 +87,55 @@ const Button = component.button<{}>`
 `
 ```
 
+## Global styles
+
+`global` creates a component that renders nothing and adds its styles to the document. Props and the theme are interpolated the same way as in components:
+
+```typescript
+import { global } from '@teiler/svelte'
+
+const GlobalStyles = global<{ _background: string }>`
+  body {
+    margin: 0;
+    background: ${({ _background }) => _background};
+  }
+`
+```
+
+```svelte
+<GlobalStyles _background="#fafafa" />
+```
+
+Styles are added when the component renders and stay in the document after it unmounts.
+
+## `css`
+
+Interpolated functions can return a plain string, as in the examples above. Return `css` instead when the styles interpolate a component, keyframes or another function: a plain template string turns `${Icon}` into `[object Object]` (`@teiler/unplugin` reports it as a warning).
+
+```typescript
+import { component, css } from '@teiler/svelte'
+
+const Icon = component.span`
+  color: gray;
+`
+
+const Button = component.button<{ _active: boolean; _color: string }>`
+  color: black;
+
+  ${({ _active, _color }) =>
+    _active &&
+    css`
+      color: ${_color};
+
+      ${Icon} {
+        color: ${_color};
+      }
+    `}
+`
+```
+
+`css` is evaluated with the props of the component, so it can also hold shared styles: `${() => shared}`, where `shared` is a `css` template.
+
 ## Extending
 
 Pass an existing component to `component` to add styles to it. The new component keeps the element of the extended one, unless you pick another element with `component.<tag>`:
@@ -173,6 +222,13 @@ const ButtonAnchor = Button.withComponent('a')
 Props are typed from the target, so `FooterLink` requires `to`. The target component has the same requirements as a component passed to `as`: it has to apply `class` to its root element. `as` still works and takes precedence over the target. Extending with `component(FooterLink)` keeps rendering `Link`, `component.a(FooterLink)` renders `<a>`.
 
 ## Theme
+
+```typescript
+// theme.ts
+export type CustomTheme = {
+  fontColor: string
+}
+```
 
 ```svelte
 <!-- App.svelte -->
@@ -275,7 +331,7 @@ const sheet = createStyleSheet({ nonce: element?.nonce })
 
 ## Build plugin
 
-Teiler works without a build step. For smaller bundles, add [`@teiler/unplugin`](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) to Vite, Rollup, Rolldown, webpack, Rspack or esbuild. It minifies the CSS in templates, lets the bundler remove unused styled components and warns about CSS that is ignored at runtime.
+Teiler works without a build step. For smaller bundles, add [`@teiler/unplugin`](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) to Vite, Rollup, Rolldown, webpack, Rspack or esbuild. In production builds it minifies the CSS in templates and lets the bundler remove unused styled components. In development it leaves the code as written and only warns about mistakes, such as CSS that is ignored at runtime.
 
 ```js
 // vite.config.js
@@ -288,7 +344,7 @@ export default defineConfig({
 })
 ```
 
-With SSR, use it in both the server and the client build. See the [plugin README](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) for other bundlers and options.
+With SSR, use it in both the server and the client build. See the [plugin README](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) for other bundlers, options and [development mode](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#development).
 
 ## Sew a Pattern
 

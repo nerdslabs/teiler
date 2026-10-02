@@ -14,6 +14,7 @@ Join our community on our [Discord Server](https://discord.gg/J6Sv9sQ64t) to sta
 - 🪡 **Patterns system** for UI libraries
 - 🚉 **Server-Side Rendering** (SSR)*
 - ⚡ **Babel** not required
+- 📦 Optional [**build plugin**](#build-plugin) for smaller bundles
 
 \* Not all frameworks, more details [here](#frameworks)
 
@@ -49,7 +50,7 @@ These are the frameworks we are currently working on and planning to support in 
 | Framework     | CSR   | SSR  | More details |
 | :---          | :---- | :--- | :----------- |
 | Svelte v5     | ✓     | ✓    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/svelte/README.md) |
-| VueJS         | ✓     | ✓    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/vue/README.md) |
+| VueJS v3      | ✓     | ✓    | [README](https://github.com/nerdslabs/teiler/blob/master/packages/vue/README.md) |
 | SolidJS       | ✕     | ✕    | ---          |
 | React         | ✕     | ✕    | ---          |
 
@@ -102,6 +103,26 @@ const ButtonLinkPattern = pattern.a(ButtonPattern)`
 `
 ```
 
+## Build plugin
+
+Teiler works without a build step. [`@teiler/unplugin`](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) is an optional plugin for Vite, Rollup, Rolldown, webpack, Rspack and esbuild:
+
+- in production builds it minifies the CSS in templates and lets the bundler remove unused styled components and patterns,
+- in every mode it warns about mistakes, such as CSS that is ignored at runtime.
+
+Add it after the framework plugin:
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import teiler from '@teiler/unplugin/vite'
+
+export default defineConfig({
+  plugins: [vue(), teiler()],
+})
+```
+
 ## Packages
 
 | Package       | Download | Size
@@ -109,3 +130,4 @@ const ButtonLinkPattern = pattern.a(ButtonPattern)`
 | Core          | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fcore) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fcore) |
 | Svelte        | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fsvelte) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fsvelte) |
 | Vue           | ![npm](https://img.shields.io/npm/dm/%40teiler%2Fvue) | ![npm bundle size](https://img.shields.io/bundlephobia/min/%40teiler%2Fvue) |
+| Unplugin      | ![npm](https://img.shields.io/npm/dm/%40teiler%2Funplugin) | --- |
