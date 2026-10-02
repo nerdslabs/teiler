@@ -2,17 +2,18 @@ import type { Options } from '.'
 import type { UnpluginOptions } from 'unplugin'
 
 import { describe, expect, test } from 'vitest'
-import { unplugin } from '.'
+import { transform as transformCode, unplugin } from '.'
+import { fileURLToPath } from 'node:url'
 
 const code = "import { component } from '@teiler/vue'\ncomponent.div`\n  color: red;\n`"
 
 function setup(framework: 'vite' | 'webpack' | 'rspack' | 'rollup', options?: Options) {
-  const plugin = unplugin.raw(options, { framework } as never) as UnpluginOptions
+  const plugin = unplugin.raw({ componentId: false, ...options }, { framework } as never) as UnpluginOptions
   const handler = (plugin.transform as { handler: (this: unknown, code: string, id: string) => { code: string } | null }).handler
   const warnings: unknown[] = []
   return {
     plugin,
-    transform: (source = code) => handler.call({ warn: (warning: unknown) => warnings.push(warning) }, source, 'file.js')?.code ?? null,
+    transform: (source = code, id = 'file.js') => handler.call({ warn: (warning: unknown) => warnings.push(warning) }, source, id)?.code ?? null,
     warnings,
   }
 }
@@ -59,5 +60,19 @@ describe('plugin', () => {
     ;(plugin.vite?.configResolved as (config: unknown) => void)({ command: 'serve' })
     expect(transform("import { component } from '@teiler/vue'\ncomponent.div`\n  color red;\n`")).toBeNull()
     expect(warnings).toEqual([expect.objectContaining({ message: expect.stringContaining('`component` template') })])
+  })
+
+  test.each(['build', 'serve'])('adds component ids with the vite %s command', (command) => {
+    const { plugin, transform } = setup('vite', { componentId: undefined })
+    ;(plugin.vite?.configResolved as (config: unknown) => void)({ command })
+    expect(transform()).toMatch(/component\.div\.withConfig\("[\w-]{9,}"\)/)
+  })
+
+  test('creates component ids from the package name and the path in the package', () => {
+    const file = fileURLToPath(new URL('Button.ts', import.meta.url))
+    const expected = transformCode(code, file, { scope: '@teiler/unplugin|src/Button.ts' })?.code
+
+    expect(setup('rollup', { componentId: true }).transform(code, file)).toBe(expected)
+    expect(setup('rollup', { componentId: true }).transform(code, `${file}?vue&type=script&lang.ts`)).toBe(expected)
   })
 })

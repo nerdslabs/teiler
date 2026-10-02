@@ -375,7 +375,7 @@ app.provide('STYLE_SHEET', styleSheet)
 
 ## Build plugin
 
-Teiler works without a build step. For smaller bundles, add [`@teiler/unplugin`](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) to Vite, Rollup, Rolldown, webpack, Rspack or esbuild. In production builds it minifies the CSS in templates and lets the bundler remove unused styled components. In development it leaves the code as written and only warns about mistakes, such as CSS that is ignored at runtime.
+Teiler works without a build step. For smaller bundles, add [`@teiler/unplugin`](https://github.com/nerdslabs/teiler/tree/master/packages/unplugin#readme) to Vite, Rollup, Rolldown, webpack, Rspack or esbuild. In production builds it minifies the CSS in templates and lets the bundler remove unused styled components. In every mode it gives components stable ids, so a `${Button}` selector never matches another component with the same template strings, and warns about mistakes, such as CSS that is ignored at runtime. Without the plugin, set an id by hand with `component.button.withConfig({ componentId: 'button' })`.
 
 ```js
 // vite.config.js

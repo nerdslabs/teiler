@@ -5,7 +5,7 @@ import { createStyleSheet, css, insert, pattern } from '@teiler/core'
 import { describe, expect, test } from 'vitest'
 import { transform } from './transform'
 
-const run = (code: string, id = 'file.js', options?: Options) => transform(code, id, options)?.code
+const run = (code: string, id = 'file.js', options?: Options) => transform(code, id, { componentId: false, ...options })?.code
 
 const render = (code: string) => {
   const definition: Pattern<'button', { color: string; active: boolean }> = new Function('pattern', 'css', code.replace(/^import .*\n/, '').replace('export const Button =', 'return'))(pattern, css)
@@ -40,7 +40,7 @@ describe('transform', () => {
     { name: 'invalid escapes', code: "import { component } from '@teiler/vue'\ncomponent.button`content: '\\unicode';`" },
     { name: 'invalid code', code: "import { component } from '@teiler/vue'\ncomponent.button`\n  color: red;\n`\n}" },
   ])('skips $name', ({ code }) => {
-    expect(transform(code, 'file.js')).toBeNull()
+    expect(transform(code, 'file.js', { componentId: false })).toBeNull()
   })
 
   test('passes interpolations as arguments', () => {
@@ -87,8 +87,8 @@ describe('transform', () => {
   })
 
   test('keeps templates with nothing to do', () => {
-    expect(transform("import { component } from '@teiler/vue'\ncomponent.div`\n  color: red;\n`", 'file.js', { minify: false, pure: false })).toBeNull()
-    expect(transform("import { component, css } from '@teiler/vue'\ncomponent.div`\n  border: 1px ${() => css`solid`};\n`", 'file.js', { pure: false })?.code).toBe(
+    expect(transform("import { component } from '@teiler/vue'\ncomponent.div`\n  color: red;\n`", 'file.js', { minify: false, pure: false, componentId: false })).toBeNull()
+    expect(transform("import { component, css } from '@teiler/vue'\ncomponent.div`\n  border: 1px ${() => css`solid`};\n`", 'file.js', { pure: false, componentId: false })?.code).toBe(
       "import { component, css } from '@teiler/vue'\ncomponent.div`border:1px ${() => css`solid`};`",
     )
   })
@@ -102,6 +102,71 @@ describe('transform', () => {
     const result = transform("import { component } from '@teiler/vue'\ncomponent.button`\n  color: red;\n`", 'file.js')
     expect(result?.map.sources).toEqual(['file.js'])
     expect(result?.map.mappings).not.toBe('')
+  })
+})
+
+describe('componentId', () => {
+  const ids = (code: string, options?: Options) => [...(transform(code, 'src/file.js', options)?.code ?? '').matchAll(/(\w+(?:\.\w+)*(?:\(\w+\))?)\.withConfig\("([\w-]{9,})"\)/g)].map(([, tag, id]) => ({ tag, id }))
+
+  test('adds component ids to components, globals and patterns', () => {
+    const code =
+      "import { component, css, global, keyframes } from '@teiler/vue'\nimport { pattern } from '@teiler/core'\nconst Button = component.button`color: red;`\nconst Link = component.a(Button)`color: blue;`\nconst Global = global`body { margin: 0; }`\nconst Base = pattern`color: red;`\nconst fade = keyframes`from { opacity: 0; }`\nconst shared = css`margin: 0;`"
+    expect(ids(code).map(({ tag }) => tag)).toEqual(['component.button', 'component.a(Button)', 'global', 'pattern'])
+    expect(new Set(ids(code).map(({ id }) => id)).size).toBe(4)
+  })
+
+  test('keeps the ids of other components', () => {
+    const before = ids("import { component } from '@teiler/vue'\nconst Button = component.button`color: red;`")
+    const after = ids("import { component } from '@teiler/vue'\nconst Icon = component.span`color: red;`\nconst Button = component.button`color: blue;`")
+    expect(after[1].id).toBe(before[0].id)
+  })
+
+  test('numbers templates with the same name', () => {
+    const code = "import { component } from '@teiler/vue'\nexport default component.div`a: b;`\nfunction f() { const A = component.div`a: b;` }\nfunction g() { const A = component.div`a: b;` }\ncomponent.div`a: b;`"
+    expect(new Set(ids(code).map(({ id }) => id)).size).toBe(4)
+  })
+
+  test('creates ids from the scope', () => {
+    const code = "import { component } from '@teiler/vue'\nconst Button = component.button`color: red;`"
+    expect(ids(code, { scope: 'a' })).toEqual(ids(code, { scope: 'a' }))
+    expect(ids(code, { scope: 'a' })).not.toEqual(ids(code, { scope: 'b' }))
+    expect(ids(code)).toEqual(ids(code, { scope: 'src/file.js' }))
+  })
+
+  test.each([{}, { pure: false }, { minify: false, pure: false }])('keeps type arguments and works with %o', (options) => {
+    const code = "import { component } from '@teiler/vue'\nconst Button = component.button<{ a: number }>`\n  color: red;\n`"
+    expect(transform(code, 'file.ts', options)?.code).toMatch(/component\.button\.withConfig\("[\w-]{9,}"\)<\{ a: number \}>[(`]/)
+  })
+
+  test.each([
+    { name: 'a component id', tag: "component.button.withConfig({ componentId: 'button' })", expected: 0 },
+    { name: 'a quoted component id', tag: "component.button.withConfig({ 'componentId': 'button' })", expected: 0 },
+    { name: 'a component id string', tag: "component.button.withConfig('button')", expected: 0 },
+    { name: 'an extension with a component id', tag: "component(Base).withConfig({ componentId: 'button' })", expected: 0 },
+    { name: 'a component id before the extension', tag: "component.withConfig({ componentId: 'button' })(Base)", expected: 0 },
+    { name: 'other options', tag: 'component.button.withConfig({ other: true })', expected: 1 },
+    { name: 'a config variable', tag: 'component.button.withConfig(config)', expected: 1 },
+  ])('keeps templates configured with $name', ({ tag, expected }) => {
+    const code = transform(`import { component } from '@teiler/vue'\nconst Button = ${tag}\`color: red;\``, 'file.js')?.code
+    expect(code?.match(/withConfig\("[\w-]{9,}"\)/g) ?? []).toHaveLength(expected)
+  })
+
+  test('keeps ids unique in large files', () => {
+    const code = "import { component } from '@teiler/vue'\n" + Array.from({ length: 500 }, (_, index) => `const C${index} = component.div\`a: b;\``).join('\n')
+    const found = ids(code).map(({ id }) => id)
+    expect(found).toHaveLength(500)
+    expect(new Set(found).size).toBe(500)
+    expect(new Set(found.map((id) => id.slice(0, 6))).size).toBe(1)
+    expect(found.some((id) => id.length > 9)).toBe(true)
+  })
+
+  test('adds component ids to templates with invalid escapes', () => {
+    expect(ids("import { component } from '@teiler/vue'\nconst Button = component.button`content: '\\unicode';`")).toHaveLength(1)
+  })
+
+  test('produces the same styles at runtime', () => {
+    const code = "import { css, pattern } from '@teiler/core'\nexport const Button = pattern.button`\n  color: ${({ color }) => color};\n`"
+    expect(render(transform(code, 'file.js')!.code)).toBe(render(code))
   })
 })
 
@@ -149,6 +214,6 @@ describe('warnings', () => {
 
   test('reports templates with invalid escapes', () => {
     const code = "import { component } from '@teiler/vue'\nimport Button from './Button'\ncomponent.div`\n  content: '\\unicode';\n  ${() => `${Button} {}`}\n`"
-    expect(transform(code, 'file.js')).toEqual(expect.objectContaining({ code, warnings: [expect.objectContaining({ loc: expect.objectContaining({ line: 5 }) })] }))
+    expect(transform(code, 'file.js', { componentId: false })).toEqual(expect.objectContaining({ code, warnings: [expect.objectContaining({ loc: expect.objectContaining({ line: 5 }) })] }))
   })
 })

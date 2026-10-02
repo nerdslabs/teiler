@@ -1,8 +1,8 @@
-import type { Compiler, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
+import type { Compiler, ConfigArguments, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
 import type { ComponentConstructorOptions, ComponentInternals, ComponentProps, Snippet, Component as SvelteComponent, SvelteComponent as SvelteComponentInstance } from 'svelte'
 import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
 
-import { component, global, keyframes, styled, tags, withTarget } from '@teiler/core'
+import { component, configure, global, keyframes, styled, tags, toConfig, withTarget } from '@teiler/core'
 import Styled from './Styled.svelte'
 
 type Tag = Exclude<HTMLElements, null>
@@ -47,21 +47,27 @@ type InferComponent<Component, Props extends object, Extended> =
       ? SvelteTeilerComponent<Extended extends HTMLElements ? Extended : E, Props & P>
       : SvelteTeilerComponent<HTMLElements, Props>
 
+type Extend<Component, Extended> = <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<InferProps<Component, Props>>[]) => InferComponent<Component, Props, Extended>
+
 type Component<Target extends HTMLElements, Extended extends HTMLElements | undefined = Target> = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): SvelteTeilerComponent<Target, Props>
-  <Component>(binded: Component): <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<InferProps<Component, Props>>[]) => InferComponent<Component, Props, Extended>
+  <Component>(binded: Component): Extend<Component, Extended> & { withConfig(...args: ConfigArguments): Extend<Component, Extended> }
+  withConfig(...args: ConfigArguments): Component<Target, Extended>
 }
 
 type Global = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): SvelteGlobalComponent<Props>
+  withConfig(...args: ConfigArguments): Global
 }
 
 type ComponentWithTags = Component<'div', undefined> & { [K in Exclude<HTMLElements, null>]: Component<K> }
 
-const construct = (tag: HTMLElements | undefined, compiler: Compiler) => {
-  return <Props extends object = {}>(stringOrBinded: TeilerComponent<HTMLElements, Props> | TemplateStringsArray, ...properties: Properties<Props>[]) => {
+const construct = (tag: HTMLElements | undefined, compiler: Compiler): unknown => {
+  const create = <Props extends object = {}>(stringOrBinded: TeilerComponent<HTMLElements, Props> | TemplateStringsArray, ...properties: Properties<Props>[]) => {
     return styled<Props, SvelteTeilerComponent<HTMLElements, Props>>(tag, compiler, createComponent, stringOrBinded, ...properties)
   }
+
+  return Object.assign(create, { withConfig: (...args: ConfigArguments) => construct(tag, configure(compiler, toConfig(...args))) })
 }
 
 const svelteComponent = construct(undefined, component) as ComponentWithTags

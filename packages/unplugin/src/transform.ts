@@ -1,16 +1,18 @@
 import type { Expression, ParserOptions, TaggedTemplateExpression, TemplateLiteral } from 'oxc-parser'
 
 import MagicString from 'magic-string'
+import { createHash } from 'node:crypto'
 import { Visitor, parseSync, visitorKeys } from 'oxc-parser'
 import { minify } from './minify'
 
 type Warning = { message: string; pos: number; loc: { file: string; line: number; column: number } }
 type Result = { code: string; map: ReturnType<MagicString['generateMap']>; warnings: Warning[] }
 type Node = { type: string; [key: string]: unknown }
-type Options = { modules?: string[]; minify?: boolean; pure?: boolean }
+type Options = { modules?: string[]; minify?: boolean; pure?: boolean; componentId?: boolean; scope?: string }
 
 const MODULES = ['@teiler/core', '@teiler/vue', '@teiler/svelte']
 const TAGS = ['component', 'global', 'keyframes', 'css', 'pattern']
+const IDENTIFIED = ['component', 'global', 'pattern']
 const PASCAL_CASE = /^[A-Z](?=.*[a-z])/
 
 function lang(id: string): ParserOptions['lang'] {
@@ -35,6 +37,32 @@ function resolve(node: Expression): { name: string; member?: string } | null {
   }
 
   return { name: current.name, member }
+}
+
+function configured(node: Expression): boolean {
+  let current = node
+
+  while (current.type === 'CallExpression' || current.type === 'MemberExpression') {
+    if (current.type === 'CallExpression') {
+      const [config] = current.arguments
+      const withConfig = current.callee.type === 'MemberExpression' && !current.callee.computed && current.callee.property.type === 'Identifier' && current.callee.property.name === 'withConfig'
+      if (withConfig && ((config?.type === 'Literal' && typeof config.value === 'string') || config?.type === 'TemplateLiteral')) {
+        return true
+      }
+      if (
+        withConfig &&
+        config?.type === 'ObjectExpression' &&
+        config.properties.some((property) => property.type === 'Property' && !property.computed && (property.key.type === 'Identifier' ? property.key.name : property.key.type === 'Literal' ? property.key.value : null) === 'componentId')
+      ) {
+        return true
+      }
+      current = current.callee
+    } else {
+      current = current.object
+    }
+  }
+
+  return false
 }
 
 function walk(node: unknown, enter: (node: Node) => boolean): void {
@@ -63,7 +91,9 @@ function location(code: string, file: string, offset: number): Pick<Warning, 'po
 
 const escape = (cooked: string) => cooked.replace(/\\|`|\$\{/g, (match) => '\\' + match)
 
-function transform(code: string, id: string, { modules = MODULES, minify: compress = true, pure = true }: Options = {}): Result | null {
+const hash = (value: string) => createHash('sha256').update(value).digest('base64url')
+
+function transform(code: string, id: string, { modules = MODULES, minify: compress = true, pure = true, componentId = true, scope = id.split('?')[0] }: Options = {}): Result | null {
   const { program, errors } = parseSync(id, code, { lang: lang(id), sourceType: 'module', astType: 'js' })
 
   if (errors.length > 0) {
@@ -107,6 +137,28 @@ function transform(code: string, id: string, { modules = MODULES, minify: compre
   }
 
   const definitions = new Set([...imported, ...[...declarations].filter(([, init]) => tagName(init) !== null).map(([name]) => name)])
+  const names = new Map([...declarations].map(([name, init]) => [init, name]))
+  const counts = new Map<string, number>()
+  const hashes = componentId
+    ? templates
+        .filter((node) => IDENTIFIED.includes(tagName(node) ?? '') && !configured(node.tag))
+        .map((node) => {
+          const variable = names.get(node) ?? ''
+          const index = counts.get(variable) ?? 0
+          counts.set(variable, index + 1)
+          return [node, hash(`${variable}|${index}`)] as const
+        })
+    : []
+  const file = hash(scope).slice(0, 6)
+  const identifiers = new Map(
+    hashes.map(([node, value]) => {
+      let length = 3
+      while (hashes.some(([other, otherValue]) => other !== node && otherValue.startsWith(value.slice(0, length)))) {
+        length++
+      }
+      return [node, file + value.slice(0, length)]
+    }),
+  )
   const warnings: Warning[] = []
   const string = new MagicString(code)
 
@@ -118,6 +170,12 @@ function transform(code: string, id: string, { modules = MODULES, minify: compre
     }
 
     const { start, quasi } = node
+
+    const identifier = identifiers.get(node)
+
+    if (identifier !== undefined) {
+      string.appendLeft(node.tag.end, `.withConfig(${JSON.stringify(identifier)})`)
+    }
 
     for (const expression of quasi.expressions) {
       if (expression.type !== 'ArrowFunctionExpression' && expression.type !== 'FunctionExpression') {

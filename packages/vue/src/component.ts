@@ -1,10 +1,10 @@
-import type { Compiler, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
+import type { Compiler, ConfigArguments, HTMLElements, Properties, StyleDefinition, TeilerComponent } from '@teiler/core'
 import type { DefineSetupFnComponent } from 'vue'
 import type { AsTarget, PolymorphicComponent, StyledOptions, Tag } from './types'
 
 import Styled from './Styled'
 
-import { component, global, keyframes, styled, tags } from '@teiler/core'
+import { component, configure, global, keyframes, styled, tags, toConfig } from '@teiler/core'
 
 type VueTeilerComponent<Target extends HTMLElements, Props extends object, Default = Target> = PolymorphicComponent<Target, Props, Default> &
   TeilerComponent<Target, Props> & {
@@ -27,21 +27,27 @@ type InferComponent<Component, Props extends object, Extended> =
       ? VueTeilerComponent<Extended extends HTMLElements ? Extended : E, Props & P>
       : VueTeilerComponent<HTMLElements, Props>
 
+type Extend<Component, Extended> = <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<InferProps<Component, Props>>[]) => InferComponent<Component, Props, Extended>
+
 type Component<Target extends HTMLElements, Extended extends HTMLElements | undefined = Target> = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueTeilerComponent<Target, Props>
-  <Component>(binded: Component): <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<InferProps<Component, Props>>[]) => InferComponent<Component, Props, Extended>
+  <Component>(binded: Component): Extend<Component, Extended> & { withConfig(...args: ConfigArguments): Extend<Component, Extended> }
+  withConfig(...args: ConfigArguments): Component<Target, Extended>
 }
 
 type Global = {
   <Props extends object = {}>(string: TemplateStringsArray, ...properties: Properties<Props>[]): VueGlobalComponent<Props>
+  withConfig(...args: ConfigArguments): Global
 }
 
 type ComponentWithTags = Component<'div', undefined> & { [K in Exclude<HTMLElements, null>]: Component<K> }
 
-const construct = (tag: HTMLElements | undefined, compiler: Compiler) => {
-  return <Props extends object = {}>(stringOrBinded: TeilerComponent<HTMLElements, Props> | TemplateStringsArray, ...properties: Properties<Props>[]) => {
+const construct = (tag: HTMLElements | undefined, compiler: Compiler): unknown => {
+  const create = <Props extends object = {}>(stringOrBinded: TeilerComponent<HTMLElements, Props> | TemplateStringsArray, ...properties: Properties<Props>[]) => {
     return styled<Props, VueTeilerComponent<HTMLElements, Props>>(tag, compiler, createComponent, stringOrBinded, ...properties)
   }
+
+  return Object.assign(create, { withConfig: (...args: ConfigArguments) => construct(tag, configure(compiler, toConfig(...args))) })
 }
 
 const vueComponent = construct(undefined, component) as ComponentWithTags
