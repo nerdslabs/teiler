@@ -70,17 +70,24 @@ describe('plugin', () => {
 
   test('creates component ids from the package name and the path in the package', () => {
     const file = fileURLToPath(new URL('Button.ts', import.meta.url))
-    const expected = transformCode(code, file, { scope: '@teiler/unplugin|src/Button.ts' })?.code
+    const expected = transformCode(code, file, { scope: '@teiler/unplugin|src/Button.ts', displayName: false })?.code
 
     expect(setup('rollup', { componentId: true }).transform(code, file)).toBe(expected)
     expect(setup('rollup', { componentId: true }).transform(code, `${file}?vue&type=script&lang.ts`)).toBe(expected)
   })
 
   test.each([
-    { options: {}, expected: /withConfig\("[\w-]{9,}", "Button"\)/ },
-    { options: { displayName: false }, expected: /withConfig\("[\w-]{9,}"\)/ },
-  ])('adds names with $options', ({ options, expected }) => {
-    const { transform } = setup('rollup', { componentId: undefined, ...options })
-    expect(transform("import { component } from '@teiler/vue'\nconst Button = component.button`color: red;`")).toMatch(expected)
+    { framework: 'vite', command: 'serve', options: {}, named: true },
+    { framework: 'vite', command: 'build', options: {}, named: false },
+    { framework: 'rollup', command: undefined, options: {}, named: false },
+    { framework: 'vite', command: 'build', options: { displayName: true }, named: true },
+    { framework: 'vite', command: 'serve', options: { displayName: false }, named: false },
+  ] as const)('adds names with the $framework $command command and $options', ({ framework, command, options, named }) => {
+    const { plugin, transform } = setup(framework, { componentId: undefined, ...options })
+    if (command !== undefined) {
+      ;(plugin.vite?.configResolved as (config: unknown) => void)({ command })
+    }
+    const result = transform("import { component } from '@teiler/vue'\nconst Button = component.button`color: red;`")
+    expect(result).toMatch(named ? /withConfig\("[\w-]{9,}", "Button"\)/ : /withConfig\("[\w-]{9,}"\)/)
   })
 })

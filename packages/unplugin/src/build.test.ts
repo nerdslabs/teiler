@@ -36,7 +36,7 @@ describe('build', () => {
     { name: 'svelte', entry: fixture('Button.fixture.svelte'), plugins: [svelte()] },
   ])('minifies templates in $name components with vite', async ({ entry, plugins }) => {
     const code = await bundle(entry, plugins)
-    expect(code).toMatch(/\/\*\s*[#@]__PURE__\s*\*\/\s*\w+\.button\.withConfig\(\s*["`][\w-]{9,}["`](?:,\s*["`]\w+["`])?\s*\)\(\["color:",\s*";&:hover\{color:green;\}"\]/)
+    expect(code).toMatch(/\/\*\s*[#@]__PURE__\s*\*\/\s*\w+\.button\.withConfig\(\s*["`][\w-]{9,}["`]\s*\)\(\["color:",\s*";&:hover\{color:green;\}"\]/)
   })
 
   test.each([
@@ -52,7 +52,7 @@ describe('build', () => {
   test('minifies templates and removes unused definitions with rolldown', async () => {
     const input = fixture('Entry.fixture.ts')
     const result = await (await rolldown({ input, external, plugins: [teilerRolldown()] })).generate({ format: 'esm' })
-    expect(result.output[0].code).toMatch(/pattern\.button\.withConfig\(\s*"[\w-]{9,}",\s*"Button"\s*\)\(\["color:red;&:hover\{color:green;\}"\]\)/)
+    expect(result.output[0].code).toMatch(/pattern\.button\.withConfig\("[\w-]{9,}"\)\(\["color:red;&:hover\{color:green;\}"\]\)/)
     expect(result.output[0].code).not.toContain('unused')
   })
 
@@ -78,7 +78,7 @@ describe('build', () => {
     })
     const result = await server.transformRequest('/Warnings.fixture.ts')
     await server.close()
-    expect(result?.code).toMatch(/pattern\.button\.withConfig\("[\w-]{9,}"(?:, "\w+")?\)`\n {2}color red;\n`/)
+    expect(result?.code).toMatch(/pattern\.button\.withConfig\("[\w-]{9,}", "Broken"\)`\n {2}color red;\n`/)
     expect(warnings).toEqual([expect.stringMatching(/Warnings\.fixture\.ts:7:22\n[\s\S]*pattern\.button`\n\s+\|\s+\^/)])
   })
 })

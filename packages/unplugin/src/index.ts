@@ -58,7 +58,7 @@ const factory: UnpluginFactory<Options | undefined> = (options = {}) => {
         code: modules,
       },
       handler(code, id) {
-        const result = transform(code, id, { modules, minify: options.minify ?? production, pure: options.pure ?? production, componentId: options.componentId ?? true, displayName: options.displayName ?? true, scope: scope(id) })
+        const result = transform(code, id, { modules, minify: options.minify ?? production, pure: options.pure ?? production, componentId: options.componentId ?? true, displayName: options.displayName ?? !production, scope: scope(id) })
 
         if (result === null) {
           return null
